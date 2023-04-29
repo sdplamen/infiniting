@@ -1,77 +1,57 @@
 body {
-    background-color: 002F5B;
-    /* background-image: url("images/infinity.png");*/
+    background-color: #002F5B;
     background-size: cover;
-    position: relative;
-    font-family: Montserrat;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
-    color: D4ECFC;
+    color: #D4ECFC;
 }
-#band-logo {
-    background-color: 004899;
-    position: absolute;
-    height: 30px;
+.band-logo {
+    background-color: #004899;
+    margin: 5px auto;
+    display: flex;
+    justify-content: space-around;
 }
-img {
+#logo {
     width: 50px;
-    
-    margin: 5px;
-    position: absolute;
-    left: 210px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
 }
-#nav {
-    background-color: 000000;
+.nav {
+    background-color: #000000;
+    color: #D4ECFC;
     font-size: 15px;
-    position: absolute;
-    left: 0;
-    top: 40px;
-    height: 30px;
-    font-weight: 600px;
-    padding: 3px;
+    font-weight: 600;
+    text-decoration: none;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
-#band-photo {
-    background-color: 000000;
+.author {
+    background-color: #000000;
+    color: #D4ECFC;
     font-size: 15px;
-    position: absolute;
-    top: 80px;
-    height: 30px;
-    font-weight: 400px;
-    margin-left: 5px;
-    margin-right: 5px;
-    padding-top: 5px;
+    font-weight: 400;
+    text-decoration: none;
+    height: 35px;
+    margin: 5px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
 }
-.i {
-    font-size: 10px;
-    position: absolute;
-    top: 80px;
-    left: 5px;
-    color: D4ECFC;
-    width: 8px;
-    height: 8px;
-}
-.rounded {
-    position: absolute;
-    text-align: center;
-    top: 140px;
-    left: 5px;
+#photo {
+    margin: 5px auto;
     width: 420px;
-    height: 300px;
+    display: flex;
+    justify-content: center;
 }
-.form-control {
-    background-color: D4ECFC;
-    color: 002F5B;
-    font-size: 11px;
-    position: absolute;
-    top: 450px;
-    left: 10px;
+.comm {
+    background-color: #D4ECFC;
+    color: #002F5B;
+    font-size: 10px;
+    margin: auto 70px;
     width: 400px;
     height: 10px;
-    border-width: 0;
-    border-radius: 2%;
-}
-label {
-    position: absolute;
-    top: 450px;
-    left: 5px;
-    color: 002F5B;
+    border-radius: 3%;
 }
