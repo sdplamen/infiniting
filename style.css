@@ -46,7 +46,7 @@ a:hover{
     background-color: #000000;
     font-size: 15px;
     font-weight: 500;
-    width: 420px;
+    width: 500px;
     margin: 0 auto;
     padding: 20px auto;
     display: flex;
@@ -55,7 +55,7 @@ a:hover{
 }
 .photo {
     margin: 0 auto;
-    width: 420px;
+    width: 500px;
     display: flex;
 }
 .comm {
@@ -63,8 +63,10 @@ a:hover{
     color: #002F5B;
     font-size: 10px;
     font-style: italic;
-    margin: auto 75px;
-    width: 420px;
+    margin: auto 35px;
+    width: 500px;
     height: 20px;
     border-radius: 5%;
+    display: flex;
+    justify-content: center;
 }
