@@ -5,6 +5,15 @@ body {
     font-weight: 500;
     color: #D4ECFC;
 }
+a:link, :visited {
+    color: #D4ECFC;
+    text-decoration: none;
+}
+a:hover{
+    color: #008999;
+    text-decoration: none;
+}
+
 .band-logo {
     background-color: #004899;
     margin: 5px auto;
@@ -19,23 +28,20 @@ body {
 }
 .nav {
     background-color: #000000;
-    color: #D4ECFC;
     font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-    height: 35px;
+    font-weight: 700;
+    margin: 5px auto;
+    padding: 5px auto;
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
 .author {
     background-color: #000000;
-    color: #D4ECFC;
     font-size: 15px;
-    font-weight: 400;
-    text-decoration: none;
-    height: 35px;
+    font-weight: 500;
     margin: 5px auto;
+    padding: 5px auto;
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
@@ -50,8 +56,9 @@ body {
     background-color: #D4ECFC;
     color: #002F5B;
     font-size: 10px;
-    margin: auto 70px;
-    width: 400px;
-    height: 10px;
-    border-radius: 3%;
+    font-style: italic;
+    margin: auto 75px;
+    width: 420px;
+    height: 20px;
+    border-radius: 5%;
 }
