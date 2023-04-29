@@ -33,24 +33,30 @@ a:hover{
     margin: 5px auto;
     padding: 5px auto;
     display: flex;
-    align-items: center;
     justify-content: space-around;
+    align-items: baseline;
 }
 .author {
+    margin: 5px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.authory {
     background-color: #000000;
     font-size: 15px;
     font-weight: 500;
-    margin: 5px auto;
-    padding: 5px auto;
+    width: 420px;
+    margin: 0 auto;
+    padding: 20px auto;
     display: flex;
-    align-items: flex-start;
     justify-content: space-around;
+    align-items: baseline;
 }
-#photo {
-    margin: 5px auto;
+.photo {
+    margin: 0 auto;
     width: 420px;
     display: flex;
-    justify-content: center;
 }
 .comm {
     background-color: #D4ECFC;
