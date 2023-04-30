@@ -38,9 +38,8 @@ a:hover{
 }
 .author {
     margin: 5px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    justify-items: center;
 }
 .authory {
     background-color: #000000;
@@ -56,7 +55,9 @@ a:hover{
 .photo {
     margin: 0 auto;
     width: 500px;
+    border-radius: 5px;
     display: flex;
+    flex-direction: column;
 }
 .comm {
     background-color: #D4ECFC;
@@ -64,9 +65,9 @@ a:hover{
     font-size: 10px;
     font-style: italic;
     margin: auto 35px;
+    padding: 0 10px;
     width: 500px;
     height: 20px;
-    border-radius: 5%;
+    border-radius: 50px 50px;
     display: flex;
-    justify-content: center;
 }
