@@ -36,17 +36,21 @@ a:hover{
     justify-content: space-around;
     align-items: baseline;
 }
+.body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .author {
-    margin: 5px auto;
     display: grid;
     justify-items: center;
 }
 .authory {
     background-color: #000000;
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 700;
     width: 500px;
-    margin: 0 auto;
+    margin: 20px auto 0 auto;
     padding: 20px auto;
     display: flex;
     justify-content: space-around;
@@ -68,4 +72,19 @@ a:hover{
     width: 450px;
     height: 20px;
     border-radius: 50px 50px;
+}
+.friends {
+    display: grid;
+    gap: 10px 5px;
+    grid-template-columns: 70px 60px 70px;
+}
+.person {
+    color: #001021;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#friend {
+    align-items: center;
+    font-size: 9px;
 }
