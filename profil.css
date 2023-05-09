@@ -59,10 +59,6 @@ a:hover{
     justify-content: space-between;
     align-items: baseline;
 }
-.author {
-    display: flex;
-    justify-content: center;
-}
 .photo {
     margin: 0 auto;
     width: 180px;
