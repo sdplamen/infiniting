@@ -36,15 +36,15 @@ a:hover{
     justify-content: space-around;
     align-items: baseline;
 }
-.body {
-    display: grid;
-    /*grid-template: 150px / auto auto auto;*/
-    grid-template-columns: 20px 20px 20px;
-}
+/*.body {
+    gdisplay: grid;
+    rid-template: 150px / auto auto auto;
+    grid-template-columns: repeat(3, 1fr);
+}*/
 .author {
-    /*display: grid;
-    grid-template-columns: 20px 20px 20px;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /*display: flex;
     flex-direction: column;
     justify-content: space-between;*/
 }
@@ -70,7 +70,7 @@ a:hover{
     color: #002F5B;
     font-size: 10px;
     font-style: italic;
-    margin: auto 30px;
+    margin: auto 100px;
     padding: 0 5px;
     width: 120px;
     height: 15px;
