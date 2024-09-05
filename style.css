@@ -1,0 +1,90 @@
+body {
+    background-color: #002F5B;
+    background-size: cover;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #D4ECFC;
+}
+a:link, :visited {
+    color: #D4ECFC;
+    text-decoration: none;
+}
+a:hover{
+    color: #008999;
+    text-decoration: none;
+}
+
+.band-logo {
+    background-color: #004899;
+    margin: 5px auto;
+    display: flex;
+    justify-content: space-around;
+}
+#logo {
+    width: 50px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+}
+.nav {
+    background-color: #000000;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 5px auto;
+    padding: 5px auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: baseline;
+}
+.body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.author {
+    display: grid;
+    justify-items: center;
+}
+.authory {
+    background-color: #000000;
+    font-size: 15px;
+    font-weight: 700;
+    width: 500px;
+    margin: 20px auto 0 auto;
+    padding: 20px auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: baseline;
+}
+.photo {
+    margin: 0 auto;
+    width: 500px;
+    border-radius: 5px;
+    display: flex;
+}
+.comm {
+    background-color: #D4ECFC;
+    color: #002F5B;
+    font-size: 10px;
+    font-style: italic;
+    margin: auto 35px;
+    padding: 0 10px;
+    width: 450px;
+    height: 20px;
+    border-radius: 50px 50px;
+}
+.friends {
+    display: grid;
+    gap: 10px 5px;
+    grid-template-columns: 70px 60px 70px;
+}
+.person {
+    color: #001021;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#friend {
+    align-items: center;
+    font-size: 9px;
+}
