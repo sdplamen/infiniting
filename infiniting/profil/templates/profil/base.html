@@ -1,19 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}My Website{% endblock %}</title>
+    <title>{% block title %}Профилна страница - социална мрежа за Магнум фотография{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profil.css' %}">
     {% block head_extra %}{% endblock %}
 </head>
 <body>
     <header>
         <div class="band-logo">
-            <p><a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>социална мрежа за Магнум фотография</p>
+            <p><a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>Социална мрежа за Магнум фотография</p>
         </div>
         <nav class="nav">
             <p><a href="{% url 'profile_view_name' %}"> Профил</p>
@@ -30,7 +31,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 My Social Network</p>
+        <p>&copy; My Social Magnum Photography Network</p>
     </footer>
 
     <script src="{% static 'js/scripts.js' %}"></script>
