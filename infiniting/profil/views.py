@@ -3,7 +3,7 @@ from .models import Author, Group, Photo
 
 # Create your views here.
 def homepage_view(request):
-    return render(request, 'profil/homepage.html')
+    return render(request, 'profil/profil.html')
 
 def profile_view(request):
     return render(request, 'profil/profil.html')
