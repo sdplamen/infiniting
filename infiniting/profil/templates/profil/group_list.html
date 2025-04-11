@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Groups - Социална мрежа за Магнум фотография{% endblock %}
+
+{% block content %}
+  <h1>Groups</h1>
+
+  {% if groups %}
+    <ul>
+      {% for group in groups %}
+        <li>
+          <h3><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a></h3>
+          <p>{{ group.description|truncatechars:100 }}</p>
+          <p>Members: <a href="{% url 'author_detail' group.members.first.id %}">{{ group.members.count }}</a></p>
+          {# Add other relevant group details #}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No groups available yet.</p>
+  {% endif %}
+{% endblock %}

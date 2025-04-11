@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="band-logo">
+            <p><a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>социална мрежа за Магнум фотография</p>
+        </div>
+        <nav class="nav">
+            <p><a href="{% url 'profile_view_name' %}"> Профил</p>
+            <p><a href="{% url 'group_view_name' %}">Групи</p>
+            <p><a href="{% url 'article_view_name' %}">Статии</p>
+            <p><a href="{% url 'auction_view_name' %}">Аукцион</p>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+            {# This is where the content from child templates will be inserted #}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 My Social Network</p>
+    </footer>
+
+    <script src="{% static 'js/scripts.js' %}"></script>
+    {% block body_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Auctions - Социална мрежа за Магнум фотография{% endblock %}
+
+{% block content %}
+  <h1>Auctions</h1>
+
+  {% if auctions %}
+    <ul>
+      {% for auction in auctions %}
+        <li>
+          <h3><a href="{% url 'auction_detail' auction.id %}">{{ auction.title }}</a></h3>
+          <p>Starting Price: {{ auction.start_price }}</p>
+          <p>End Date: {{ auction.end_date }}</p>
+          {# Add other relevant auction details #}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No auctions available at the moment.</p>
+  {% endif %}
+{% endblock %}

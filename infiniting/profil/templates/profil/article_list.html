@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Articles - Социална мрежа за Магнум фотография{% endblock %}
+
+{% block content %}
+  <h1>Articles</h1>
+
+  {% if articles %}
+    <ul>
+      {% for article in articles %}
+        <li>
+          <h3><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></h3>
+          <p>Published on: {{ article.publication_date }}</p>
+          <p>Author: <a href="{% url 'author_detail' article.author.id %}">{{ article.author.name }}</a></p>
+          <p>{{ article.body|truncatewords:50|safe }} <a href="{% url 'article_detail' article.slug %}">Read more</a></p>
+          {# Add other relevant article details #}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No articles published yet.</p>
+  {% endif %}
+{% endblock %}
