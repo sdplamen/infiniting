@@ -16,22 +16,25 @@ a:hover{
 
 .band-logo {
     background-color: #004899;
+    width: 10px;
     margin: 5px auto;
     display: flex;
     justify-content: space-around;
+    align-items: center
 }
+
 #logo {
-    width: 10px;
-    padding: 5px;
     display: flex;
     justify-content: center;
+    width: 10px;
+    padding: 5px;
 }
 .nav {
     background-color: #000000;
     font-size: 15px;
     font-weight: 700;
     margin: 5px auto;
-    padding: 5px auto;
+    padding: 5px 10px;
     display: flex;
     justify-content: space-around;
     align-items: baseline;
@@ -54,7 +57,7 @@ a:hover{
     font-weight: 700;
     width: 180px;
     margin: 20px auto 0 auto;
-    padding: 20px auto;
+    padding: 20px 20px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -74,5 +77,5 @@ a:hover{
     padding: 0 5px;
     width: 120px;
     height: 15px;
-    border-radius: 50px 50px;
+    border-radius: 50px;
 }
