@@ -16,26 +16,25 @@ a:hover{
 
 .band-logo {
     background-color: #002F5B;
-    font-size: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    /*font-style: italic;*/
     /*margin: 5px;*/
+    color: #008999;
     display: flex;
-    /*justify-content: space-around;*/
-    align-items: center
+    justify-content: space-around;
+    align-items: center;
 }
 
 #logo {
     width: 100px;
-    padding: 5px;
 }
 .nav {
     background-color: #000000;
     font-size: 15px;
-    font-weight: 700;
-    margin: 5px auto;
-    padding: 5px 10px;
+    font-weight: 600;
     display: flex;
     justify-content: space-around;
-    align-items: baseline;
 }
 /*.body {
     display: grid;
