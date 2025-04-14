@@ -40,8 +40,8 @@ a:hover{
     align-items: baseline;
 }
 /*.body {
-    gdisplay: grid;
-    rid-template: 150px / auto auto auto;
+    display: grid;
+    grid-template: 150px / auto auto auto;
     grid-template-columns: repeat(3, 1fr);
 }*/
 .author {
