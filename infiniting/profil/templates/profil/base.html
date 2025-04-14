@@ -14,7 +14,8 @@
 <body>
     <header>
         <div class="band-logo">
-            <p><a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>Социална мрежа за Магнум фотография</p>
+            <a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>
+            <p>Социална мрежа за Магнум фотография</p>
         </div>
         <nav class="nav">
             <p><a href="{% url 'profile_view_name' %}">Профил</a></p>
@@ -34,7 +35,7 @@
         <p>&copy; My Social Magnum Photography Network</p>
     </footer>
 
-    <script src="{% static 'js/scripts.js' %}"></script>
+{#    <script src="{% static 'js/scripts.js' %}"></script>#}
     {% block body_extra %}{% endblock %}
 </body>
 </html>

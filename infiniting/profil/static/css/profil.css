@@ -15,18 +15,16 @@ a:hover{
 }
 
 .band-logo {
-    background-color: #004899;
-    width: 10px;
-    margin: 5px auto;
+    background-color: #002F5B;
+    font-size: 20px;
+    /*margin: 5px;*/
     display: flex;
-    justify-content: space-around;
+    /*justify-content: space-around;*/
     align-items: center
 }
 
 #logo {
-    display: flex;
-    justify-content: center;
-    width: 10px;
+    width: 100px;
     padding: 5px;
 }
 .nav {
