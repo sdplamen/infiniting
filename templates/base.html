@@ -14,14 +14,14 @@
 <body>
     <header>
         <div class="band-logo">
-            <a href="{% url 'homepage' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>
-            <p>Социална мрежа за Магнум фотография</p>
+            <a href="{% url 'home' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>
+            <h1>Социална мрежа за Магнум фотография</h1>
         </div>
         <nav class="nav">
-            <p><a href="{% url 'profile_view_name' %}">Профил</a></p>
-            <p><a href="{% url 'group_view_name' %}">Групи</a></p>
-            <p><a href="{% url 'article_view_name' %}">Статии</a></p>
-            <p><a href="{% url 'auction_view_name' %}">Аукцион</a></p>
+            <p><a href="{% url 'profile' %}">Профил</a></p>
+            <p><a href="{% url 'group' %}">Групи</a></p>
+            <p><a href="{% url 'article' %}">Статии</a></p>
+            <p><a href="{% url 'auction' %}">Аукцион</a></p>
         </nav>
     </header>
 
@@ -32,10 +32,9 @@
     </main>
 
     <footer>
-        <p>&copy; My Social Magnum Photography Network</p>
+        <p>&copy; Social Magnum Photography Network</p>
     </footer>
 
-{#    <script src="{% static 'js/scripts.js' %}"></script>#}
     {% block body_extra %}{% endblock %}
 </body>
 </html>

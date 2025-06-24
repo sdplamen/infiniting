@@ -18,11 +18,11 @@ a:hover{
     background-color: #004899;
     margin: 5px auto;
     display: flex;
-    justify-content: space-around;
+    justify-content: left;
 }
 #logo {
-    width: 50px;
-    padding: 5px;
+    width: 90px;
+    padding: 20px;
     display: flex;
     justify-content: center;
 }
