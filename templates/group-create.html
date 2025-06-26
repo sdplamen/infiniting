@@ -9,9 +9,9 @@
     <ul>
       {% for group in groups %}
         <li>
-          <h3><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a></h3>
+          <h3><a href="{% url 'group-detail' group.id %}">{{ group.name }}</a></h3>
           <p>{{ group.description|truncatechars:100 }}</p>
-          <p>Members: <a href="{% url 'author_detail' group.members.first.id %}">{{ group.members.count }}</a></p>
+          <p>Members: <a href="{% url 'profile-detail' group.members.first.id %}">{{ group.members.count }}</a></p>
           {# Add other relevant group details #}
         </li>
       {% endfor %}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="infiniting_db" uuid="f34c55a2-45d5-4789-9827-08a0963ff113">
+    <data-source source="LOCAL" name="infiniting_db" uuid="14ed60d6-e2b4-4275-b5fd-cfa010c3c978">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

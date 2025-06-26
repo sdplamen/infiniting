@@ -18,23 +18,21 @@
             <h1>Социална мрежа за Магнум фотография</h1>
         </div>
         <nav class="nav">
-            <p><a href="{% url 'profile' %}">Профил</a></p>
-            <p><a href="{% url 'group' %}">Групи</a></p>
-            <p><a href="{% url 'article' %}">Статии</a></p>
-            <p><a href="{% url 'auction' %}">Аукцион</a></p>
+            <p><a href="{% url 'profil-details' %}">Профил</a></p>
+            <p><a href="{% url 'group-details' %}">Групи</a></p>
+            <p><a href="{% url 'article-details' %}">Статии</a></p>
+            <p><a href="{% url 'auction-details' %}">Аукцион</a></p>
         </nav>
     </header>
 
     <main>
         {% block content %}
-            {# This is where the content from child templates will be inserted #}
         {% endblock %}
     </main>
-
+        <!-- Footer -->
     <footer>
-        <p>&copy; Social Magnum Photography Network</p>
+        <div>&copy; Social Magnum Photography Network</div>
     </footer>
-
-    {% block body_extra %}{% endblock %}
+      <!-- End Footer -->
 </body>
 </html>
