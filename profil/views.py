@@ -11,7 +11,7 @@ from profil.models import Photo, Photographer, Group, Like, Rating, Article, Auc
 
 class UserRegisterView(CreateView):
     form_class = CustomUserCreationForm
-    template_name = 'register.html'
+    template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
 
 class IndexView(ListView):

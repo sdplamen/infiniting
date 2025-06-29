@@ -9,15 +9,15 @@
     <ul>
       {% for article in articles %}
         <li>
-          <h3><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></h3>
+          <h3><a href="{% url 'article-detail' article.slug %}">{{ article.title }}</a></h3>
           <p>Published on: {{ article.publication_date }}</p>
-          <p>Author: <a href="{% url 'author_detail' article.author.id %}">{{ article.author.name }}</a></p>
+          <p>Author: <a href="{% url 'author-detail' article.author.id %}">{{ article.author.name }}</a></p>
           <p>{{ article.body|truncatewords:50|safe }} <a href="{% url 'article_detail' article.slug %}">Read more</a></p>
           {# Add other relevant article details #}
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No articles published yet.</p>
+    <p>Все още няма публикувани статии.</p>
   {% endif %}
 {% endblock %}

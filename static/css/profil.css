@@ -4,101 +4,321 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     color: #D4ECFC;
+    margin: 0;
+    padding: 0;
 }
-a:link, :visited {
+a:link, a:visited {
     color: #D4ECFC;
     text-decoration: none;
 }
-a:hover{
+a:hover {
     color: #008999;
-    text-decoration: none;
+    text-decoration: underline; /* Added underline for clarity on hover */
+}
+
+/* Header and Navigation */
+header {
+    background-color: #004899;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .band-logo {
-    background-color: #004899;
-    margin: 5px auto;
-    display: flex;
-    justify-content: left;
-}
-#logo {
-    width: 90px;
-    padding: 20px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%; /* Ensure it takes full width of header */
 }
 
-.body {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.band-logo #logo {
+    width: 100px; /* Adjusted size slightly for better fit */
+    height: 50px;
+    margin-right: 15px;
+    display: block;
 }
-.author {
+
+.band-logo h1 {
+    font-size: 1.8em; /* Adjusted font size */
+    margin: 0; /* Remove default margin */
+    color: #D4ECFC;
+    text-align: center;
+}
+
+.nav-links { /* Renamed from .nav to avoid conflict with footer's nav */
+    background-color: #001535;
+    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.nav-links p {
+    margin: 0 15px; /* Spacing between nav items */
+    font-size: 1.1em;
+}
+
+/* Main Content Area */
+.main-content {
+    max-width: 1200px; /* Max width for content */
+    margin: 20px auto; /* Center content horizontally */
+    padding: 20px; /* Padding around content */
+    background-color: rgba(0, 47, 91, 0.8); /* Slightly transparent background for main content */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Messages */
+.messages-container {
+    margin-bottom: 20px;
+    padding: 10px;
+}
+.message-alert {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.message-alert.success { background-color: #4CAF50; color: white; }
+.message-alert.error { background-color: #f44336; color: white; }
+.message-alert.warning { background-color: #ff9800; color: white; }
+.message-alert.info { background-color: #2196F3; color: white; }
+
+
+/* General Containers for Cards/Forms */
+.content-section {
+    padding: 20px;
+    background-color: rgba(0, 21, 53, 0.7); /* Darker background for sections/cards */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-container, .card-custom {
+    background-color: rgba(0, 21, 53, 0.9); /* Darker background for forms/cards */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 600px; /* Default for forms/single cards */
+}
+
+.text-center {
+    text-align: center;
+}
+.text-muted {
+    color: #A0B9D6; /* Lighter blue for muted text */
+}
+
+/* Forms */
+.form-field {
+    margin-bottom: 15px;
+}
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #D4ECFC;
+}
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field input[type="number"],
+.form-field input[type="datetime-local"],
+.form-field textarea,
+.form-field select {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 10px;
+    border: 1px solid #005F99;
+    border-radius: 5px;
+    background-color: #001021;
+    color: #D4ECFC;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+.form-field input[type="file"] {
+    width: 100%;
+    color: #D4ECFC;
+}
+
+.form-field .help-text {
+    font-size: 0.9em;
+    color: #A0B9D6;
+    margin-top: 5px;
+}
+.form-field .errorlist {
+    color: #ff6347; /* Tomato red for errors */
+    font-size: 0.9em;
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+}
+
+/* Custom Buttons */
+.custom-button {
+    background-color: #008999;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+.custom-button:hover {
+    background-color: #006F79;
+}
+.custom-button-primary {
+    background-color: #008999;
+    color: white;
+}
+.custom-button-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.custom-button-danger {
+    background-color: #dc3545;
+    color: white;
+}
+.custom-button-success {
+    background-color: #28a745;
+    color: white;
+}
+.custom-button-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+.custom-button-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Specific elements from your provided CSS */
+.author { /* This seems unused, assuming it's for individual author display */
     display: grid;
     justify-items: center;
 }
-.authory {
+.authory { /* Specific to index.html photo author/group links */
     background-color: #000000;
     font-size: 15px;
     font-weight: 700;
     width: 500px;
     margin: 20px auto 0 auto;
-    padding: 20px auto;
+    padding: 20px; /* Adjusted padding */
     display: flex;
     justify-content: space-around;
     align-items: baseline;
-}
-.photo {
-    margin: 0 auto;
-    width: 500px;
     border-radius: 5px;
-    display: flex;
 }
-.comm {
+.photo-item { /* A general container for each photo in a list */
+    margin: 0 auto 20px auto;
+    max-width: 500px;
+    background-color: rgba(0, 21, 53, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.photo-item img.photo-display { /* Applied to actual image tag */
+    max-width: 100%;
+    height: auto; /* Ensure aspect ratio is maintained */
+    border-radius: 5px;
+    display: block; /* Remove extra space below image */
+    margin-bottom: 10px;
+}
+.comm { /* For comment input box */
     background-color: #D4ECFC;
     color: #002F5B;
     font-size: 10px;
     font-style: italic;
-    margin: auto 35px;
-    padding: 0 10px;
-    width: 450px;
-    height: 20px;
-    border-radius: 50px 50px;
+    margin: 10px auto; /* Adjusted margin */
+    padding: 5px 10px; /* Adjusted padding */
+    width: calc(100% - 20px); /* Adjusted width */
+    height: 30px; /* Adjusted height */
+    border-radius: 50px;
+    border: none; /* Remove default border */
+    box-sizing: border-box;
 }
-.friends {
+
+.friends { /* For friend list in photo details */
     display: grid;
     gap: 10px 5px;
-    grid-template-columns: 70px 60px 70px;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* Responsive grid for friends */
+    justify-content: center; /* Center items within grid */
+    padding: 10px 0;
 }
 .person {
-    color: #001021;
+    color: #D4ECFC; /* Changed to match body text color */
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 0.9em;
+    text-align: center;
 }
-#friend {
-    align-items: center;
-    font-size: 9px;
+.person i.fas { /* Style for Font Awesome icons in person */
+    font-size: 2em; /* Larger icon */
+    margin-bottom: 5px;
+    color: #D4ECFC;
+}
+#friend { /* Specific styling for friend links within .person */
+    font-size: 0.8em; /* Adjusted font size */
+    word-break: break-all; /* Break long names */
 }
 
-nav, footer {
+/* Footer */
+footer {
     background-color: #001535;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
-    font-size: 16px;
-    justify-content: space-around;
+    font-size: 0.9em;
+    justify-content: center; /* Center footer text */
     align-items: center;
-    padding: 0 5px 0 3px;
-    margin: 0;
-    color: white;
+    padding: 15px 10px;
+    margin-top: 30px;
+    color: #D4ECFC;
 }
 
-/*.nav {*/
-/*    background-color: #000000;*/
-/*    font-size: 15px;*/
-/*    font-weight: 700;*/
-/*    margin: 5px auto;*/
-/*    padding: 5px auto;*/
-/*    display: flex;*/
-/*    justify-content: space-around;*/
-/*    align-items: baseline;*/
-/*}*/
+/* Utility classes for spacing and alignment */
+.margin-auto { margin: auto; }
+.text-center { text-align: center; }
+.full-width { width: 100%; }
+.half-width { width: 48%; } /* For two column layouts, adjust as needed */
+.flex-container { display: flex; justify-content: space-around; flex-wrap: wrap; }
+.flex-item { flex: 1; min-width: 280px; margin: 10px; } /* For flexible cards */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .band-logo h1 {
+        font-size: 1.5em;
+    }
+    .nav-links p {
+        margin: 5px 10px;
+        font-size: 0.9em;
+    }
+    .form-container, .card-custom, .authory, .photo-item {
+        max-width: 95%;
+        padding: 15px;
+    }
+    .main-content {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .band-logo {
+        flex-direction: column;
+    }
+    .band-logo #logo {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .nav-links {
+        flex-direction: column;
+    }
+    .nav-links p {
+        margin: 5px 0;
+    }
+}

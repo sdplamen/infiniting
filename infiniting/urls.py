@@ -18,13 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from profil import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('profil.urls')),
-    # path('accounts/', include('django.contrib.auth.urls')),
-    # path('accounts/register/', views.UserRegisterView.as_view(), name='register')
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/register/', views.UserRegisterView.as_view(), name='register')
 ]
 
 if settings.DEBUG:

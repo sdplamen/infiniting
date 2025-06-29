@@ -1,179 +1,51 @@
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Infiniting - социална мрежа за Магнум фотография</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="../static/css/style.css">
-</head>
+{% extends 'base.html' %}
+<title>{% block title %}Профилна страница - социална мрежа за Магнум фотография{% endblock %}</title>
 
-<body>
-    <div class="band-logo">
-        </p><a href="index.html"><img id="logo" src="/images/infinity.png" alt="logo"></a>социална мрежа за Магнум фотография</p>
+{% block content %}
+    <h2 class="text-center">Последни снимки</h2>
+    <div class="photo-grid-container"> {# Custom container for photo grid #}
+        {% for photo in latest_photos %}
+            <div class="photo-item">
+                <div class="authory">
+                    <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'profile-details' profil_pk=photo.author.pk %}">{{ photo.author.user.username }}</a>
+                    {% if photo.group %}
+                        <i class="fas fa-users me-1"></i> Група: <a href="{% url 'group-details' group_pk=photo.group.pk %}">{{ photo.group.name }}</a>
+                    {% endif %}
+                </div>
+                <a href="{% url 'photo-details' photo_pk=photo.pk %}" class="photo-link">
+                    {% if photo.image %}
+                        <img src="{{ photo.image.url }}" class="photo-display" alt="{{ photo.caption|default:'Photo' }}">
+                    {% else %}
+                        <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
+                    {% endif %}
+                </a>
+                <p class="photo-caption">{{ photo.caption|default:'Няма описание.' }}</p>
+                <div class="photo-interactions">
+                    <span class="likes-count"><i class="fas fa-thumbs-up"></i> {{ photo.likes.count }}</span>
+                    <span class="comments-count"><i class="fas fa-comment"></i> {{ photo.comments.count }}</span>
+                    {% if photo.ratings.count > 0 %}
+                        <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings.count }} оценки</span>
+                    {% endif %}
+                    <small class="uploaded-at">{{ photo.uploaded_at|date:"d M Y H:i" }}</small>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">Все още няма качени снимки.</p>
+        {% endfor %}
     </div>
-    <div class="nav">
-            <p><a href="profile-details.html"> Профил</p>
-            <p><a href="group-details.html">Групи</p>
-            <p><a href="article-details.html">Статии</p>
-            <p><a href="auction-details.html">Аукцион</p>
-    </div>
-    <div class="body">
-    <div class="author">
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
+
+        {# Pagination - simplified without Bootstrap #}
+    {% if is_paginated %}
+        <div class="pagination-container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Предишна</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Следваща</a>
+            {% endif %}
         </div>
-        <div>
-            <img class="photo" src="/images/L1008950.jpg" alt="photo">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
-        </div>
-        <div>
-            <img class="photo" src="/images/L1008964.jpg" alt="photo">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
-        </div>
-        <div>
-            <img class="photo" src="/images/L1008955.jpg" alt="photo">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
-        </div>
-        <div>
-            <img class="photo" src="/images/L1008968.jpg" alt="photo">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
-        </div>
-        <div>
-            <img class="photo" src="/images/L1008972.jpg" alt="photo">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-        <div class="authory">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-            <a href="article-details.html">Автор</a>
-            <a href="group-details.html">Група</a>
-        </div>
-        <div>
-            <img class="photo" src="/images/L1008986.jpg" alt="photo_">
-        </div>
-        <div>
-            <input class="comm" type="comment"  placeholder="Type your comment here ...">
-        </div>
-    </div>
-    <div class="friends">
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 1</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 2</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 3</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 4</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 5</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 6</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 7</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 8</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 9</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 10</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 11</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 12</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 13</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-</svg>
-        <a id="friend" href="profile-details.html">Приятел 14</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 15</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 16</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 17</a>
-        </div>
-        <div class="person">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
-        <a id="friend" href="profile-details.html">Приятел 18</a>
-        </div>
-    </div>
-    </div>
-</body>
-</html>
+    {% endif %}
+{% endblock %}
