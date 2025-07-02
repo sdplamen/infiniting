@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Всички Профили{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Всички Профили</h2>
+    {% if user.is_authenticated and not user.photographer %}
+        <div class="message-alert info text-center">
+            Все още нямате профил. <a href="{% url 'users:profile-create' %}" class="alert-link">Създайте го сега!</a>
+        </div>
+    {% endif %}
+
+    <div class="profile-grid-container">
+        {% for profile in photographer %}
+            <div class="card-custom text-center flex-item">
+                {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" class="profile-picture-small" alt="{{ profile.user.username }}">
+                {% else %}
+                    <i class="fas fa-user-circle default-profile-icon"></i>
+                {% endif %}
+                <h3>{{ profile.user.username }}</h3>
+                <p class="text-muted">Член от {{ profile.created_at|date:"d M Y" }}</p>
+                <p>{{ profile.bio|truncatechars:100|default:'Няма биография.' }}</p>
+                <a href="{% url 'user-profile-detail' pk=profile.pk %}" class="custom-button custom-button-secondary">Виж профил</a>
+            </div>
+        {% empty %}
+            <p class="text-center">Все още няма създадени профили на фотографи.</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination-container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Предишна</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Следваща</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Изтрий Статия{% endblock %}
+
+{% block content %}
+<div class="form-container text-center">
+    <h2 class="text-danger">Изтрий Статия</h2>
+    <p class="lead-text">Сигурни ли сте, че искате да изтриете статията:</p>
+    <p><strong>"{{ article.title }}"</strong> от <strong>{{ article.author.user.username }}</strong>?</p>
+    <p class="text-muted">Това действие е необратимо.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="custom-button custom-button-danger">Да, Изтрий</button>
+        <a href="{% url 'article-details' pk=article.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+    </form>
+</div>
+{% endblock %}

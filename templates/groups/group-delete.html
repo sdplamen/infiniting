@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Изтрий Група{% endblock %}
+
+{% block content %}
+<div class="form-container text-center">
+    <h2 class="text-danger">Изтрий Група</h2>
+    <p class="lead-text">Сигурни ли сте, че искате да изтриете групата <strong>"{{ group.name }}"</strong>?</p>
+    <p class="text-muted">Това действие е необратимо и ще изтрие всички свързани снимки в тази група.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="custom-button custom-button-danger">Да, Изтрий</button>
+        <a href="{% url 'group-detail' pk=group.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+    </form>
+</div>
+{% endblock %}

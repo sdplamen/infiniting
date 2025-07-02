@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Аукцион за {{ auction.photo.caption|default:'Снимка' }}{% endblock %}
+
+{% block content %}
+<div class="two-column-layout">
+    <div class="main-content-column">
+        <div class="card-custom large-card">
+            {% if auction.photo.image %}
+                <img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
+            {% else %}
+                <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
+            {% endif %}
+            <div class="card-text-content">
+                <h3>Аукцион за "{{ auction.photo.caption|default:'Снимка' }}"</h3>
+                <p class="text-muted small-text">
+                    <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
+                </p>
+                <p>
+                    Описание: {{ auction.photo.caption|default:'Няма описание на снимката.' }}
+                </p>
+                <p>
+                    Начало на аукциона: <strong>{{ auction.start_time|date:"d M Y H:i" }}</strong>
+                </p>
+                <p>
+                    Край на аукциона: <strong>{{ auction.end_time|date:"d M Y H:i" }}</strong>
+                </p>
+                <p>
+                    Начална оферта: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
+                </p>
+                <p class="large-text">
+                    Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
+                </p>
+                {% if auction.highest_bidder %}
+                    <p>
+                        Най-висок оферент: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
+                    </p>
+                {% else %}
+                    <p>Няма оферти все още.</p>
+                {% endif %}
+
+                <hr class="custom-hr">
+
+                {% if auction.is_active and auction.end_time > now %}
+                    <h4>Направете оферта</h4>
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'place_bid' pk=auction.pk %}">
+                            {% csrf_token %}
+                            <div class="form-field inline-form-field">
+                                {{ bid_form.amount }}
+                                <span class="input-addon">лв.</span>
+                                <button type="submit" class="custom-button custom-button-primary">Оферирай</button>
+                            </div>
+                            {% for error in bid_form.amount.errors %}
+                                <div class="errorlist">{{ error }}</div>
+                            {% endfor %}
+                            {% if bid_form.non_field_errors %}
+                                <div class="message-alert error">
+                                    {% for error in bid_form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        <div class="message-alert info text-center small-text">
+                            <a href="{% url 'login' %}">Влезте</a>, за да оферирате.
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="message-alert warning text-center">
+                        Този аукцион е приключил.
+                    </div>
+                {% endif %}
+
+                <div class="text-center margin-top-large">
+                    <a href="{% url 'auction_list' %}" class="custom-button custom-button-primary"><i class="fas fa-arrow-left me-2"></i>Към всички аукциони</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="side-column"> {# Column for bid history #}
+        <div class="card-custom">
+            <h4>История на офертите ({{ bids.count }})</h4>
+            {% if bids %}
+                <ul class="simple-list bid-list">
+                    {% for bid in bids %}
+                        <li>
+                            <div>
+                                <i class="fas fa-user me-2"></i>
+                                <a href="{% url 'user-profile-detail' pk=bid.bidder.photographer.pk %}">
+                                    <strong>{{ bid.bidder.username }}</strong>
+                                </a>
+                                оферира
+                                <span class="text-success"><strong>{{ bid.amount|floatformat:2 }} лв.</strong></span>
+                            </div>
+                            <small class="text-muted">{{ bid.bid_time|date:"d M Y H:i" }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Все още няма оферти за този аукцион.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add a simple client-side check for bid amount (optional, server-side is crucial)
+    document.addEventListener('DOMContentLoaded', function() {
+        const bidForm = document.querySelector('form[action*="/bid/"]');
+        if (bidForm) {
+            bidForm.addEventListener('submit', function(event) {
+                const bidAmountInput = bidForm.querySelector('input[name="amount"]');
+                const currentHighestBid = parseFloat("{{ auction.current_highest_bid|floatformat:2 }}");
+                const startingBid = parseFloat("{{ auction.starting_bid|floatformat:2 }}");
+                const newBidAmount = parseFloat(bidAmountInput.value);
+
+                if (isNaN(newBidAmount) || newBidAmount <= 0) {
+                    // For production, consider a custom modal instead of alert
+                    alert('Моля, въведете валидна сума за оферта.');
+                    event.preventDefault();
+                } else if (newBidAmount <= currentHighestBid && currentHighestBid > 0) {
+                    alert('Вашата оферта трябва да е по-висока от текущата най-висока оферта (' + currentHighestBid.toFixed(2) + ' лв.).');
+                    event.preventDefault();
+                } else if (newBidAmount < startingBid && currentHighestBid === 0) {
+                    alert('Вашата оферта трябва да е по-висока или равна на началната оферта (' + startingBid.toFixed(2) + ' лв.).');
+                    event.preventDefault();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

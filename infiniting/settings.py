@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,7 +31,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 PROJECT_APPS = [
-    'profil',
+    'users', 'groups',  'photos', 'articles', 'auctions'
 ]
 
 INSTALLED_APPS = [
@@ -52,6 +54,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'infiniting.urls'
+
+LOGIN_REDIRECT_URL = reverse_lazy('photo-home')
+LOGOUT_REDIRECT_URL = reverse_lazy('photo-home')
+# AUTH_USER_MODEL = 'user.Photographer'
 
 TEMPLATES = [
     {
@@ -82,7 +88,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'infiniting_db',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

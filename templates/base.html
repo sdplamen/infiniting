@@ -15,27 +15,33 @@
 <body>
     <header>
         <div class="band-logo">
-            <a href="{% url 'home' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>
+            <a href="{% url 'photo-home' %}"><img id="logo" src="{% static 'images/infinity.png' %}" alt="logo"></a>
             <h1>Социална мрежа за Магнум фотография</h1>
         </div>
-
     </header>
     <nav class="nav-links">
-            <p><a href="{% url 'home' %}">Начало</a></p>
+            <p><a href="{% url 'photo-home' %}">Начало</a></p>
             <p><a href="{% url 'article-list' %}">Статии</a></p>
             <p><a href="{% url 'auction-list' %}">Аукцион</a></p>
             <p><a href="{% url 'group-list' %}">Групи</a></p>
 
             {% if user.is_authenticated %}
-                <p><a href="{% url 'my-profile-details' %}">Профил ({{ user.username }})</a></p>
-                <p><a href="{% url 'logout' %}">Изход</a></p>
+{#                <a href="{% url 'photo-upload' %}">Качи Снимка</a>#}
+{#                <a href="{% url 'user-profile' %}">Моят Профил</a>#}
+{#                <a href="{% url 'logout' %}">Изход</a>#}
+                <p><a href="{% url 'user-profile' %}">Профил ({{ user.username }})</a></p>
+                <p>
+                    <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="custom-button custom-button-link">Изход</button>
+                    </form>
+                </p>
             {% else %}
                 <p><a href="{% url 'login' %}">Вход</a></p>
                 <p><a href="{% url 'register' %}">Регистрация</a></p>
             {% endif %}
         </nav>
     <main class="main-content">
-        {# Django Messages Framework #}
         {% if messages %}
             <div class="messages-container">
                 {% for message in messages %}

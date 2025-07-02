@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Аукциони{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Аукциони</h2>
+
+    {% if user.is_authenticated and user.is_staff %} {# Only staff/admin can create auctions #}
+        <div class="text-center">
+            <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
+        </div>
+    {% endif %}
+
+    <div class="sort-options-container">
+        <label for="sort-by">Сортирай по:</label>
+        <select id="sort-by" onchange="location = this.value;">
+            <option value="{% url 'auction-list' %}" {% if current_sort == 'latest' %}selected{% endif %}>Най-нови</option>
+            <option value="{% url 'auction-list' %}?sort_by=likes" {% if current_sort == 'likes' %}selected{% endif %}>Харесвания на снимката</option>
+            <option value="{% url 'auction-list' %}?sort_by=rating" {% if current_sort == 'rating' %}selected{% endif %}>Рейтинг на снимката</option>
+        </select>
+    </div>
+
+    <div class="auction-grid-container">
+        {% for auction in auctions %}
+            <div class="card-custom flex-item">
+                <a href="{% url 'auction-details' pk=auction.pk %}" class="photo-link">
+                    {% if auction.photo.image %}
+                        <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
+                    {% else %}
+                        <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
+                    {% endif %}
+                </a>
+                <div class="card-text-content">
+                    <h3>Аукцион за "{{ auction.photo.caption|default:'Снимка' }}"</h3>
+                    <p class="text-muted small-text">
+                        <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'profile_details' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
+                    </p>
+                    <p class="auction-price">
+                        Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
+                    </p>
+                    <p class="auction-price">
+                        Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
+                    </p>
+                    {% if auction.highest_bidder %}
+                        <p class="small-text">
+                            Най-висок оферент: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
+                        </p>
+                    {% else %}
+                        <p class="small-text">Няма оферти все още.</p>
+                    {% endif %}
+                    <p class="small-text">
+                        <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
+                    </p>
+                    <div class="text-center">
+                        <a href="{% url 'auction-details' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж Детайли и Оферирай</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">Все още няма активни аукциони.</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination-container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Предишна</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Следваща</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

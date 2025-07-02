@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Статия: {{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="content-section max-width-800 margin-auto">
+    <h2 class="text-center">{{ article.title }}</h2>
+    <p class="text-muted text-center small-text">
+        От <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
+        на {{ article.created_at|date:"d M Y H:i" }}
+        {% if article.created_at != article.updated_at %}
+            (последно обновен: {{ article.updated_at|date:"d M Y H:i" }})
+        {% endif %}
+    </p>
+    <hr class="custom-hr">
+    <div class="article-content">
+        {{ article.content|linebreaksbr }}
+    </div>
+
+    {% if user.is_authenticated and user == article.author.user %}
+        <div class="actions-right">
+            <a href="{% url 'article-edit' pk=article.pk %}" class="custom-button custom-button-secondary"><i class="fas fa-edit me-1"></i>Редактирай</a>
+            <a href="{% url 'article-delete' pk=article.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий</a>
+        </div>
+    {% endif %}
+    <div class="text-center margin-top-large">
+        <a href="{% url 'article-list' %}" class="custom-button custom-button-primary"><i class="fas fa-arrow-left me-2"></i>Към всички статии</a>
+    </div>
+</div>
+{% endblock %}

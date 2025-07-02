@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактирай Снимка{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="text-center">Редактирай Снимка</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="help-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+            <div class="message-alert error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <button type="submit" class="custom-button custom-button-primary full-width">Запази Промените</button>
+    </form>
+    <div class="text-center">
+        <a href="{% url 'photo-details' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+    </div>
+</div>
+{% endblock %}

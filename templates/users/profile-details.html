@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профил на {{ photographer.user.username }}{% endblock %}
+
+{% block content %}
+<div class="profile-details-layout">
+    <div class="profile-info-column">
+        <div class="card-custom text-center">
+            {% if photographer.profile_picture %}
+                <img src="{{ photographer.profile_picture.url }}" class="profile-picture-large" alt="{{ photographer.user.username }}">
+            {% else %}
+                <i class="fas fa-user-circle default-profile-icon-large"></i>
+            {% endif %}
+            <h3>{{ photographer.user.username }}</h3>
+            <p class="text-muted">Член от {{ photographer.created_at|date:"d M Y" }}</p>
+            <p class="text-muted">Последно обновен: {{ photographer.updated_at|date:"d M Y H:i" }}</p>
+            <p>{{ photographer.bio|default:'Няма биография.' }}</p>
+
+            {% if user.is_authenticated and user == photographer.user %}
+                <div class="profile-actions">
+                    <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="custom-button custom-button-secondary">Редактирай Профил</a>
+                    <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий Профил</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card-custom">
+            <h4>Членува в Групи</h4>
+            {% if photographer.user.user_groups.all %}
+                <ul class="simple-list">
+                    {% for group in photographer.user.user_groups.all %}
+                        <li>
+                            <a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>
+                            {% if user.is_authenticated and user in group.members.all %}
+                                <form method="post" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Този фотограф не членува в групи.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="profile-content-column">
+        <h3>Снимки от {{ photographer.user.username }}</h3>
+        <div class="photo-grid-container">
+            {% for photo in photos %}
+                <div class="photo-item flex-item">
+                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="photo-link">
+                        {% if photo.image %}
+                            <img src="{{ photo.image.url }}" class="photo-display alt={{ photo.caption|default:'Photo' }}">
+                        {% else %}
+                            <img src="https://placehold.co/400x200/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
+                        {% endif %}
+                    </a>
+                    <p>{{ photo.caption|default:'Няма описание.' }}</p>
+                    {% if photo.group %}
+                        <p class="text-muted small-text">
+                            <i class="fas fa-users me-1"></i> Група: <a href="{% url 'group-detail' pk=photo.group.pk %}">{{ photo.group.name }}</a>
+                        </p>
+                    {% endif %}
+                    <div class="photo-interactions">
+                        <small class="uploaded-at">{{ photo.uploaded_at|date:"d M Y" }}</small>
+                        <span class="likes-count"><i class="fas fa-thumbs-up"></i> {{ photo.likes.count }}</span>
+                        <span class="comments-count"><i class="fas fa-comment"></i> {{ photo.comments.count }}</span>
+                        {% if photo.ratings.count > 0 %}
+                            <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings.count }} оценки</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center">Този фотограф все още не е качил снимки.</p>
+            {% endfor %}
+        </div>
+
+        <h3 class="margin-top-large">Статии от {{ photographer.user.username }}</h3>
+        {% if photographer.articles.all %}
+            <ul class="simple-list">
+                {% for article in photographer.articles.all %}
+                    <li>
+                        <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}"</a>
+                        <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
+                    </li>
+                {% empty %}
+                    <p class="text-center">Този фотограф все още не е публикувал статии.</p>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">Този фотограф все още не е публикувал статии.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

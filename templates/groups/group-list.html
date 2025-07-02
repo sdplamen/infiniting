@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Всички Групи{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Всички Групи</h2>
+    {% if user.is_authenticated %}
+        <div class="text-center">
+            <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
+        </div>
+    {% endif %}
+
+    <div class="group-grid-container">
+        {% for group in groups %}
+            <div class="card-custom flex-item">
+                <h3>{{ group.name }}</h3>
+                <p class="text-muted small-text">
+                    <i class="fas fa-users me-1"></i> {{ group.members.count }} члена
+                </p>
+                <p>{{ group.description|truncatechars:150|default:'Няма описание.' }}</p>
+                <div class="group-actions">
+                    <a class="custom-button custom-button-secondary custom-button-small" href="{% url 'group-detail' pk=group.pk %}">Виж Група</a>
+                    {% if user.is_authenticated %}
+                        {% if user in group.members.all %}
+                            <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{% url 'group-join' pk=group.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="custom-button custom-button-success custom-button-small">Присъедини се</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">Все още няма създадени групи.</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination-container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Предишна</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Следваща</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

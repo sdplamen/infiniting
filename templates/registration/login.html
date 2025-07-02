@@ -6,7 +6,7 @@
 {% block content %}
 <div class="form-container">
     <h2 class="text-center">Вход</h2>
-    <form method="post">
+    <form method="POST">
         {% csrf_token %}
         {% for field in form %}
             <div class="form-field">
@@ -33,7 +33,7 @@
         </p>
     </form>
     <p class="text-center">
-        Нямате акаунт? <a href="{% url 'register' %}">Регистрирайте се тук</a>
+        Нямате акаунт? Регистрирайте се<a href="{% url 'register' %}"> тук</a>
     </p>
 </div>
 {% endblock %}

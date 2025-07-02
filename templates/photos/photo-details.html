@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Снимка: {{ photo.caption|default:'Без Заглавие' }}{% endblock %}
+
+{% block content %}
+<div class="two-column-layout">
+    <div class="main-content-column">
+        <div class="card-custom large-card">
+            {% if photo.image %}
+                <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
+            {% else %}
+                <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
+            {% endif %}
+            <div class="card-text-content">
+                <h3>{{ photo.caption|default:'Без Заглавие' }}</h3>
+                <p class="text-muted small-text">
+                    <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'profile_details' pk=photo.author.pk %}">{{ photo.author.user.username }}</a>
+                </p>
+                <p class="text-muted small-text">
+                    Качена на: {{ photo.uploaded_at|date:"d M Y H:i" }}
+                </p>
+                {% if photo.group %}
+                    <p class="text-muted small-text">
+                        <i class="fas fa-users me-1"></i> Група: <a href="{% url 'group-detail' pk=photo.group.pk %}">{{ photo.group.name }}</a>
+                    </p>
+                {% endif %}
+
+                <hr class="custom-hr">
+
+                <div class="interaction-buttons-container">
+                    {# Like/Unlike Button #}
+                    <div>
+                        {% if user.is_authenticated %}
+                            {% if user_liked %}
+                                <form method="POST" action="{% url 'unlike-photo' pk=photo.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="custom-button custom-button-danger custom-button-small"><i class="fas fa-thumbs-down me-1"></i>Харесана ({{ photo.likes.count }})</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{% url 'like-photo' pk=photo.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="custom-button custom-button-primary custom-button-small"><i class="fas fa-thumbs-up me-1"></i>Харесай ({{ photo.likes.count }})</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <button type="button" class="custom-button custom-button-secondary custom-button-small" disabled><i class="fas fa-thumbs-up me-1"></i>Харесвания ({{ photo.likes.count }})</button>
+                            <span class="small-text text-muted">Влезте, за да харесате.</span>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        {% if user.is_authenticated %}
+                            {% if user_rating %}
+                                <span class="custom-badge custom-badge-success"><i class="fas fa-star"></i> Вашата оценка: {{ user_rating.score }}</span>
+                                <form method="post" action="{% url 'add-rating' pk=photo.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <span class="small-text">Смени оценката:</span>
+                                    <select name="score" class="custom-select custom-select-small">
+                                        {% for i in "12345"|make_list %}
+                                            <option value="{{ i }}" {% if user_rating.score == i|add:0 %}selected{% endif %}>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="custom-button custom-button-warning custom-button-small"><i class="fas fa-star me-1"></i>Оцени</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{% url 'add-rating' pk=photo.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <span class="small-text">Оцени:</span>
+                                    <select name="score" class="custom-select custom-select-small">
+                                        <option value="1">1 звезда</option>
+                                        <option value="2">2 звезди</option>
+                                        <option value="3">3 звезди</option>
+                                        <option value="4">4 звезди</option>
+                                        <option value="5">5 звезди</option>
+                                    </select>
+                                    <button type="submit" class="custom-button custom-button-warning custom-button-small"><i class="fas fa-star me-1"></i>Оцени</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <button type="button" class="custom-button custom-button-secondary custom-button-small" disabled><i class="fas fa-star me-1"></i>Оценки ({{ photo.ratings.count }})</button>
+                            <span class="small-text text-muted">Влезте, за да оцените.</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if user.is_authenticated and user == photo.author.user %}
+                    <div class="actions-right">
+                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="custom-button custom-button-secondary"><i class="fas fa-edit me-1"></i>Редактирай Снимка</a>
+                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий Снимка</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="side-column">
+        <div class="card-custom">
+            <h4>Коментари ({{ comments.count }})</h4>
+            {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'add_comment' pk=photo.pk %}">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        {{ comment_form.text.label_tag }}
+                        {{ comment_form.text }}
+                        {% for error in comment_form.text.errors %}
+                            <div class="errorlist">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% if comment_form.non_field_errors %}
+                        <div class="message-alert error">
+                            {% for error in comment_form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <button type="submit" class="custom-button custom-button-success full-width">Добави Коментар</button>
+                </form>
+            {% else %}
+                <div class="message-alert info text-center small-text">
+                    <a href="{% url 'login' %}">Влезте</a>, за да добавяте коментари.
+                </div>
+            {% endif %}
+
+            {% if comments %}
+                <ul class="simple-list comment-list">
+                    {% for comment in comments %}
+                        <li>
+                            <p>
+                                <i class="fas fa-user-circle me-1"></i>
+                                <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                                {{ comment.text }}
+                            </p>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Все още няма коментари.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

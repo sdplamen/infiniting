@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Създай Аукцион{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="text-center">Създай Нов Аукцион</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="help-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+            <div class="message-alert error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <button type="submit" class="custom-button custom-button-primary full-width">Създай Аукцион</button>
+    </form>
+</div>
+{% endblock %}
+
+
+{#{% extends 'base.html' %}#}
+{#{% load static %}#}
+{#{% block title %}Търгове - Социална мрежа за Магнум фотография{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#  <h1>Търгове</h1>#}
+{##}
+{#  {% if auctions %}#}
+{#    <ul>#}
+{#      {% for auction in auctions %}#}
+{#        <li>#}
+{#          <h3><a href="{% url 'auction-detail' auction.id %}">{{ auction.title }}</a></h3>#}
+{#          <p>Starting Price: {{ auction.start_price }}</p>#}
+{#          <p>End Date: {{ auction.end_date }}</p>#}
+          {# Add other relevant auction details #}
+{#        </li>#}
+{#      {% endfor %}#}
+{#    </ul>#}
+{#  {% else %}#}
+{#    <p>Няма отворени аукциони в момента.</p>#}
+{#  {% endif %}#}
+{#{% endblock %}#}

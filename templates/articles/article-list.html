@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Всички Статии{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Последни Статии</h2>
+    {% if user.is_authenticated and user.photographer %}
+        <div class="text-center">
+            <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова статия</a>
+        </div>
+    {% elif user.is_authenticated and not user.photographer %}
+        <div class="message-alert info text-center">
+            <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте профил на фотограф</a>, за да можете да пишете статии.
+        </div>
+    {% endif %}
+
+    <div class="article-grid-container">
+        {% for article in articles %}
+            <div class="card-custom flex-item">
+                <h3><a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}</a></h3>
+                <p class="text-muted small-text">
+                    <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
+                </p>
+                <p class="text-muted small-text">
+                    Публикувано на: {{ article.created_at|date:"d M Y H:i" }}
+                </p>
+                <p>{{ article.content|truncatewords:50|default:'Няма съдържание.' }}</p>
+                <a href="{% url 'article-detail' pk=article.pk %}" class="custom-button custom-button-secondary custom-button-small">Прочети повече</a>
+            </div>
+        {% empty %}
+            <p class="text-center">Все още няма публикувани статии.</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination-container">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Предишна</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Следваща</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

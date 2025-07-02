@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Изтрий Снимка{% endblock %}
+
+{% block content %}
+<div class="form-container text-center">
+    <h2 class="text-danger">Изтрий Снимка</h2>
+    <p class="lead-text">Сигурни ли сте, че искате да изтриете снимката:</p>
+    <p><strong>"{{ photo.caption|default:'Без Заглавие' }}"</strong> от <strong>{{ photo.author.user.username }}</strong>?</p>
+    <p class="text-muted">Това действие е необратимо.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="custom-button custom-button-danger">Да, Изтрий</button>
+        <a href="{% url 'photo-details' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+    </form>
+</div>
+{% endblock %}
