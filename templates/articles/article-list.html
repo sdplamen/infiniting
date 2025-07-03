@@ -11,7 +11,8 @@
         </div>
     {% elif user.is_authenticated and not user.photographer %}
         <div class="message-alert info text-center">
-            <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте профил на фотограф</a>, за да можете да пишете статии.
+            <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте профил на фотограф</a>.
+            <p>за да можете да пишете статии</p>
         </div>
     {% endif %}
 

@@ -15,7 +15,7 @@
             <div class="card-text-content">
                 <h3>{{ photo.caption|default:'Без Заглавие' }}</h3>
                 <p class="text-muted small-text">
-                    <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'profile_details' pk=photo.author.pk %}">{{ photo.author.user.username }}</a>
+                    <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=photo.author.pk %}">{{ photo.author.user.username }}</a>
                 </p>
                 <p class="text-muted small-text">
                     Качена на: {{ photo.uploaded_at|date:"d M Y H:i" }}
@@ -29,16 +29,15 @@
                 <hr class="custom-hr">
 
                 <div class="interaction-buttons-container">
-                    {# Like/Unlike Button #}
                     <div>
                         {% if user.is_authenticated %}
                             {% if user_liked %}
-                                <form method="POST" action="{% url 'unlike-photo' pk=photo.pk %}" class="d-inline">
+                                <form method="POST" action="{% url 'photo-unlike' pk=photo.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="custom-button custom-button-danger custom-button-small"><i class="fas fa-thumbs-down me-1"></i>Харесана ({{ photo.likes.count }})</button>
                                 </form>
                             {% else %}
-                                <form method="POST" action="{% url 'like-photo' pk=photo.pk %}" class="d-inline">
+                                <form method="POST" action="{% url 'photo-like' pk=photo.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="custom-button custom-button-primary custom-button-small"><i class="fas fa-thumbs-up me-1"></i>Харесай ({{ photo.likes.count }})</button>
                                 </form>
@@ -53,7 +52,7 @@
                         {% if user.is_authenticated %}
                             {% if user_rating %}
                                 <span class="custom-badge custom-badge-success"><i class="fas fa-star"></i> Вашата оценка: {{ user_rating.score }}</span>
-                                <form method="post" action="{% url 'add-rating' pk=photo.pk %}" class="d-inline">
+                                <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <span class="small-text">Смени оценката:</span>
                                     <select name="score" class="custom-select custom-select-small">
@@ -64,7 +63,7 @@
                                     <button type="submit" class="custom-button custom-button-warning custom-button-small"><i class="fas fa-star me-1"></i>Оцени</button>
                                 </form>
                             {% else %}
-                                <form method="POST" action="{% url 'add-rating' pk=photo.pk %}" class="d-inline">
+                                <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <span class="small-text">Оцени:</span>
                                     <select name="score" class="custom-select custom-select-small">
@@ -98,7 +97,7 @@
         <div class="card-custom">
             <h4>Коментари ({{ comments.count }})</h4>
             {% if user.is_authenticated %}
-                <form method="POST" action="{% url 'add_comment' pk=photo.pk %}">
+                <form method="POST" action="{% url 'photo-comment' pk=photo.pk %}">
                     {% csrf_token %}
                     <div class="form-field">
                         {{ comment_form.text.label_tag }}
@@ -118,7 +117,8 @@
                 </form>
             {% else %}
                 <div class="message-alert info text-center small-text">
-                    <a href="{% url 'login' %}">Влезте</a>, за да добавяте коментари.
+                    <a href="{% url 'login' %}">Влезте</a>
+                    <p>за да добавяте коментари.</p>
                 </div>
             {% endif %}
 

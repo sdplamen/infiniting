@@ -5,10 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-
-from users.forms import CustomUserCreationForm, PhotographerProfileForm
 from .forms import PhotoUploadForm, CommentForm, RatingForm
-from .models import Photo, Like, Comment, Rating
+from photos.models import Photo, Like, Comment, Rating
 from users.models import Photographer
 
 # Create your views here.
@@ -32,7 +30,7 @@ class PhotoDetailView(DetailView):
         context['rating_form'] = RatingForm()
         if self.request.user.is_authenticated:
             context['user_liked'] = Like.objects.filter(photo=self.object, user=self.request.user).exists()
-            context['user_rating'] = Rating.objects.filter(photo=self.object, user=self.request.user).first()
+            context['user_rating'] = Rating.objects.filter( photo=self.object, user=self.request.user.photographer).first()
         return context
 
 class PhotoCreateView(LoginRequiredMixin, CreateView):
@@ -94,11 +92,11 @@ def add_comment(request, pk):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.user = request.user
+            comment.user = request.user.photographer,
             comment.photo = photo
             comment.save()
             return redirect('photo-detail', pk=photo.pk)
-        return redirect('photo-detail', pk=photo.pk)  # Redirect on invalid form
+        return redirect('photo-detail', pk=photo.pk)
     return HttpResponseBadRequest('Invalid request method.')
 
 @login_required
@@ -108,7 +106,7 @@ def add_rating(request, pk):
         form = RatingForm(request.POST)
         if form.is_valid():
             Rating.objects.update_or_create(
-                user=request.user,
+                user=request.user.photographer,
                 photo=photo,
                 defaults={'score': form.cleaned_data['score']}
             )

@@ -33,7 +33,7 @@ class AuctionListView(ListView):
 
 class AuctionDetailView(DetailView):
     model = Auction
-    template_name = 'auctions/auction-detail.html'
+    template_name = 'auctions/auction-details.html'
     context_object_name = 'auction'
     pk_url_kwarg = 'pk'
 

@@ -7,7 +7,7 @@
     <h2 class="text-center">Всички Профили</h2>
     {% if user.is_authenticated and not user.photographer %}
         <div class="message-alert info text-center">
-            Все още нямате профил. <a href="{% url 'users:profile-create' %}" class="alert-link">Създайте го сега!</a>
+            Все още нямате профил. <a href="{% url 'profile-create' %}" class="alert-link">Създайте го сега!</a>
         </div>
     {% endif %}
 

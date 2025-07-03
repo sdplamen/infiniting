@@ -24,7 +24,7 @@
     <div class="auction-grid-container">
         {% for auction in auctions %}
             <div class="card-custom flex-item">
-                <a href="{% url 'auction-details' pk=auction.pk %}" class="photo-link">
+                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">
                     {% if auction.photo.image %}
                         <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
                     {% else %}
@@ -34,7 +34,7 @@
                 <div class="card-text-content">
                     <h3>Аукцион за "{{ auction.photo.caption|default:'Снимка' }}"</h3>
                     <p class="text-muted small-text">
-                        <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'profile_details' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
+                        <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
                     </p>
                     <p class="auction-price">
                         Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
@@ -44,7 +44,7 @@
                     </p>
                     {% if auction.highest_bidder %}
                         <p class="small-text">
-                            Най-висок оферент: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
+                            С най-висока оферта: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
                         </p>
                     {% else %}
                         <p class="small-text">Няма оферти все още.</p>
@@ -53,7 +53,7 @@
                         <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
                     </p>
                     <div class="text-center">
-                        <a href="{% url 'auction-details' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж Детайли и Оферирай</a>
+                        <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж Детайли и Оферирай</a>
                     </div>
                 </div>
             </div>
