@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bad+Script&family=Comforter+Brush&family=Great+Vibes&family=Marck+Script&display=swap');
 body {
     background-color: #002F5B;
     background-size: cover;
@@ -13,7 +14,7 @@ a:link, a:visited {
 }
 a:hover {
     color: #008999;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 header {
@@ -41,9 +42,11 @@ header {
 }
 
 .band-logo h1 {
-    font-size: 1.8em;
+    font-family: "Great Vibes";
+    font-size: 3em;
+    font-weight: 5  00;
     margin: 0;
-    color: #D4ECFC;
+    color: #0095af;
     text-align: center;
 }
 
@@ -57,9 +60,14 @@ header {
     flex-wrap: wrap;
 }
 
+.photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
+    display: flex;
+    justify-content: center;
+}
+
 .nav-links p {
     margin: 0 15px;
-    font-size: 1.1em;
+    font-size: 1em;
 }
 
 .main-content {
@@ -97,7 +105,6 @@ header {
     background-color: #2196F3;
     color: white;
 }
-
 
 .content-section {
     padding: 20px;
@@ -139,7 +146,7 @@ header {
 .form-field input[type="datetime-local"],
 .form-field textarea,
 .form-field select {
-    width: calc(100% - 20px);
+    width: 100%;
     padding: 10px;
     border: 1px solid #005F99;
     border-radius: 5px;
@@ -167,7 +174,7 @@ header {
 
 .custom-button {
     background-color: #008999;
-    color: white;
+    color: #ede38f;
     margin: 5px auto;
     padding: 5px 10px;
     border: none;
@@ -178,6 +185,7 @@ header {
 }
 .custom-button:hover {
     background-color: #006F79;
+    color: white;
 }
 .custom-button-primary {
     background-color: #008999;
@@ -256,7 +264,7 @@ img.photo-display {
     color: #D4ECFC;
 }
 
-.comm {
+.pagination-container {
     background-color: #D4ECFC;
     color: #002F5B;
     font-size: 10px;

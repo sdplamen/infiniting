@@ -53,7 +53,7 @@
                         <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
                     </p>
                     <div class="text-center">
-                        <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж Детайли и Оферирай</a>
+                        <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж детайли и направи оферирай</a>
                     </div>
                 </div>
             </div>
@@ -62,17 +62,17 @@
         {% endfor %}
     </div>
 
-    {% if is_paginated %}
-        <div class="pagination-container">
-            {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Предишна</a>
-            {% endif %}
-            {% for num in page_obj.paginator.page_range %}
-                <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
-            {% endfor %}
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Следваща</a>
-            {% endif %}
-        </div>
-    {% endif %}
+{#    {% if is_paginated %}#}
+{#        <div class="pagination-container">#}
+{#            {% if page_obj.has_previous %}#}
+{#                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Предишна</a>#}
+{#            {% endif %}#}
+{#            {% for num in page_obj.paginator.page_range %}#}
+{#                <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>#}
+{#            {% endfor %}#}
+{#            {% if page_obj.has_next %}#}
+{#                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Следваща</a>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#    {% endif %}#}
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ group.name }} - Магнум Фотография{% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div>
     <h2>{{ group.name }}</h2>
     <p>{{ group.description|default:'Няма описание' }}</p>
     {% if user.is_authenticated %}
@@ -19,7 +19,7 @@
         <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай Група</a>
     {% endif %}
     <h3>Снимки в групата</h3>
-    <div class="row">
+    <div>
         {% for photo in photos %}
             <div class="col-md-4 mb-4">
                 <div class="card">
