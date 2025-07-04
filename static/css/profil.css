@@ -62,9 +62,8 @@ header {
     font-size: 1.1em;
 }
 
-/* Main Content Area */
 .main-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 20px auto;
     padding: 20px;
     background-color: rgba(0, 47, 91, 0.8);
@@ -72,7 +71,6 @@ header {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Messages */
 .messages-container {
     margin-bottom: 20px;
     padding: 10px;
@@ -83,10 +81,22 @@ header {
     border-radius: 5px;
     font-weight: bold;
 }
-.message-alert.success { background-color: #4CAF50; color: white; }
-.message-alert.error { background-color: #f44336; color: white; }
-.message-alert.warning { background-color: #ff9800; color: white; }
-.message-alert.info { background-color: #2196F3; color: white; }
+.message-alert.success {
+    background-color: #4CAF50;
+    color: white;
+}
+.message-alert.error {
+    background-color: #f44336;
+    color: white;
+}
+.message-alert.warning {
+    background-color: #ff9800;
+    color: white;
+}
+.message-alert.info {
+    background-color: #2196F3;
+    color: white;
+}
 
 
 .content-section {
@@ -103,7 +113,7 @@ header {
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     margin: 20px auto;
-    max-width: 600px; /* Default for forms/single cards */
+    max-width: 600px;
 }
 
 .text-center {
@@ -113,7 +123,6 @@ header {
     color: #A0B9D6;
 }
 
-/* Forms */
 .form-field {
     margin-bottom: 15px;
 }
@@ -159,7 +168,8 @@ header {
 .custom-button {
     background-color: #008999;
     color: white;
-    padding: 10px 20px;
+    margin: 5px auto;
+    padding: 5px 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -199,17 +209,10 @@ header {
     display: grid;
     justify-items: center;
 }
-.authory {
-    background-color: #000000;
-    font-size: 15px;
-    font-weight: 700;
-    width: 500px;
-    margin: 20px auto 0 auto;
-    padding: 20px;
-    display: flex;
-    justify-content: space-around;
-    align-items: baseline;
-    border-radius: 5px;
+.article-content{
+    background-color: rgba(0, 21, 53, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    margin: 40px auto;
 }
 .photo-item, .card {
     margin: 0 auto 20px auto;
@@ -226,6 +229,33 @@ header {
     display: block;
     margin-bottom: 10px;
 }
+
+img.photo-display {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    margin: 0 auto 10px auto;
+}
+
+.photo-display-large {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.photo-link {
+    display: block;
+    line-height: 0;
+}
+
+.card-text-content {
+    padding: 15px;
+    padding-top: 0;
+    color: #D4ECFC;
+}
+
 .comm {
     background-color: #D4ECFC;
     color: #002F5B;
@@ -278,12 +308,28 @@ footer {
 }
 
 
-.margin-auto { margin: auto; }
-.text-center { text-align: center; }
-.full-width { width: 100%; }
-.half-width { width: 48%; }
-.flex-container { display: flex; justify-content: space-around; flex-wrap: wrap; }
-.flex-item { flex: 1; min-width: 280px; margin: 10px; }
+.margin-auto {
+    margin: auto;
+}
+.text-center {
+    text-align: center;
+}
+.full-width {
+    width: 100%;
+}
+.half-width {
+    width: 48%;
+}
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.flex-item {
+    flex: 1;
+    min-width: 280px;
+    margin: 10px;
+}
 
 
 @media (max-width: 768px) {

@@ -8,9 +8,9 @@
     <div class="main-content-column">
         <div class="card-custom large-card">
             {% if photo.image %}
-                <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
-            {% else %}
-                <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
+                    <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
+                {% else %}
+                    <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
             {% endif %}
             <div class="card-text-content">
                 <h3>{{ photo.caption|default:'Без Заглавие' }}</h3>
@@ -117,8 +117,7 @@
                 </form>
             {% else %}
                 <div class="message-alert info text-center small-text">
-                    <a href="{% url 'login' %}">Влезте</a>
-                    <p>за да добавяте коментари.</p>
+                    <a href="{% url 'login' %}">Влезте</a> за да добавяте коментари.
                 </div>
             {% endif %}
 
