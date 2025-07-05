@@ -212,7 +212,12 @@ header {
     color: white;
 }
 
+.profile-picture-large {
+    max-width: 100px;
+    border: #1f6acd double 3px;
+    border-radius: 50%;
 
+}
 .author {
     display: grid;
     justify-items: center;
