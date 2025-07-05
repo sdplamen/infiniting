@@ -39,7 +39,7 @@
                             {% else %}
                                 <form method="POST" action="{% url 'photo-like' pk=photo.pk %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="custom-button custom-button-primary custom-button-small"><i class="fas fa-thumbs-up me-1"></i>Харесай ({{ photo.likes.count }})</button>
+                                    <button class="custom-button custom-button-primary custom-button-small"><i class="fas fa-thumbs-up me-1"></i>Харесай ({{ photo.likes.count }})</button>
                                 </form>
                             {% endif %}
                         {% else %}

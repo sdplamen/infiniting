@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ group.name }} - Магнум Фотография{% endblock %}
 {% block content %}
-<div>
+<div class="text-center">
     <h2>{{ group.name }}</h2>
     <p>{{ group.description|default:'Няма описание' }}</p>
     {% if user.is_authenticated %}
@@ -21,7 +21,7 @@
     <h3>Снимки в групата</h3>
     <div>
         {% for photo in photos %}
-            <div class="col-md-4 mb-4">
+            <div class="text-center">
                 <div class="card">
                     <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}">
                     <div class="card-body">
