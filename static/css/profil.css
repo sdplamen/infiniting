@@ -44,7 +44,7 @@ header {
 .band-logo h1 {
     font-family: "Great Vibes";
     font-size: 3em;
-    font-weight: 5  00;
+    font-weight: 500;
     margin: 0;
     color: #0095af;
     text-align: center;
@@ -130,19 +130,25 @@ header {
     color: #A0B9D6;
 }
 
-.form-field {
-    margin-bottom: 15px;
-}
 .form-field label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #D4ECFC;
 }
+
 .form-field input[type="text"],
 .form-field input[type="email"],
 .form-field input[type="password"],
-.form-field input[type="number"],
+.form-field input[type="number"] {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #005F99;
+    border-radius: 5px;
+    background-color: #001021;
+    color: #D4ECFC;
+    box-sizing: border-box;
+}
 .form-field input[type="datetime-local"],
 .form-field textarea,
 .form-field select {
@@ -160,7 +166,7 @@ header {
 }
 
 .form-field .help-text {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #A0B9D6;
     margin-top: 5px;
 }
@@ -210,6 +216,24 @@ header {
 .custom-button-info {
     background-color: #17a2b8;
     color: white;
+}
+
+.icon-button {
+    border: none;
+    background: none;
+    padding: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0095af;
+}
+
+
+.like-count, .rating-count {
+    margin-left: 5px;
+    font-size: 0.9rem;
+    vertical-align: middle;
 }
 
 .profile-picture-large {
@@ -325,6 +349,7 @@ footer {
     margin: auto;
 }
 .text-center {
+    margin: 10px auto;
     text-align: center;
 }
 .full-width {

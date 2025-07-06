@@ -12,7 +12,7 @@
     <form method="POST">
         {% csrf_token %}
         <button type="submit" class="custom-button custom-button-danger">Да, Изтрий</button>
-        <a href="{% url 'photo-details' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+        <a href="{% url 'photo-detail' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
     </form>
 </div>
 {% endblock %}

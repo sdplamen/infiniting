@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .forms import ArticleForm
@@ -14,11 +14,23 @@ class ArticleListView(ListView):
     ordering = ['-created_at']
     paginate_by = 10
 
+    def get_queryset(self) :
+        queryset = super().get_queryset()
+        if not self.request.user.has_perm('articles.can_approve_articles') :
+            queryset = queryset.filter(is_approved=True)
+        return queryset
+
 class ArticleDetailView(DetailView):
     model = Article
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'pk'
+
+    def get_queryset(self) :
+        queryset = super().get_queryset()
+        if not self.request.user.has_perm('articles.can_approve_articles') :
+            queryset = queryset.filter(is_approved=True)
+        return queryset
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article
@@ -67,3 +79,19 @@ class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user == self.get_object().author.user
+
+class ArticleApproveView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Article
+    fields = ['is_approved']
+    template_name = 'articles/article-approve.html'
+    pk_url_kwarg = 'pk'
+    permission_required = 'articles.can_approve_articles'
+
+    def get_success_url(self):
+        return reverse('article-detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        article = form.save(commit=False)
+        article.is_approved = True
+        article.save()
+        return super().form_valid(form)

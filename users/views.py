@@ -24,7 +24,6 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
     template_name = 'users/profile-create.html'
 
     def form_valid(self, form):
-        # Check for existing profile
         if Photographer.objects.filter(user=self.request.user).exists():
             form.add_error(None, 'You already have a photographer profile.')
             return self.form_invalid(form)

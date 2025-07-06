@@ -9,6 +9,10 @@ class Article(models.Model) :
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(Photographer, on_delete=models.CASCADE, related_name='articles')
+    is_approved = models.BooleanField(default=False)
+
+    class Meta :
+        permissions = [('can_approve_articles', 'Can approve articles'),]
 
     def __str__(self) :
         return self.title
