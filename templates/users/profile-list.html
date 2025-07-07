@@ -22,7 +22,7 @@
                 <h3>{{ profile.user.username }}</h3>
                 <p class="text-muted">Член от {{ profile.created_at|date:"d M Y" }}</p>
                 <p>{{ profile.bio|truncatechars:100|default:'Няма биография.' }}</p>
-                <a href="{% url 'user-profile-detail' pk=profile.pk %}" class="custom-button custom-button-secondary">Виж профил</a>
+                <a href="{% url 'user-profile-detail' pk=profile.pk %}" class="custom-button custom-button-secondary">Виж профила.</a>
             </div>
         {% empty %}
             <p class="text-center">Все още няма създадени профили на фотографи.</p>

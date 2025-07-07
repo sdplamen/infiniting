@@ -1,7 +1,5 @@
 from django.http import HttpResponseBadRequest
-from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy

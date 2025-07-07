@@ -29,8 +29,13 @@ class PhotoDetailView(DetailView):
         context['comment_form'] = CommentForm()
         context['rating_form'] = RatingForm()
         if self.request.user.is_authenticated:
-            context['user_liked'] = Like.objects.filter(photo=self.object, user=self.request.user).exists()
-            context['user_rating'] = Rating.objects.filter( photo=self.object, user=self.request.user.photographer).first()
+            photographer = getattr(self.request.user, 'photographer', None)
+            if photographer :
+                context['user_liked'] = Like.objects.filter(photo=self.object, user=self.request.user).exists()
+                context['user_rating'] = Rating.objects.filter(photo=self.object, user=photographer).first()
+            else :
+                context['user_liked'] = False
+                context['user_rating'] = None
         return context
 
 class PhotoCreateView(LoginRequiredMixin, CreateView):
