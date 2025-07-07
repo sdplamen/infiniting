@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Редактирай Профил на Фотограф{% endblock %}
+{% block title %}Редактирай профил на фотограф{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Редактирай Профил на Фотограф</h2>
+    <h2 class="text-center">Редактирай профил на фотографа</h2>
     <form method="POST" action="{% url 'user-profile-edit' pk=photographer.pk %}" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <button type="submit" class="custom-button custom-button-primary full-width">Запази Промените</button>
+        <button type="submit" class="custom-button custom-button-primary full-width">Запази промените</button>
     </form>
     <div class="text-center">
         <a href="{% url 'user-profile-detail' pk=photographer.pk %}" class="custom-button custom-button-secondary">Откажи</a>

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Създай Профил на Фотограф{% endblock %}
+{% block title %}Създай профил на фотограф{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Създай Профил на Фотограф</h2>
+    <h2 class="text-center">Създай профила на фотографа</h2>
     <form method="POST" action="{% url 'user-profile-create' %}" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <button type="submit" class="custom-button custom-button-primary full-width">Създай Профил</button>
+        <button type="submit" class="custom-button custom-button-primary full-width">Създай профила</button>
     </form>
 </div>
 {% endblock %}

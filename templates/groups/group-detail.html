@@ -8,7 +8,7 @@
         {% if user in group.members.all %}
             <form action="{% url 'group-leave' pk=group.pk %}" method="POST" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Напусни Група</button>
+                <button type="submit" class="btn btn-danger">Напусни групата</button>
             </form>
         {% else %}
             <form action="{% url 'group-join' pk=group.pk %}" method="POST" style="display: inline;">
@@ -16,7 +16,7 @@
                 <button type="submit" class="btn btn-success">Присъедини се</button>
             </form>
         {% endif %}
-        <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай Група</a>
+        <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай групата</a>
     {% endif %}
     <h3>Снимки в групата</h3>
     <div>

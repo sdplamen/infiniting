@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Всички Профили{% endblock %}
+{% block title %}Всички профили{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">Всички Профили</h2>
+    <h2 class="text-center">Всички профили</h2>
     {% if user.is_authenticated and not user.photographer %}
         <div class="message-alert info text-center">
             Все още нямате профил. <a href="{% url 'profile-create' %}" class="alert-link">Създайте го сега!</a>

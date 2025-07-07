@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Всички Групи{% endblock %}
+{% block title %}Всички групи{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">Всички Групи</h2>
+    <h2 class="text-center">Всички групи</h2>
     {% if user.is_authenticated %}
         <div class="text-center">
             <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
@@ -16,11 +16,15 @@
             <div class="card-custom flex-item">
                 <h3>{{ group.name }}</h3>
                 <p class="text-muted small-text">
-                    <i class="fas fa-users me-1"></i> {{ group.members.count }} члена
+                    {% if group.members.count == 1 %}
+                        <i class="fas fa-users me-1"></i> {{ group.members.count }} член
+                    {% else %}
+                        <i class="fas fa-users me-1"></i> {{ group.members.count }} члена
+                    {% endif %}
                 </p>
                 <p>{{ group.description|truncatechars:150|default:'Няма описание.' }}</p>
                 <div class="group-actions">
-                    <a class="custom-button custom-button-secondary custom-button-small" href="{% url 'group-detail' pk=group.pk %}">Виж Група</a>
+                    <a class="custom-button custom-button-secondary custom-button-small" href="{% url 'group-detail' pk=group.pk %}">Виж групата</a>
                     {% if user.is_authenticated %}
                         {% if user in group.members.all %}
                             <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">

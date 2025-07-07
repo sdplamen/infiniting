@@ -23,7 +23,7 @@
             <a href="{% url 'article-edit' pk=article.pk %}" class="custom-button custom-button-secondary"><i class="fas fa-edit me-1"></i>Редактирай</a>
             <a href="{% url 'article-delete' pk=article.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий</a>
             {% if not article.is_approved and perms.articles.can_approve_articles %}
-                <a href="{% url 'article-approve' article.pk %}" class="custom-button custom-button-warning">Approve Article</a>
+                <a href="{% url 'article-approve' article.pk %}" class="custom-button custom-button-warning">Потвърди статията</a>
             {% endif %}
         </div>
     {% endif %}

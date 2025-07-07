@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}Approve Article{% endblock %}
+{% block title %}Потвърди статия{% endblock %}
 
 {% block content %}
-    <h2>Approve Article: {{ object.title }}</h2>
+    <h2>Потвърди статията: {{ object.title }}</h2>
 {#    <p>Are you sure you want to approve this article?</p>#}
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="custom-button custom-button-primary">Approve</button>
+        <button type="submit" class="custom-button custom-button-primary">Потвърди</button>
 {#        <a href="{% url 'article-detail' object.pk %}" class="custom-button custom-button-primary">Cancel</a>#}
     </form>
 {% endblock %}

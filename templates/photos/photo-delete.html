@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Изтрий Снимка{% endblock %}
+{% block title %}Изтрий снимка{% endblock %}
 
 {% block content %}
 <div class="form-container text-center">
-    <h2 class="text-danger">Изтрий Снимка</h2>
+    <h2 class="text-danger">Изтрий снимката</h2>
     <p class="lead-text">Сигурни ли сте, че искате да изтриете снимката:</p>
     <p><strong>"{{ photo.caption|default:'Без Заглавие' }}"</strong> от <strong>{{ photo.author.user.username }}</strong>?</p>
     <p class="text-muted">Това действие е необратимо.</p>
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" class="custom-button custom-button-danger">Да, Изтрий</button>
+        <button type="submit" class="custom-button custom-button-danger">Да, изтрий</button>
         <a href="{% url 'photo-detail' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
     </form>
 </div>

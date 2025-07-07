@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Редактирай Група: {{ group.name }}{% endblock %}
+{% block title %}Редактирай група: {{ group.name }}{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Редактирай Група: "{{ group.name }}"</h2>
+    <h2 class="text-center">Редактирай групата: "{{ group.name }}"</h2>
     <form method="POST">
         {% csrf_token %}
         {% for field in form %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <button type="submit" class="custom-button custom-button-primary full-width">Запази Промените</button>
+        <button type="submit" class="custom-button custom-button-primary full-width">Запази промените</button>
     </form>
     <div class="text-center">
         <a href="{% url 'group-detail' pk=group.pk %}" class="custom-button custom-button-secondary">Откажи</a>

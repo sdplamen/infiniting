@@ -91,8 +91,8 @@
 
                 {% if user.is_authenticated and user == photo.author.user %}
                     <div class="actions-right">
-                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="icon-button icon-edit"><i class="fas fa-edit me-1"></i>Редактирай Снимка</a>
-                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="icon-button icon-delete"><i class="fas fa-trash-alt me-1"></i>Изтрий Снимка</a>
+                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="icon-button icon-edit"><i class="fas fa-edit me-1"></i>Редактирай снимката</a>
+                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="icon-button icon-delete"><i class="fas fa-trash-alt me-1"></i>Изтрий снимката</a>
                     </div>
                 {% endif %}
             </div>
@@ -119,7 +119,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <button type="submit" class="custom-button custom-button-success full-width">Добави Коментар</button>
+                    <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
                 </form>
             {% else %}
                 <div class="text-center">

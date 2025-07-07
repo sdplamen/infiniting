@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Качи Снимка{% endblock %}
+{% block title %}Качи снимка{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Качи Нова Снимка</h2>
+    <h2 class="text-center">Качи нова снимка</h2>
     {% if not user.photographer %}
         <div class="message-alert warning text-center">
             Моля, <a href="{% url 'user-profile-create' %}" class="alert-link">създайте профил на фотограф</a>, за да можете да качвате снимки.
@@ -32,7 +32,7 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            <button type="submit" class="custom-button custom-button-primary full-width" id="upload-button">Качи Снимка</button>
+            <button type="submit" class="custom-button custom-button-primary full-width" id="upload-button">Качи снимка</button>
         </form>
         <script>
             document.getElementById('upload-button').addEventListener('click', function() {console.log('Upload button clicked');});

@@ -19,14 +19,14 @@
 
             {% if user.is_authenticated and user == photographer.user %}
                 <div class="profile-actions">
-                    <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="custom-button custom-button-secondary">Редактирай Профил</a>
-                    <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий Профил</a>
+                    <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="custom-button custom-button-secondary">Редактирай профила</a>
+                    <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий профила</a>
                 </div>
             {% endif %}
         </div>
 
         <div class="card-custom">
-            <h4>Членува в Групи</h4>
+            <h4>Членува в групи</h4>
             {% if photographer.user.user_groups.all %}
                 <ul class="simple-list">
                     {% for group in photographer.user.user_groups.all %}

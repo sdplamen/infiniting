@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Всички Статии{% endblock %}
+{% block title %}Всички статии{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">Последни Статии</h2>
+    <h2 class="text-center">Последни статии</h2>
     {% if user.is_authenticated and user.photographer %}
         <div class="text-center">
             <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова статия</a>

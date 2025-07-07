@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Създай Група{% endblock %}
+{% block title %}Създай група{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Създай Нова Група</h2>
+    <h2 class="text-center">Създай нова група</h2>
     <form method="POST">
         {% csrf_token %}
         {% for field in form %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <button type="submit" class="custom-button custom-button-primary full-width">Създай Група</button>
+        <button type="submit" class="custom-button custom-button-primary full-width">Създай група</button>
     </form>
 </div>
 {% endblock %}

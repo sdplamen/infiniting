@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Създай Аукцион{% endblock %}
+{% block title %}Създай аукцион{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 class="text-center">Създай Нов Аукцион</h2>
+    <h2 class="text-center">Създай нов аукцион</h2>
     <form method="POST">
         {% csrf_token %}
         {% for field in form %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <button type="submit" class="custom-button custom-button-primary full-width">Създай Аукцион</button>
+        <button type="submit" class="custom-button custom-button-primary full-width">Създай аукцион</button>
     </form>
 </div>
 {% endblock %}
