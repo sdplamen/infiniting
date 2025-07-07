@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView
+from django.views import View
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from .forms import AuctionCreateForm, BidForm
 from .models import Auction
 
@@ -73,3 +74,14 @@ def place_bid(request, pk):
                 return redirect('auction-detail', pk=auction.pk)
         return redirect('auction-detail', pk=auction.pk)
     return HttpResponseBadRequest('Invalid request method.')
+
+class AuctionDeactivateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
+
+    def post(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+        if auction.is_active:
+            auction.is_active = False
+            auction.save()
+        return redirect('auction-list')

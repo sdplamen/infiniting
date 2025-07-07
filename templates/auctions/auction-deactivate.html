@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Деактивиране на аукцион{% endblock %}
+{% if user.is_superuser or user.is_staff %}
+<form method="POST" action="{% url 'auction-deactivate' auction.pk %}">
+    {% csrf_token %}
+    <button type="submit">Deactivate Auction</button>
+</form>
+{% endif %}
