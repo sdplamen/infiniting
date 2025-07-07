@@ -6,5 +6,5 @@ urlpatterns = [
     path('create/', views.AuctionCreateView.as_view(), name='auction-create'),
     path('<int:pk>/', views.AuctionDetailView.as_view(), name='auction-detail'),
     path('<int:pk>/bid/', views.place_bid, name='auction-bid'),
-    path('auction/<int:pk>/deactivate/', views.AuctionDeactivateView.as_view(), name='auction-deactivate'),
+    path('<int:pk>/deactivate/', views.AuctionDeactivateView.as_view(), name='auction-deactivate'),
 ]

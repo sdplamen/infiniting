@@ -12,7 +12,7 @@
         </div>
     {% endif %}
 
-    <div class="sort-options-container">
+    <div class="sort-options-container text-center">
         <label for="sort-by">Сортирай по:</label>
         <select id="sort-by" onchange="location = this.value;">
             <option value="{% url 'auction-list' %}" {% if current_sort == 'latest' %}selected{% endif %}>Най-нови</option>

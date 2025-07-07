@@ -39,18 +39,8 @@
                     {% endif %}
                 </div>
 
-{#                <!-- Debugging Output -->#}
-{#                <div class="debug-info">#}
-{#                    <p><strong>Debug Info:</strong></p>#}
-{#                    <p>auction.is_active: {{ auction.is_active }}</p>#}
-{#                    <p>auction.end_time: {{ auction.end_time|date:"Y-m-d H:i:s O" }}</p>#}
-{#                    <p>now: {% now "Y-m-d H:i:s O" %}</p>#}
-{#                    <p>end_time > now: {% if auction.end_time|is_future %}Future{% else %}Past{% endif %}</p>#}
-{#                </div>#}
-
                 <hr class="custom-hr">
                 {% if auction.is_active %}
-                    {% if auction.end_time|is_future %}
                         <div class="bidding-section">
                             <h4>Направете оферта</h4>
                             {% if user.is_authenticated %}
@@ -82,10 +72,10 @@
                                 </div>
                             {% endif %}
 
-                            {% if user.is_authenticated and user.is_superuser or user.is_authenticated and user.is_staff %}
+                            {% if user.is_authenticated and user.is_staff %}
                                 <hr class="custom-hr">
                                 <div class="admin-actions">
-                                    <h4>Администраторски действия</h4>
+                                    <h4>Модераторски права</h4>
                                     <form action="{% url 'auction-deactivate' pk=auction.pk %}" method="POST" style="display:inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger btn-sm"
@@ -97,16 +87,17 @@
                             {% endif %}
                         </div>
                     {% else %}
-                        <div class="message-alert warning text-center">
-                            Този аукцион е спрян.
-                        </div>
-                    {% endif %}
-                {% else %}
+{#                        <div class="message-alert warning text-center">#}
+{#                            Този аукцион е спрян.#}
+{#                        </div>#}
+{#                    {% endif %}#}
+{#                {% else %}#}
                     <div class="message-alert warning text-center">
                         Този аукцион е приключил.
                     </div>
                 {% endif %}
 
+                <hr class="custom-hr">
                 <div class="text-center margin-top-large">
                     <a href="{% url 'auction-list' %}" class="custom-button custom-button-primary">
                         <i class="fas fa-arrow-left me-2"></i>Към всички аукциони
@@ -116,7 +107,6 @@
         </div>
     </div>
 
-    <!-- Bid History Sidebar -->
     <div class="side-column">
         <div class="card-custom">
             <h4>История на офертите ({{ bids.count }})</h4>
