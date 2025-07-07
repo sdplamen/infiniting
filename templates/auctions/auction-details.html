@@ -8,7 +8,6 @@
 <div class="two-column-layout">
     <div class="main-content-column">
         <div class="card-custom large-card">
-            <!-- Auction Image -->
             <div class="auction-image-container">
                 {% if auction.photo.image %}
                     <img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}">

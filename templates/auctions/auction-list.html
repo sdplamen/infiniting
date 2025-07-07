@@ -6,7 +6,7 @@
 {% block content %}
     <h2 class="text-center">Аукциони</h2>
 
-    {% if user.is_authenticated and user.is_staff %} {# Only staff/admin can create auctions #}
+    {% if user.is_authenticated and user.is_staff %}
         <div class="text-center">
             <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
         </div>
