@@ -1,5 +1,7 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from .forms import ArticleForm
 from .models import Article
@@ -79,18 +81,16 @@ class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user == self.get_object().author.user
 
-class ArticleApproveView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    model = Article
-    fields = ['is_approved']
-    template_name = 'articles/article-approve.html'
-    pk_url_kwarg = 'pk'
-    permission_required = 'articles.can_approve_articles'
+class ArticleApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
 
-    def get_success_url(self):
-        return reverse('article-detail', kwargs={'pk': self.object.pk})
+    def post(self, request, pk):
+        article = get_object_or_404(Article, pk=pk)
+        if not article.is_approved:
+            article.is_approved = True
+            article.save()
+        return redirect('article-list')
 
-    def form_valid(self, form):
-        article = form.save(commit=False)
-        article.is_approved = True
-        article.save()
-        return super().form_valid(form)
+    def get(self, request, pk) :
+        return redirect('article-list')

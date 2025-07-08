@@ -62,7 +62,10 @@ header {
 
 .photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    width: 51%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .nav-links p {
@@ -250,6 +253,10 @@ header {
     background-color: rgba(0, 21, 53, 0.5);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
     margin: 40px auto;
+}
+
+.actions-right {
+    display: inline-block;
 }
 .photo-item, .card {
     margin: 0 auto 20px auto;

@@ -27,7 +27,10 @@
     {% if user.is_authenticated %}
         <div class="actions-right">
             {% if not article.is_approved and perms.articles.can_approve_articles %}
-                <a href="{% url 'article-approve' article.pk %}" class="custom-button custom-button-warning">Потвърди статията</a>
+                <form action="{% url 'article-approve' article.pk %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button custom-button-warning">Потвърди статията</button>
+                </form>
             {% endif %}
         </div>
     {% endif %}

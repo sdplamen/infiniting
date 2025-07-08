@@ -32,7 +32,7 @@
                     {% for group in photographer.user.user_groups.all %}
                         <li>
                             <a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>
-                            {% if user.is_authenticated and user in group.members.all %}
+                            {% if user.is_authenticated and user == photographer.user %}
                                 <form method="post" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
