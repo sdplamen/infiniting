@@ -23,8 +23,8 @@
 
     <div class="auction-grid-container">
         {% for auction in auctions %}
-            <div class="card-custom flex-item">
-                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">
+            <div class="card-custom">
+{#                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">#}
                     {% if auction.photo.image %}
                         <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
                     {% else %}

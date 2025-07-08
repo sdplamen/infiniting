@@ -13,8 +13,11 @@ a:link, a:visited {
     text-decoration: none;
 }
 a:hover {
-    color: #008999;
+    color: #D4ECFC;
     text-decoration: none;
+    background-color: #008999;
+    padding: 5px 5px;
+    border-radius: 5px;
 }
 
 header {
@@ -183,7 +186,7 @@ header {
 
 .custom-button {
     background-color: #008999;
-    color: #ede38f;
+    color: #D4ECFC;
     margin: 5px auto;
     padding: 5px 10px;
     border: none;
@@ -259,6 +262,7 @@ header {
     display: inline-block;
 }
 .photo-item, .card {
+    align-items: center;
     margin: 0 auto 20px auto;
     max-width: 500px;
     background-color: rgba(0, 21, 53, 0.9);
@@ -371,6 +375,9 @@ footer {
     flex-wrap: wrap;
 }
 .flex-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     flex: 1;
     min-width: 280px;
     margin: 10px;
@@ -386,6 +393,7 @@ footer {
         font-size: 0.9em;
     }
     .form-container, .card-body, .card-custom, .photo-item {
+        align-items: flex-start;
         max-width: 95%;
         padding: 15px;
     }

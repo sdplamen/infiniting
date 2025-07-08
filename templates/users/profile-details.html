@@ -53,7 +53,7 @@
             <div>
                 {% for photo in photos %}
                     <div class="photo-item flex-item">
-                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="photo-link">
+{#                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="photo-link">#}
                             {% if photo.image %}
                                 <img src="{{ photo.image.url }}" class="photo-display alt={{ photo.caption|default:'Photo' }}" alt="Снимка">
                             {% else %}
@@ -80,21 +80,23 @@
                 {% endfor %}
             </div>
         </section>
-            <h3 class="margin-top-large">Статии от {{ photographer.user.username }}</h3>
-            {% if photographer.articles.all %}
-                <ul class="simple-list">
-                    {% for article in photographer.articles.all %}
-                        <li>
-                            <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}"</a>
-                            <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
-                        </li>
-                    {% empty %}
-                        <p class="text-center">Този фотограф все още не е публикувал статии.</p>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-center">Този фотограф все още не е публикувал статии.</p>
-            {% endif %}
-        </div>
+    </div>
+    <div class="profile-content-column">
+        <h3 class="margin-top-large">Статии от {{ photographer.user.username }}</h3>
+        {% if photographer.articles.all %}
+            <ul class="simple-list">
+                {% for article in photographer.articles.all %}
+                    <li>
+                        <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}"</a>
+                        <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
+                    </li>
+                {% empty %}
+                    <p class="text-center">Този фотограф все още не е публикувал статии.</p>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">Този фотограф все още не е публикувал статии.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
