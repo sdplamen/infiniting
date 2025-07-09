@@ -9,6 +9,12 @@ This **humble final project** for IT Step Academy's Computer Graphics and Design
 
 ---
 
+## UX/UI Design
+As a core part of this project for IT Step Academy's Computer Graphics and Design program,
+I have already created the comprehensive UX/UI design on Figma, laying the visual and interactive foundation for the platform.
+
+---
+
 ## Technical Foundation
 
 Considering my graphic design expertise, I've developed this web solution using the **Django framework**.
