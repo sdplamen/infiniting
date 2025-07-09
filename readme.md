@@ -1,27 +1,30 @@
-# Empowering Photographers: A Social Media Platform (Django)
+# Empowering Photographers: A Django Social Media Platform
 
 ---
 
 ## Project Vision
 
-As a dedicated hobby photographer and someone deeply dedicated to **B & W Photography** and **Magnum Photography**, I recognize the unique needs of the photography community.
-This **humble final project** for IT Step Academy's Computer Graphics and Design program is a web application designed to showcase **brand design identity** principles within a social media context for photographers.
+As a dedicated hobby photographer and someone deeply dedicated to **B & W** and **Magnum Photography**, I recognize the unique needs of the photography community.
+This **final project** for IT Step Academy's Computer Graphics and Design program is a social media platform crafted for photographers, emphasizing **Magnum Photography**.
+It integrates **brand design identity** principles to create an engaging, community-driven experience for showcasing, sharing, and connecting through photography.
 
 ---
 
 ## UX/UI Design
-As a core part of this project for IT Step Academy's Computer Graphics and Design program,
-I have already created the comprehensive UX/UI design on Figma, laying the visual and interactive foundation for the platform.
+Considering my graphic design expertise, I created a comprehensive UX/UI prototype in Figma.
+The design prioritizes intuitive navigation, visually appealing layouts, and a cohesive brand identity. Key features include streamlined photo uploads, portfolio galleries, and community interaction interfaces.
 
 ---
 
 ## Technical Foundation
 
-Considering my graphic design expertise, I've developed this web solution using the **Django framework**.
-My excellent studies 2+ years in Software Engineering with Python at SoftUni, Bulgaria, have been instrumental in bringing this design-driven web application to life.
-
+Built with the **Django framework**, this platform reflects my 2+ years of Software Engineering with Python studies at SoftUni, Bulgaria. Key technical components include:
+* **Models**: Custom database models for user profiles, photos, and comments to support community interactions.
+* **Views & Templates**: Dynamic views and responsive templates for seamless gallery and feed rendering.
+* **Authentication**: Secure user authentication and authorization using Django’s built-in system.
+* **REST API**: Enables future integration with mobile apps or third-party services.
 ---
 
 ## Presentation
 
-This humble and starting project is prepared for presentation to the examiners at SoftUni.
+Prepared for evaluation by SoftUni examiners, this project demonstrates my ability to blend graphic design with Python-based web development to create a meaningful platform for photographers.
