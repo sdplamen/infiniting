@@ -1,13 +1,13 @@
-from django.http import HttpResponseBadRequest
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from .forms import PhotoUploadForm, CommentForm, RatingForm
-from photos.models import Photo, Like, Comment, Rating
+from photos.forms import PhotoUploadForm, CommentForm, RatingForm
+from photos.models import Photo, Like, Rating
 from users.models import Photographer
+from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
+
 
 # Create your views here.
 class IndexView(ListView):
@@ -53,7 +53,7 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = photographer
         return super().form_valid(form)
 
-class PhotoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PhotoUpdateView(LoginRequiredMixin, UserIsObjectAuthorMixin, UpdateView):
     model = Photo
     form_class = PhotoUploadForm
     template_name = 'photos/photo-edit.html'
@@ -62,59 +62,47 @@ class PhotoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('photo-detail', kwargs={'pk': self.object.pk})
 
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
-
-class PhotoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PhotoDeleteView(LoginRequiredMixin, UserIsObjectAuthorMixin, DeleteView):
     model = Photo
     template_name = 'photos/photo-delete.html'
     success_url = reverse_lazy('photo-home')
     pk_url_kwarg = 'pk'
 
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
+def _handle_photo_like_action(request, pk, action_type):
+    photo = get_object_or_404(Photo, pk=pk)
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            if action_type == 'like':
+                Like.objects.get_or_create(user=request.user, photo=photo)
+            elif action_type == 'unlike':
+                Like.objects.filter(user=request.user, photo=photo).delete()
+            return redirect('photo-detail', pk=photo.pk)
+        else:
+            return redirect('login')
 
 @login_required
 def like_photo(request, pk):
-    photo = get_object_or_404(Photo, pk=pk)
-    if request.method == 'POST':
-        Like.objects.get_or_create(user=request.user, photo=photo)
-        return redirect('photo-detail', pk=photo.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+    return _handle_photo_like_action(request, pk, 'like')
 
 @login_required
 def unlike_photo(request, pk):
-    photo = get_object_or_404(Photo, pk=pk)
-    if request.method == 'POST':
-        Like.objects.filter(user=request.user, photo=photo).delete()
-        return redirect('photo-detail', pk=photo.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+    return _handle_photo_like_action(request, pk, 'unlike')
 
-@login_required
-def add_comment(request, pk):
-    photo = get_object_or_404(Photo, pk=pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = request.user
-            comment.photo = photo
-            comment.save()
-            return redirect('photo-detail', pk=photo.pk)
-        return redirect('photo-detail', pk=photo.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+class PhotoAddCommentView(PhotoFormProcessingMixin):
+    form_class = CommentForm
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.user = self.request.user
+        comment.photo = self.object
+        comment.save()
+        return super().form_valid(form)
 
-@login_required
-def add_rating(request, pk):
-    photo = get_object_or_404(Photo, pk=pk)
-    if request.method == 'POST':
-        form = RatingForm(request.POST)
-        if form.is_valid():
-            Rating.objects.update_or_create(
-                user=request.user.photographer,
-                photo=photo,
-                defaults={'score': form.cleaned_data['score']}
-            )
-            return redirect('photo-detail', pk=photo.pk)
-        return redirect('photo-detail', pk=photo.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+class PhotoAddRatingView(PhotoFormProcessingMixin):
+    form_class = RatingForm
+    def form_valid(self, form):
+        Rating.objects.update_or_create(
+            user=self.request.user.photographer,
+            photo=self.object,
+            defaults={'score': form.cleaned_data['score']}
+        )
+        return super().form_valid(form)

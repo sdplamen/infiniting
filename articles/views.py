@@ -3,35 +3,24 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from .forms import ArticleForm
-from .models import Article
+from articles.forms import ArticleForm
+from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
+from articles.models import Article
 from users.models import Photographer
 
 # Create your views here.
-class ArticleListView(ListView):
+class ArticleListView(ArticleApprovalMixin, ListView):
     model = Article
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
     ordering = ['-created_at']
     paginate_by = 10
 
-    def get_queryset(self) :
-        queryset = super().get_queryset()
-        if not self.request.user.has_perm('articles.can_approve_articles') :
-            queryset = queryset.filter(is_approved=True)
-        return queryset
-
-class ArticleDetailView(DetailView):
+class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'pk'
-
-    def get_queryset(self) :
-        queryset = super().get_queryset()
-        if not self.request.user.has_perm('articles.can_approve_articles') :
-            queryset = queryset.filter(is_approved=True)
-        return queryset
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article
@@ -48,7 +37,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = photographer
         return super().form_valid(form)
 
-class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ArticleUpdateView(LoginRequiredMixin, AuthorRequiredTestMixin, UpdateView):
     model = Article
     form_class = ArticleForm
     template_name = 'articles/article-edit.html'
@@ -57,29 +46,11 @@ class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('article-detail', kwargs={'pk': self.object.pk})
 
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
-
-class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class ArticleDeleteView(LoginRequiredMixin, AuthorRequiredTestMixin, DeleteView):
     model = Article
     template_name = 'articles/article-delete.html'
     success_url = reverse_lazy('article-list')
     pk_url_kwarg = 'pk'
-
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
-
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
-
-class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Article
-    template_name = 'articles/article-delete.html'
-    success_url = reverse_lazy('article-list')
-    pk_url_kwarg = 'pk'
-
-    def test_func(self):
-        return self.request.user == self.get_object().author.user
 
 class ArticleApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):

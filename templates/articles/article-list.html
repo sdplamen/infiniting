@@ -18,7 +18,8 @@
     <div class="article-grid-container">
         {% for article in articles %}
             <div class="card-custom flex-item">
-                <h3><a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}</a></h3>
+{#            <a href="{% url 'article-detail' pk=article.pk %}">#}
+                <h3 class="text-center"><strong>{{ article.title }}</strong></h3>
                 <p class="text-muted small-text">
                     <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
                 </p>

@@ -1,9 +1,10 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from .forms import CustomUserCreationForm, PhotographerProfileForm
-from .models import Photographer
+from users.forms import CustomUserCreationForm, PhotographerProfileForm
+from users.mixins import UserIsProfileOwnerMixin
+from users.models import Photographer
 
 
 # Create your views here.
@@ -49,7 +50,7 @@ class ProfileDetailView(DetailView):
         context['photos'] = self.object.photos.all().order_by('-uploaded_at')
         return context
 
-class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UserIsProfileOwnerMixin, UpdateView):
     model = Photographer
     form_class = PhotographerProfileForm
     template_name = 'users/profile-edit.html'
@@ -58,13 +59,7 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('user-profile-detail', kwargs={'pk': self.object.pk})
 
-    def test_func(self):
-        return self.request.user == self.get_object().user
-
-class ProfileDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class ProfileDeleteView(LoginRequiredMixin, UserIsProfileOwnerMixin, DeleteView):
     model = Photographer
     template_name = 'users/profile-delete.html'
     success_url = reverse_lazy('photo-home')
-
-    def test_func(self):
-        return self.request.user == self.get_object().user

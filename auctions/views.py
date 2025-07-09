@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from .forms import AuctionCreateForm, BidForm
+from .mixins import StaffOrSuperuserRequiredMixin
 from .models import Auction
 
 # Create your views here.
@@ -42,14 +43,11 @@ class AuctionDetailView(DetailView):
         context['bid_form'] = BidForm()
         return context
 
-class AuctionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class AuctionCreateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, CreateView):
     model = Auction
     form_class = AuctionCreateForm
     template_name = 'auctions/auction-create.html'
     success_url = reverse_lazy('auction-list')
-
-    def test_func(self):
-        return self.request.user.is_superuser or self.request.user.is_staff
 
 def place_bid(request, pk):
     auction = get_object_or_404(Auction, pk=pk)
@@ -73,10 +71,7 @@ def place_bid(request, pk):
         return redirect('auction-detail', pk=auction.pk)
     return HttpResponseBadRequest('Invalid request method.')
 
-class AuctionDeactivateView(LoginRequiredMixin, UserPassesTestMixin, View):
-    def test_func(self):
-        return self.request.user.is_superuser or self.request.user.is_staff
-
+class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, View):
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         if auction.is_active:

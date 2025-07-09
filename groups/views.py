@@ -1,10 +1,10 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponseBadRequest
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from .forms import GroupCreateForm
-from .models import Group
+from groups.forms import GroupCreateForm
+from groups.mixins import GroupMemberRequiredMixin
+from groups.models import Group
 
 # Create your views here.
 class GroupCreateView(LoginRequiredMixin, CreateView):
@@ -22,7 +22,7 @@ class GroupListView(ListView):
     model = Group
     template_name = 'groups/group-list.html'
     context_object_name = 'groups'
-    paginate_by = 10
+    paginate_by = 5
 
 class GroupDetailView(DetailView):
     model = Group
@@ -35,7 +35,7 @@ class GroupDetailView(DetailView):
         context['photos'] = self.object.photos.all().order_by('-uploaded_at')
         return context
 
-class GroupUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class GroupUpdateView(LoginRequiredMixin, GroupMemberRequiredMixin, UpdateView):
     model = Group
     form_class = GroupCreateForm
     template_name = 'groups/group-edit.html'
@@ -44,27 +44,27 @@ class GroupUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('group-detail', kwargs={'pk': self.object.pk})
 
-    def test_func(self):
-        return self.request.user in self.get_object().members.all()
-
-class GroupDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class GroupDeleteView(LoginRequiredMixin, GroupMemberRequiredMixin, DeleteView):
     model = Group
     template_name = 'groups/group-delete.html'
     success_url = reverse_lazy('group-list')  # Corrected
 
-    def test_func(self):
-        return self.request.user in self.get_object().members.all()
+def _handle_group_membership_change(request, pk, action_type):
+    group = get_object_or_404(Group, pk=pk)
+
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            if action_type == 'add':
+                group.members.add(request.user)
+            elif action_type == 'remove':
+                group.members.remove(request.user)
+            return redirect('group-detail', pk=group.pk)
+        else:
+            return redirect('login')
+
 
 def join_group(request, pk):
-    group = get_object_or_404(Group, pk=pk)
-    if request.method == 'POST':
-        group.members.add(request.user)
-        return redirect('group-detail', pk=group.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+    return _handle_group_membership_change(request, pk, 'add')
 
 def leave_group(request, pk):
-    group = get_object_or_404(Group, pk=pk)
-    if request.method == 'POST':
-        group.members.remove(request.user)
-        return redirect('group-detail', pk=group.pk)
-    return HttpResponseBadRequest('Invalid request method.')
+    return _handle_group_membership_change(request, pk, 'remove')

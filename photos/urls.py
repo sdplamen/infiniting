@@ -9,6 +9,6 @@ urlpatterns = [
     path('<int:pk>/delete/', views.PhotoDeleteView.as_view(), name='photo-delete'),
     path('<int:pk>/like/', views.like_photo, name='photo-like'),
     path('<int:pk>/unlike/', views.unlike_photo, name='photo-unlike'),
-    path('<int:pk>/comment/', views.add_comment, name='photo-comment'),
-    path('<int:pk>/rate/', views.add_rating, name='photo-rate'),
+    path('<int:pk>/comment/', views.PhotoAddCommentView.as_view(), name='photo-comment'),
+    path('<int:pk>/rate/', views.PhotoAddRatingView.as_view(), name='photo-rate'),
 ]
