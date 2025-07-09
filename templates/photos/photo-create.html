@@ -11,7 +11,7 @@
             Моля, <a href="{% url 'user-profile-create' %}" class="alert-link">създайте профил на фотограф</a>, за да можете да качвате снимки.
         </div>
     {% else %}
-        <form method="POST" action="{% url 'photo-upload' %}" enctype="multipart/form-data">
+        <form method="POST" action="{% url 'photo-create' %}" enctype="multipart/form-data">
             {% csrf_token %}
             {% for field in form %}
                 <div class="form-field">

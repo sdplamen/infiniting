@@ -12,7 +12,7 @@ from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
 # Create your views here.
 class IndexView(ListView):
     model = Photo
-    template_name = 'photos/index.html'
+    template_name = 'photos/photo-list.html'
     context_object_name = 'photos'
     ordering = ['-uploaded_at']
     paginate_by = 12
@@ -41,7 +41,7 @@ class PhotoDetailView(DetailView):
 class PhotoCreateView(LoginRequiredMixin, CreateView):
     model = Photo
     form_class = PhotoUploadForm
-    template_name = 'photos/photo-upload.html'
+    template_name = 'photos/photo-create.html'
     success_url = reverse_lazy('photo-home')
 
     def form_valid(self, form):

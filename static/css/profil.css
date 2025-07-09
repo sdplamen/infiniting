@@ -45,12 +45,11 @@ header {
 }
 
 .band-logo h1 {
-    font-family: "Great Vibes";
+    font-family: "Oswald";
     font-size: 3em;
     font-weight: 500;
     margin: 0;
-    color: #0095af;
-    text-align: center;
+    color: #f8f6f6;
 }
 
 .nav-links {

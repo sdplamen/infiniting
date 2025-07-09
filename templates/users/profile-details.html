@@ -82,7 +82,7 @@
         </section>
     </div>
     <div class="profile-content-column">
-        <h3 class="margin-top-large">Статии от {{ photographer.user.username }}</h3>
+        <h3 class="margin-top-large">Статии от <strong>{{ photographer.user.username }}</strong></h3>
         {% if photographer.articles.all %}
             <ul class="simple-list">
                 {% for article in photographer.articles.all %}

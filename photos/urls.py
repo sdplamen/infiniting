@@ -3,7 +3,7 @@ from photos import views
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='photo-home'),
-    path('upload/', views.PhotoCreateView.as_view(), name='photo-upload'),
+    path('upload/', views.PhotoCreateView.as_view(), name='photo-create'),
     path('<int:pk>/', views.PhotoDetailView.as_view(), name='photo-detail'),
     path('<int:pk>/edit/', views.PhotoUpdateView.as_view(), name='photo-edit'),
     path('<int:pk>/delete/', views.PhotoDeleteView.as_view(), name='photo-delete'),
