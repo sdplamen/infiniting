@@ -7,6 +7,7 @@ from auctions.models import Auction
 class AuctionAdmin(admin.ModelAdmin):
     list_display = ('photo', 'highest_bidder_id', 'created_at', 'updated_at')
     filter = ('is_active',)
+    search_fields = ('auction', 'amount')
     ordering = ('highest_bidder_id',)
 
 class BidAdmin(admin.ModelAdmin):

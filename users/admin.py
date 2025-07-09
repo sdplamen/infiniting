@@ -7,4 +7,5 @@ from users.models import Photographer
 class PhotographerAdmin(admin.ModelAdmin):
     list_display = ('user', 'bio', 'name')
     filter = ('name', 'bio', 'profile_picture')
+    search_fields = ('user', 'name')
     ordering = ('user',)

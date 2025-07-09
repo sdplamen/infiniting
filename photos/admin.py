@@ -6,6 +6,7 @@ from photos.models import Photo
 @admin.register(Photo)
 class PhotoPhotoAdmin(admin.ModelAdmin):
     list_display = ('author', 'group', 'image', 'caption')
+    search_fields = ('caption', 'author')
     filter = ('caption',)
     ordering = ('author',)
 
