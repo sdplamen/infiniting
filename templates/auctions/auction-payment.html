@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Процес на плащане за aукцион <strong>{{ auction.photo.caption }}</strong></h2>
+    <div class="payment-section">
+        <form method="POST" action="{% url 'auction-payment' pk=auction.pk %}" class="payment-form">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="card-number">Номер на карта</label>
+                <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" required>
+            </div>
+            <div class="form-field">
+                <label for="expiry">Валидна до:</label>
+                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="form-field">
+                <label for="cvc">CVC</label>
+                <input type="text" id="cvc" name="cvc" placeholder="123" required>
+            </div>
+            <button type="submit" class="custom-button custom-button-primary">Завърши плащатето.</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             name='Photo',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='photographs/')),
+                ('image', models.ImageField(upload_to='photographer_pictures/')),
                 ('caption', models.CharField(blank=True, max_length=200, null=True)),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='photos', to='users.photographer')),

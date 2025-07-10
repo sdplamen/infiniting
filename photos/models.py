@@ -9,7 +9,7 @@ from users.models import Photographer
 class Photo(models.Model):
     author = models.ForeignKey(Photographer, on_delete=models.CASCADE, related_name='photos')
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True, related_name='photos')
-    image = models.ImageField(upload_to='photographs/')
+    image = models.ImageField(upload_to='photographer_pictures/')
     caption = models.CharField(max_length=200, blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

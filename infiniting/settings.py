@@ -132,7 +132,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'photographer'
+MEDIA_ROOT = BASE_DIR / 'photographer_pictures'
 
 
 # Default primary key field type

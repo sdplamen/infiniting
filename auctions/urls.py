@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/', views.AuctionDetailView.as_view(), name='auction-detail'),
     path('<int:pk>/bid/', views.place_bid, name='auction-bid'),
     path('<int:pk>/deactivate/', views.AuctionDeactivateView.as_view(), name='auction-deactivate'),
+    path('<int:pk>/payment/', views.PaymentView.as_view(), name='auction-payment')
 ]

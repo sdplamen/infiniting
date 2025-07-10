@@ -1,13 +1,14 @@
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Count
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView
-from .forms import AuctionCreateForm, BidForm
-from .mixins import StaffOrSuperuserRequiredMixin
-from .models import Auction
+from auctions.forms import AuctionCreateForm, BidForm, PaymentForm
+from auctions.mixins import StaffOrSuperuserRequiredMixin
+from auctions.models import Auction
 
 # Create your views here.
 class AuctionListView(ListView):
@@ -41,6 +42,7 @@ class AuctionDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['bids'] = self.object.bids.all()
         context['bid_form'] = BidForm()
+        context['now'] = timezone.now()
         return context
 
 class AuctionCreateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, CreateView):
@@ -78,3 +80,21 @@ class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, V
             auction.is_active = False
             auction.save()
         return redirect('auction-list')
+
+class PaymentView(LoginRequiredMixin, View):
+    template_name = 'auctions/auction-payment.html'
+
+    def get(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+        form = PaymentForm()
+        context = {'form': form, 'auction': auction}
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            return redirect('auction-list')
+        context = {'form': form, 'auction': auction}
+        return render(request, self.template_name, context)
