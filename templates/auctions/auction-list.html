@@ -61,18 +61,4 @@
             <p class="text-center">Все още няма активни аукциони.</p>
         {% endfor %}
     </div>
-
-{#    {% if is_paginated %}#}
-{#        <div class="pagination-container">#}
-{#            {% if page_obj.has_previous %}#}
-{#                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Предишна</a>#}
-{#            {% endif %}#}
-{#            {% for num in page_obj.paginator.page_range %}#}
-{#                <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>#}
-{#            {% endfor %}#}
-{#            {% if page_obj.has_next %}#}
-{#                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" class="pagination-link">Следваща</a>#}
-{#            {% endif %}#}
-{#        </div>#}
-{#    {% endif %}#}
 {% endblock %}

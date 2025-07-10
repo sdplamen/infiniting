@@ -15,8 +15,8 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success">Присъедини се</button>
             </form>
+            <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай групата</a>
         {% endif %}
-        <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай групата</a>
     {% endif %}
     <h3>Снимки в групата</h3>
     <div>
