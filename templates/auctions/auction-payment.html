@@ -2,24 +2,57 @@
 
 {% block content %}
 <div class="container">
-    <h2>Процес на плащане за aукцион <strong>{{ auction.photo.caption }}</strong></h2>
-    <div class="payment-section">
-        <form method="POST" action="{% url 'auction-payment' pk=auction.pk %}" class="payment-form">
-            {% csrf_token %}
-            <div class="form-field">
-                <label for="card-number">Номер на карта</label>
-                <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" required>
-            </div>
-            <div class="form-field">
-                <label for="expiry">Валидна до:</label>
-                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
-            </div>
-            <div class="form-field">
-                <label for="cvc">CVC</label>
-                <input type="text" id="cvc" name="cvc" placeholder="123" required>
-            </div>
-            <button type="submit" class="custom-button custom-button-primary">Завърши плащатето.</button>
-        </form>
+        <h2>Процес на плащане за aукцион <strong>{{ auction.photo.caption }}</strong></h2>
+        <div class="payment-section">
+            <form method="POST" action="{% url 'auction-payment' pk=auction.pk %}" class="payment-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="form-field">
+                    {{ form.card_number.label_tag }}
+                    {{ form.card_number }}
+                    {% if form.card_number.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.card_number.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ form.expiry.label_tag }}
+                    {{ form.expiry }}
+                    {% if form.expiry.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.expiry.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ form.cvc.label_tag }}
+                    {{ form.cvc }}
+                    {% if form.cvc.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.cvc.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="custom-button custom-button-primary">Завърши плащането.</button>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

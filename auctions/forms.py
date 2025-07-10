@@ -16,7 +16,42 @@ class BidForm(forms.ModelForm):
         model = Bid
         fields = ['amount']
 
-class PaymentForm(forms.Form):
-    full_name = forms.CharField(max_length=100, label='Име и фамилия')
-    address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), label='Адрес за доставка')
-    card_number = forms.CharField(max_length=16, min_length=16, label='Номер на карта')
+class DeactivateAuctionForm(forms.Form):
+    ...
+
+class AuctionPaymentForm(forms.Form):
+    card_number = forms.CharField(
+        label='Номер на карта',
+        max_length=19,
+        min_length=16,
+        widget=forms.TextInput(attrs={
+            'placeholder' :'1234 5678 9012 3456',
+            'required' :True,
+            'class' :'form-control'
+        })
+    )
+    expiry = forms.CharField(
+        label='Валидна до:',
+        max_length=5,
+        widget=forms.TextInput(attrs={
+            'placeholder' :'MM/YY',
+            'required' :True,
+            'class' :'form-control'
+        })
+    )
+    cvc = forms.CharField(
+        label='CVC',
+        max_length=4,
+        min_length=3,
+        widget=forms.TextInput(attrs={
+            'placeholder' :'123',
+            'required' :True,
+            'class' :'form-control'
+        })
+    )
+
+    def clean_expiry(self) :
+        expiry = self.cleaned_data['expiry']
+        if len(expiry) != 5 or expiry[2] != '/' :
+            raise forms.ValidationError('Моля, въведете дата във формат MM/YY.')
+        return expiry

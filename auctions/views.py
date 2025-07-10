@@ -1,12 +1,12 @@
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Count
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView
-from auctions.forms import AuctionCreateForm, BidForm, PaymentForm
+from django.views.generic import CreateView, ListView, DetailView, FormView
+from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm
 from auctions.mixins import StaffOrSuperuserRequiredMixin
 from auctions.models import Auction
 
@@ -73,28 +73,51 @@ def place_bid(request, pk):
         return redirect('auction-detail', pk=auction.pk)
     return HttpResponseBadRequest('Invalid request method.')
 
-class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, View):
-    def post(self, request, pk):
-        auction = get_object_or_404(Auction, pk=pk)
-        if auction.is_active:
+class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, FormView):
+    model = Auction
+    form_class = DeactivateAuctionForm
+    template_name = 'auctions/auction-deactivate.html'
+    success_url = reverse_lazy('auction-list')
+
+    def get_context_data(self, **kwargs) :
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        auction = get_object_or_404(self.model, pk=pk)
+        context['auction'] = auction
+        return context
+    def form_valid(self, form):
+        pk = self.kwargs.get('pk')
+        auction = get_object_or_404(self.model, pk=pk)
+
+        if auction.is_active :
             auction.is_active = False
             auction.save()
-        return redirect('auction-list')
+        return super().form_valid(form)
 
-class PaymentView(LoginRequiredMixin, View):
+class PaymentView(LoginRequiredMixin, FormView):
+    model = Auction
+    form_class = AuctionPaymentForm
     template_name = 'auctions/auction-payment.html'
+    success_url = reverse_lazy('auction-list')
 
-    def get(self, request, pk):
-        auction = get_object_or_404(Auction, pk=pk)
-        form = PaymentForm()
-        context = {'form': form, 'auction': auction}
-        return render(request, self.template_name, context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        auction = {
+            'pk': pk,
+            'photo': {'caption': 'Аукцион'}
+        }
+        context['auction'] = auction
+        return context
 
-    def post(self, request, pk):
-        auction = get_object_or_404(Auction, pk=pk)
+    def form_valid(self, form):
+        pk = self.kwargs.get('pk')
+        auction = {
+            'pk': pk,
+            'photo': {'caption': 'Аукцион'}
+        }
 
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            return redirect('auction-list')
-        context = {'form': form, 'auction': auction}
-        return render(request, self.template_name, context)
+        card_number = form.cleaned_data['card_number']
+        expiry = form.cleaned_data['expiry']
+        cvc = form.cleaned_data['cvc']
+        return super().form_valid(form)

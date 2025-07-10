@@ -79,26 +79,26 @@
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm"
                                             onclick="return confirm('Сигурни ли сте, че искате да деактивирате този аукцион?');">
-                                        Деактивирай аукцион
+                                        Деактивирай аукцион !
                                     </button>
                                 </form>
                             </div>
                         {% endif %}
                     </div>
-                {% else %}
 {#                        <div class="message-alert warning text-center">#}
 {#                            Този аукцион е спрян.#}
 {#                        </div>#}
 {#                    {% endif %}#}
-{#                {% else %}#}
+                {% else %}
                     <div class="message-alert warning text-center">
                         {% if user != auction.highest_bidder %}
                         Този аукцион е приключил.
                         {% elif user.is_authenticated and user == auction.highest_bidder %}
                         <p>Поздравления! Вие спечелихте този аукцион.</p>
+                    </div>
                         <a href="{% url 'auction-payment' pk=auction.pk %}" class="custom-button custom-button-primary">Към плащане</a>
                         {% endif %}
-                    </div>
+
                 {% endif %}
 
                 <hr class="custom-hr">
