@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from users.models import Photographer
 
-
+User = get_user_model()
 # Create your models here.
 class Article(models.Model) :
     title = models.CharField(max_length=100)

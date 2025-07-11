@@ -16,6 +16,23 @@ class BidForm(forms.ModelForm):
         model = Bid
         fields = ['amount']
 
+    def __init__(self, *args, **kwargs):
+        self.auction = kwargs.pop('auction', None)
+        self.bidder = kwargs.pop('bidder', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_amount(self) :
+        amount = self.cleaned_data['amount']
+        if amount <= self.auction.current_highest_bid :
+            raise forms.ValidationError('Вашата оферта трябва да е по-висока от текущата най-висока оферта.')
+        if amount <= self.auction.starting_bid and self.auction.current_highest_bid == 0 :
+            raise forms.ValidationError('Вашата оферта трябва да е по-висока от началната оферта.')
+        return amount
+
+    def clean(self) :
+        cleaned_data = super().clean()
+        return cleaned_data
+
 class DeactivateAuctionForm(forms.Form):
     ...
 

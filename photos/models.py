@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from groups.models import Group
 from users.models import Photographer
 
-
+User = get_user_model()
 # Create your models here.
 class Photo(models.Model):
     author = models.ForeignKey(Photographer, on_delete=models.CASCADE, related_name='photos')
