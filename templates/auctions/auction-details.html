@@ -39,16 +39,8 @@
                     {% endif %}
                 </div>
 
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
                 <hr class="custom-hr">
-                {% if can_bid %}
+                {% if form.can_user_bid %}
                     <div class="bidding-section">
                     <h4>Направете оферта</h4>
                     {% if bid_form %}
@@ -82,24 +74,26 @@
                 </div>
                 {% else %}
                     <div class="message-alert warning text-center">
-                        {% if bid_section_message %}<p>{{ bid_section_message }}</p>{% endif %}
-
-                        {% if auction_ended %}
-                            {% if user_won_auction %}
-                                <p>Поздравления! Вие спечелихте този аукцион.</p>
-                            {% else %}
-                                <p>Този аукцион е приключил.</p>
-                            {% endif %}
-                        {% endif %}
+                        {% if not form.can_user_bid %}<p>Не можете да направите оферта за този търг.</p>{% endif %}
                     </div>
+                {% endif %}
 
-                    {% if auction_ended and user_won_auction %}
+                {% if form.auction_ended %}
+                    {% if form.user_won_auction %}
+                        <p>Поздравления! Вие спечелихте този аукцион.</p>
                         <div class="text-center">
                             <a href="{% url 'auction-payment' pk=auction.pk %}" class="custom-button custom-button-primary">Към плащане</a>
                         </div>
+                    {% else %}
+                        <p>Този аукцион е приключил.</p>
                     {% endif %}
                 {% endif %}
 
+                {% if form.can_show_admin_actions %}
+                    <div class="admin-actions">
+                        <a href="{% url 'auction-deactivate' pk=auction.pk %}" class="custom-button custom-button-danger">Деактивирай аукциона</a>
+                    </div>
+                {% endif %}
                 <hr class="custom-hr">
                 <div class="text-center margin-top-large">
                     <a href="{% url 'auction-list' %}" class="custom-button custom-button-primary">

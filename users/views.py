@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from users.forms import CustomUserCreationForm, PhotographerProfileForm
+from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
 from users.mixins import UserIsProfileOwnerMixin
 from users.models import Photographer
 
@@ -48,6 +48,7 @@ class ProfileDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['photos'] = self.object.photos.all().order_by('-uploaded_at')
+        context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         return context
 
 class ProfileUpdateView(LoginRequiredMixin, UserIsProfileOwnerMixin, UpdateView):

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from groups.forms import GroupCreateForm
+from groups.forms import GroupCreateForm, GroupDetailForm
 from groups.mixins import GroupMemberRequiredMixin
 from groups.models import Group
 
@@ -33,6 +33,7 @@ class GroupDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['photos'] = self.object.photos.all().order_by('-uploaded_at')
+        context['form'] = GroupDetailForm(group=self.object, user=self.request.user)
         return context
 
 class GroupUpdateView(LoginRequiredMixin, GroupMemberRequiredMixin, UpdateView):

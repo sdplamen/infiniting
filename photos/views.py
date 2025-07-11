@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from photos.forms import PhotoUploadForm, CommentForm, RatingForm
+from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailForm
 from photos.models import Photo, Like, Rating
 from users.models import Photographer
 from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
@@ -28,14 +28,22 @@ class PhotoDetailView(DetailView):
         context['comments'] = self.object.comments.all().order_by('-created_at')
         context['comment_form'] = CommentForm()
         context['rating_form'] = RatingForm()
+
+        user_liked = False
+        user_rating = None
+
         if self.request.user.is_authenticated:
             photographer = getattr(self.request.user, 'photographer', None)
-            if photographer :
-                context['user_liked'] = Like.objects.filter(photo=self.object, user=self.request.user).exists()
-                context['user_rating'] = Rating.objects.filter(photo=self.object, user=photographer).first()
-            else :
-                context['user_liked'] = False
-                context['user_rating'] = None
+            if photographer:
+                user_liked = Like.objects.filter(photo=self.object, user=self.request.user).exists()
+                user_rating = Rating.objects.filter(photo=self.object, user=photographer).first()
+
+        context['form'] = PhotoDetailForm(
+            photo=self.object,
+            user=self.request.user,
+            user_liked=user_liked,
+            user_rating=user_rating
+        )
         return context
 
 class PhotoCreateView(LoginRequiredMixin, CreateView):

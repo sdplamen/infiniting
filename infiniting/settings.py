@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 from django.urls import reverse_lazy
 
@@ -90,6 +91,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'infiniting_db',
     }
 }
+
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = db_url(config('DATABASE_URL'))
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

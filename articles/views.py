@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from articles.forms import ArticleForm
+from articles.forms import ArticleForm, ArticleDetailForm
 from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
 from articles.models import Article
 from users.models import Photographer
@@ -21,6 +21,11 @@ class ArticleDetailView(ArticleApprovalMixin, DetailView):
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'pk'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ArticleDetailForm(article=self.object, user=self.request.user)
+        return context
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article

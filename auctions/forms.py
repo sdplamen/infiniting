@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from .models import Auction, Bid
 
 
@@ -34,7 +35,7 @@ class BidForm(forms.ModelForm):
         return cleaned_data
 
 class DeactivateAuctionForm(forms.Form):
-    ...
+    confirm = forms.BooleanField(label="Потвърдете деактивирането на търга", required=True)
 
 class AuctionPaymentForm(forms.Form):
     card_number = forms.CharField(
@@ -72,3 +73,30 @@ class AuctionPaymentForm(forms.Form):
         if len(expiry) != 5 or expiry[2] != '/' :
             raise forms.ValidationError('Моля, въведете дата във формат MM/YY.')
         return expiry
+
+
+class AuctionDetailForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.auction = kwargs.pop('auction', None)
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def can_user_bid(self):
+        if not self.user.is_authenticated:
+            return False
+        if not self.auction.is_active:
+            return False
+        if self.auction.end_time <= timezone.now():
+            return False
+        if self.user == self.auction.photo.author.user:
+            return False
+        return True
+
+    def can_show_admin_actions(self):
+        return self.user.is_authenticated and self.user.is_staff
+
+    def auction_ended(self):
+        return self.auction.end_time <= timezone.now()
+
+    def user_won_auction(self):
+        return self.user.is_authenticated and self.user == self.auction.highest_bidder

@@ -17,7 +17,7 @@
             <p class="text-muted">Последно обновен: {{ photographer.updated_at|date:"d M Y H:i" }}</p>
             <p>{{ photographer.bio|default:'Няма биография.' }}</p>
 
-            {% if user.is_authenticated and user == photographer.user %}
+            {% if form.can_edit_delete_profile %}
                 <div class="profile-actions">
                     <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="custom-button custom-button-secondary">Редактирай профила</a>
                     <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий профила</a>
@@ -32,7 +32,7 @@
                     {% for group in photographer.user.user_groups.all %}
                         <li>
                             <a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>
-                            {% if user.is_authenticated and user == photographer.user %}
+                            {% if form.can_leave_group %}
                                 <form method="post" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
@@ -59,7 +59,6 @@
                             {% else %}
                                 <img src="https://placehold.co/400x200/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
                             {% endif %}
-                        </a>
                         <p><strong>{{ photo.caption|default:'Няма описание.' }}</strong></p>
                         {% if photo.group %}
                             <p class="text-muted small-text">

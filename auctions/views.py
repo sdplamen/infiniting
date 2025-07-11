@@ -1,27 +1,16 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Count
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, DetailView, FormView
-from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm
+from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm
 from auctions.mixins import StaffOrSuperuserRequiredMixin
 from auctions.models import Auction
 
 # Create your views here.
-def can_user_bid(user, auction):
-    if not user.is_authenticated:
-        return False, 'Влезте, за да направите оферта.'
-    if not auction.is_active:
-        return False, 'Този аукцион е спрян.'
-    if auction.end_time <= timezone.now():
-        return False, 'Този аукцион е приключил.'
-    if user == auction.photo.author.user:
-        return False, 'Не можете да наддавате на Ваша снимка.'
-    return True, ''
-
 class AuctionListView(ListView):
     model = Auction
     template_name = 'auctions/auction-list.html'
@@ -57,19 +46,13 @@ class AuctionDetailView(DetailView):
         context['bids'] = auction.bids.all()
         context['now'] = timezone.now()
 
-        can_bid, bid_message = can_user_bid(user, auction)
-        context['can_bid'] = can_bid
-        context['bid_section_message'] = bid_message
+        auction_detail_form = AuctionDetailForm(auction=auction, user=user)
+        context['form'] = auction_detail_form
 
-        if can_bid:
+        if auction_detail_form.can_user_bid():
             context['bid_form'] = BidForm(auction=auction, bidder=user)
         else:
             context['bid_form'] = None
-
-        context['can_show_admin_actions'] = user.is_authenticated and user.is_staff
-
-        context['auction_ended'] = auction.end_time <= timezone.now()
-        context['user_won_auction'] = user.is_authenticated and user == auction.highest_bidder
 
         return context
 
@@ -83,13 +66,15 @@ class AuctionCreateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, Creat
 def place_bid(request, pk):
     auction = get_object_or_404(Auction, pk=pk)
     user = request.user
-    can_bid_now, error_message = can_user_bid(user, auction)
-    if not can_bid_now :
-        messages.error(request, error_message)
+
+    auction_detail_form = AuctionDetailForm(auction=auction, user=user)
+    if not auction_detail_form.can_user_bid():
+        messages.error(request, "Не можете да направите оферта за този търг.")
         return redirect('auction-detail', pk=auction.pk)
+
     if request.method == 'POST':
         form = BidForm(request.POST, auction=auction, bidder=user)
-        if form.is_valid() :
+        if form.is_valid():
             bid = form.save(commit=False)
             bid.auction = auction
             bid.bidder = user
@@ -97,23 +82,13 @@ def place_bid(request, pk):
             auction.current_highest_bid = bid.amount
             auction.highest_bidder = user
             auction.save()
+            messages.success(request, "Вашата оферта беше приета успешно!")
             return redirect('auction-detail', pk=auction.pk)
-        else :
-            context = {
-                'auction' :auction,
-                'bid_form' :form,
-                'bids' :auction.bids.all(),
-                'now' :timezone.now(),
-                'can_bid' :True,
-                'bid_section_message' :"",
-                'can_show_admin_actions' :user.is_authenticated and user.is_staff,
-                'auction_ended' :auction.end_time <= timezone.now(),
-                'user_won_auction' :user.is_authenticated and user == auction.highest_bidder
-            }
-
-            return render(request, 'auctions/auction-details.html', context)
-
-    return HttpResponseBadRequest('Invalid request method.')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
+            return redirect('auction-detail', pk=auction.pk)
 
 class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, FormView):
     model = Auction

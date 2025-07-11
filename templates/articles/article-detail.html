@@ -18,20 +18,18 @@
         {{ article.content|linebreaksbr }}
     </div>
 
-    {% if user.is_authenticated and user == article.author.user %}
+    {% if form.can_user_edit_delete %}
         <div class="actions-right">
             <a href="{% url 'article-edit' pk=article.pk %}" class="custom-button custom-button-secondary"><i class="fas fa-edit me-1"></i>Редактирай</a>
             <a href="{% url 'article-delete' pk=article.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий</a>
         </div>
     {% endif %}
-    {% if user.is_authenticated %}
+    {% if form.can_user_approve %}
         <div class="actions-right">
-            {% if not article.is_approved and perms.articles.can_approve_articles %}
-                <form action="{% url 'article-approve' article.pk %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-warning">Потвърди статията</button>
-                </form>
-            {% endif %}
+            <form action="{% url 'article-approve' article.pk %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="custom-button custom-button-warning">Потвърди статията</button>
+            </form>
         </div>
     {% endif %}
     <div class="text-center margin-top-large">
