@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Count
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, DetailView, FormView
@@ -85,10 +85,14 @@ def place_bid(request, pk):
             messages.success(request, "Вашата оферта беше приета успешно!")
             return redirect('auction-detail', pk=auction.pk)
         else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{error}")
-            return redirect('auction-detail', pk=auction.pk)
+            context = {
+                'auction': auction,
+                'bid_form': form,  # Pass the invalid form
+                'bids': auction.bids.all(),
+                'now': timezone.now(),
+                'form': AuctionDetailForm(auction=auction, user=user), # Re-initialize AuctionDetailForm
+            }
+            return render(request, 'auctions/auction-details.html', context)
 
 class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, FormView):
     model = Auction

@@ -25,4 +25,6 @@ class GroupDetailForm(forms.Form):
         return self.user in self.group.members.all()
 
     def can_edit_group(self):
-        return self.is_member()
+        if not self.user or not self.user.is_authenticated:
+            return False
+        return self.user.is_staff
