@@ -10,9 +10,9 @@
             <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова статия</a>
         </div>
     {% elif user.is_authenticated and not user.photographer %}
+        <p class="text-center">За да можете да пишете статии</p>
         <div class="message-alert info text-center">
-            <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте профил</a>.
-            <p>за да можете да пишете статии</p>
+            <a href="{% url 'user-profile-create' %}">Създайте профил.</a>
         </div>
     {% endif %}
     <div class="article-grid-container">

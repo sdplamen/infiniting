@@ -103,6 +103,7 @@ header {
     padding: 10px;
 }
 .message-alert {
+    max-width: 300px;
     padding: 10px 15px;
     margin-bottom: 10px;
     border-radius: 5px;

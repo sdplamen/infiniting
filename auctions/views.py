@@ -97,23 +97,21 @@ def place_bid(request, pk):
 class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, FormView):
     model = Auction
     form_class = DeactivateAuctionForm
-    template_name = 'auctions/auction-deactivate.html'
+    # template_name = 'auctions/auction-deactivate.html'
     success_url = reverse_lazy('auction-list')
 
-    def get_context_data(self, **kwargs) :
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get('pk')
-        auction = get_object_or_404(self.model, pk=pk)
-        context['auction'] = auction
-        return context
-    def form_valid(self, form):
-        pk = self.kwargs.get('pk')
-        auction = get_object_or_404(self.model, pk=pk)
-
-        if auction.is_active :
+    def get(self, request, *args, **kwargs):
+        auction = get_object_or_404(self.model, pk=self.kwargs.get('pk'))
+        if auction.is_active:
             auction.is_active = False
             auction.save()
-        return super().form_valid(form)
+            messages.success(request, f"Auction '{auction.pk}' has been deactivated.")
+        else:
+            messages.warning(request, 'Auction is already deactivated.')
+        return self.redirect_to_success_url()
+
+    def redirect_to_success_url(self):
+        return redirect(self.success_url)
 
 class PaymentView(LoginRequiredMixin, FormView):
     model = Auction
