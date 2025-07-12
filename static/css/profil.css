@@ -29,7 +29,7 @@ a:link, a:visited {
 }
 
 a {
-    padding: 5px 10px;
+    padding: 1px 1px;
     border: 5px solid transparent;
     box-sizing: border-box;
 }
@@ -142,9 +142,36 @@ header {
     max-width: 600px;
 }
 
-.text-center {
-    text-align: center;
+.card-img-top {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+    margin-bottom: 20px;
 }
+
+.card-body {
+    padding: 0;
+    color: #D4ECFC;
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.card-body p {
+    margin-bottom: 10px;
+}
+
+.card-body p:last-of-type {
+    margin-bottom: 10px;
+}
+
+.card-body .btn {
+    margin-top: 5px;
+}
+
 .text-muted {
     color: #A0B9D6;
 }
@@ -189,7 +216,7 @@ header {
     color: #A0B9D6;
     margin-top: 5px;
 }
-.form-field .errorlist {
+.form-field {
     color: #ff6347;
     font-size: 0.9em;
     list-style: none;
@@ -306,6 +333,19 @@ img.photo-display {
     margin: 0 auto;
 }
 
+.photo-display-large.enlarged {
+    max-width: 50%;
+    transform: scale(1.5);
+    transition: transform 0.3s ease;
+    border: #f7f8d9 solid 1px;
+    /*opacity: 0.9;*/
+    cursor: pointer;
+    z-index: 10;
+    position: fixed;
+    left: 25%;
+    top: 20%;
+}
+
 .photo-link {
     display: block;
     line-height: 0;
@@ -315,20 +355,6 @@ img.photo-display {
     padding: 15px;
     padding-top: 0;
     color: #D4ECFC;
-}
-
-.pagination-container {
-    background-color: #D4ECFC;
-    color: #002F5B;
-    font-size: 10px;
-    font-style: italic;
-    margin: 10px auto;
-    padding: 5px 10px;
-    width: calc(100% - 20px);
-    height: 30px;
-    border-radius: 50px;
-    border: none;
-    box-sizing: border-box;
 }
 
 footer {
@@ -371,6 +397,29 @@ footer {
     margin: 10px;
 }
 
+@media (max-width: 768px) {
+    .card-img-top {
+        margin-bottom: 20px;
+    }
+    .card-title {
+        margin-bottom: 10px;
+    }
+    .card-body p {
+        margin-bottom: 8px;
+    }
+    .card-body p:last-of-type {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .photo-display-large.enlarged {
+        max-width: 120%;
+        align-items: center;
+        transform: scale(1.2);
+        opacity: 0.9;
+    }
+}
 
 @media (max-width: 768px) {
     .band-logo h1 {
@@ -380,11 +429,13 @@ footer {
         margin: 5px 10px;
         font-size: 0.9em;
     }
-    .form-container, .card-body, .card-custom, .photo-item {
+    .form-container, .card-body, .card-custom, .photo-item, .card-title {
         align-items: flex-start;
         max-width: 95%;
+        margin: 20px auto;
         padding: 15px;
     }
+
     .main-content {
         padding: 10px;
     }
