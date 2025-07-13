@@ -74,7 +74,7 @@
                 </div>
                 {% else %}
                     <div class="message-alert warning text-center">
-                        {% if not form.can_user_bid %}<p>Не можете да направите оферта за този търг.</p>{% endif %}
+                        {% if not form.can_user_bid %}<p>Не можете да направите оферта за този аукцион.</p>{% endif %}
                     </div>
                 {% endif %}
 
@@ -97,7 +97,7 @@
                 <hr class="custom-hr">
                 <div class="text-center margin-top-large">
                     <a href="{% url 'auction-list' %}" class="custom-button custom-button-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Към всички аукциони
+                        <i class="fas fa-arrow-left me-2"></i>Към всички аукциони.
                     </a>
                 </div>
             </div>

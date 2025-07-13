@@ -105,9 +105,9 @@ class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, F
         if auction.is_active:
             auction.is_active = False
             auction.save()
-            messages.success(request, f"Auction '{auction.pk}' has been deactivated.")
+            messages.success(request, f"Aукционът '{auction.pk}' е деактивиран.")
         else:
-            messages.warning(request, 'Auction is already deactivated.')
+            messages.warning(request, 'Аукционът вече е деактивиран.')
         return self.redirect_to_success_url()
 
     def redirect_to_success_url(self):

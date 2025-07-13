@@ -35,7 +35,7 @@ class BidForm(forms.ModelForm):
         return cleaned_data
 
 class DeactivateAuctionForm(forms.Form):
-    confirm = forms.BooleanField(label="Потвърдете деактивирането на търга", required=True)
+    confirm = forms.BooleanField(label="Потвърдете деактивирането на аукциона", required=True)
 
 class AuctionPaymentForm(forms.Form):
     card_number = forms.CharField(
