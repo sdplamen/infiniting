@@ -11,7 +11,7 @@ It integrates **brand design identity** principles to create an engaging, commun
 ---
 
 ## UX/UI Design
-Considering my graphic design expertise, I created a comprehensive UX/UI prototype in Figma.
+Considering my graphic design expertise, I created a comprehensive __[UX/UI prototype in Figma](https://www.behance.net/gallery/153390325/UX-UI-project)__.
 The design prioritizes intuitive navigation, visually appealing layouts, and a cohesive brand identity. Key features include streamlined photo uploads, portfolio galleries, and community interaction interfaces.
 
 ---
