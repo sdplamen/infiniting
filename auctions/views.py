@@ -69,7 +69,7 @@ def place_bid(request, pk):
 
     auction_detail_form = AuctionDetailForm(auction=auction, user=user)
     if not auction_detail_form.can_user_bid():
-        messages.error(request, "Не можете да направите оферта за този търг.")
+        messages.error(request, 'Не можете да направите оферта за този аукцион.')
         return redirect('auction-detail', pk=auction.pk)
 
     if request.method == 'POST':
@@ -82,15 +82,15 @@ def place_bid(request, pk):
             auction.current_highest_bid = bid.amount
             auction.highest_bidder = user
             auction.save()
-            messages.success(request, "Вашата оферта беше приета успешно!")
+            messages.success(request, 'Вашата оферта беше приета успешно!')
             return redirect('auction-detail', pk=auction.pk)
         else:
             context = {
                 'auction': auction,
-                'bid_form': form,  # Pass the invalid form
+                'bid_form': form,
                 'bids': auction.bids.all(),
                 'now': timezone.now(),
-                'form': AuctionDetailForm(auction=auction, user=user), # Re-initialize AuctionDetailForm
+                'form': AuctionDetailForm(auction=auction, user=user),
             }
             return render(request, 'auctions/auction-details.html', context)
 
@@ -131,12 +131,21 @@ class PaymentView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         pk = self.kwargs.get('pk')
-        auction = {
-            'pk': pk,
-            'photo': {'caption': 'Аукцион'}
-        }
+        auction = get_object_or_404(Auction, pk=pk)
+        winner = auction.highest_bidder
 
-        card_number = form.cleaned_data['card_number']
-        expiry = form.cleaned_data['expiry']
-        cvc = form.cleaned_data['cvc']
-        return super().form_valid(form)
+        if self.request.user == winner:
+            photographer = winner.photographer
+
+            photo = auction.photo
+            photo.author = photographer
+            photo.save()
+
+            auction.is_active = False
+            auction.save()
+
+            messages.success(self.request, f"Поздравления! Вие спечелихте аукциона и сте притежател на тази снимка. '{photo.caption}'.")
+        else:
+            messages.error(self.request, 'Вие не спечелихте тази аукцион.')
+
+        return redirect(self.success_url)
