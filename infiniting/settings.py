@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+import dj_database_url as db_url
+
 
 from django.urls import reverse_lazy
 
@@ -32,7 +35,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 PROJECT_APPS = [
-    'users', 'groups',  'photos', 'articles', 'auctions'
+    'users', 'groups',  'photos', 'articles', 'auctions', 'mobileAPI',
 ]
 
 INSTALLED_APPS = [
@@ -44,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
+    'rest_framework.authtoken',
 ] + PROJECT_APPS
 
 MIDDLEWARE = [
@@ -60,7 +65,7 @@ ROOT_URLCONF = 'infiniting.urls'
 
 LOGIN_REDIRECT_URL = reverse_lazy('photo-home')
 LOGOUT_REDIRECT_URL = reverse_lazy('photo-home')
-# AUTH_USER_MODEL = 'user.Photographer'
+
 
 TEMPLATES = [
     {
@@ -93,7 +98,7 @@ DATABASES = {
 }
 
 if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = db_url(config('DATABASE_URL'))
+    DATABASES['default'] = db_url.parse(config('DATABASE_URL'))
 
 
 # Password validation
