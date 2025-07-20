@@ -1,53 +1,80 @@
-from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from django.contrib.auth import authenticate
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model
 from photos.models import Photo, Like, Comment, Rating
-from .serializers import PhotoSerializer, LikeSerializer, CommentSerializer, RatingSerializer
-from .authentication import TokenAuthentication
-from .permissions import IsAuthenticatedAndOwner, IsAdminOrReadOnly
-from .models import Token
+from mobileAPI.serializers import PhotoSerializer, LikeSerializer, CommentSerializer, RatingSerializer
+from mobileAPI.permissions import IsAdminOrReadOnly, IsAuthenticatedAndOwner
+
+UserModel = get_user_model()
+
+class RegisterView(generics.CreateAPIView):
+    queryset = UserModel.objects.all()
+    serializer_class = PhotoSerializer
+    permission_classes = [AllowAny]
 
 
-class PhotoViewSet(viewsets.ModelViewSet):
+class PhotoListCreateAPIView(generics.ListCreateAPIView):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-class LikeViewSet(viewsets.ModelViewSet):
+class PhotoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    lookup_field = 'pk'
+
+class LikeListCreateAPIView(generics.ListCreateAPIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAuthenticatedAndOwner]
+    permission_classes = [IsAuthenticatedAndOwner]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Like.objects.filter(owner=self.request.user)
+        return Like.objects.none()
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class LikeDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticatedAndOwner]
+    lookup_field = 'pk'
+
+
+class CommentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAuthenticatedAndOwner]
+    permission_classes = [IsAuthenticatedAndOwner]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-class RatingViewSet(viewsets.ModelViewSet):
+class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedAndOwner]
+    lookup_field = 'pk'
+
+class RatingListCreateAPIView(generics.ListCreateAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAuthenticatedAndOwner]
+    permission_classes = [IsAuthenticatedAndOwner]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-@api_view(['POST'])
-@permission_classes([])
-def generate_token(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    user = authenticate(username=username, password=password)
-
-    if user:
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key})
-    else:
-        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+class RatingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticatedAndOwner]
+    lookup_field = 'pk'
