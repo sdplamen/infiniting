@@ -15,7 +15,7 @@ class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ['id', 'title', 'image', 'description', 'uploaded_at', 'owner']
+        fields = ['id', 'caption', 'image', 'uploaded_at', 'owner']
         read_only_fields = ['id', 'uploaded_at', 'owner']
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -42,5 +42,5 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
-        fields = ['id', 'value', 'owner', 'photo', 'created_at']
+        fields = ['id', 'score', 'owner', 'photo', 'created_at']
         read_only_fields = ['id', 'owner', 'photo', 'created_at']
