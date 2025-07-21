@@ -1,4 +1,5 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+
 
 class IsAuthenticatedAndOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -19,3 +20,12 @@ class IsGroupMember(BasePermission):
         if not group_name:
             return False
         return request.user and request.user.groups.filter(name=group_name).exists()
+
+class IsGroupCreatorOrAdmin(BasePermission):
+    message = 'You must be the creator of this group or an administrator to perform this action.'
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+
+        return bool(obj.creator == request.user or request.user.is_staff)

@@ -145,7 +145,7 @@ class PaymentView(LoginRequiredMixin, FormView):
             auction.save()
             auction.delete()
 
-            messages.success(self.request, f"Поздравления! Вие спечелихте аукциона и сте притежател на тази снимка. '{photo.caption}'.")
+            messages.success(self.request, f"Поздравления! Вие спечелихте аукциона и сте притежател на тази снимка: {photo.caption}.")
         else:
             messages.error(self.request, 'Вие не спечелихте тази аукцион.')
 
