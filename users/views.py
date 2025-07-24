@@ -1,17 +1,30 @@
+from django.contrib.auth import get_user_model, login, logout
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
 from users.mixins import UserIsProfileOwnerMixin
 from users.models import Photographer
 
+UserModel = get_user_model()
 
 # Create your views here.
 class UserRegisterView(CreateView):
+    model = UserModel
     form_class = CustomUserCreationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # Note: Signal for profile creation
+
+        if response.status_code in [301, 302]:
+            login(self.request, self.object)
+
+        return response
 
 class ProfileListView(ListView):
     model = Photographer
@@ -64,3 +77,12 @@ class ProfileDeleteView(LoginRequiredMixin, UserIsProfileOwnerMixin, DeleteView)
     model = Photographer
     template_name = 'users/profile-delete.html'
     success_url = reverse_lazy('photo-home')
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Photographer, user=self.request.user)
+
+    def form_valid(self, form):
+        user = self.request.user
+        logout(self.request)
+        messages.success(self.request, f'Профилът на {user.username} беше изтрит успешно.')
+        return super().form_valid(form)

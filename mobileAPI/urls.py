@@ -6,7 +6,7 @@ from mobileAPI.views import RegisterView, PhotoListCreateAPIView, PhotoDetailAPI
     BidListCreateAPIView, BidDetailAPIView, GroupListCreateAPIView, GroupDetailAPIView
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
+    path('register/', RegisterView.as_view(), name='register-api'),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', TokenBlacklistView.as_view(), name='token_blacklist'),

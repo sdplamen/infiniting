@@ -13,7 +13,12 @@
     </facet>
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/photographer_pictures" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/include" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib" />
+    </content>
     <orderEntry type="jdk" jdkName="Python 3.12" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

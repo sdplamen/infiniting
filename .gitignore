@@ -1,3 +1,4 @@
+.gitignore
 .env
 server.log
-/photographer_pictures
+photographer_pictures/
