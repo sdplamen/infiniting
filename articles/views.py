@@ -68,8 +68,8 @@ class ArticleApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
         if not article.is_approved:
             article.is_approved = True
             article.save()
-            subject = f'Вашата статия "{article.title}" беше одобрена за четене!'
-            message = f'Скъпи {article.author.user.username},\n\nВашата статия "{article.title}" беше одобрена и вече може да бъде прочетена в Infiniting.\n\nБлагодарим ви за съдействието!\n\nПоздрави,\nЕкипът на Infiniting'
+            subject = f'Вашата статия {article.title} беше одобрена за четене!'
+            message = f'Скъпи {article.author.user.username},\n\nВашата статия {article.title} беше одобрена и вече може да бъде прочетена в Infiniting.\n\nБлагодарим ви за съдействието!\n\nПоздрави,\nЕкипът на Infiniting'
             from_email = settings.DEFAULT_FROM_EMAIL
             recipient_list = [article.author.user.email]
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
