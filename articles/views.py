@@ -7,6 +7,8 @@ from articles.forms import ArticleForm, ArticleDetailForm
 from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
 from articles.models import Article
 from users.models import Photographer
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 class ArticleListView(ArticleApprovalMixin, ListView):
@@ -66,6 +68,11 @@ class ArticleApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
         if not article.is_approved:
             article.is_approved = True
             article.save()
+            subject = f'Вашата статия "{article.title}" беше одобрена за четене!'
+            message = f'Скъпи {article.author.user.username},\n\nВашата статия "{article.title}" беше одобрена и вече може да бъде прочетена в Infiniting.\n\nБлагодарим ви за съдействието!\n\nПоздрави,\nЕкипът на Infiniting'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [article.author.user.email]
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
         return redirect('article-list')
 
     def get(self, request, pk) :
