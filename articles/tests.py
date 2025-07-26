@@ -8,7 +8,7 @@ from django.http import HttpRequest
 
 User = get_user_model()
 
-class ArticleApproveViewTest(TestCase):
+class TestArticleApproveView(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             username='admin',
