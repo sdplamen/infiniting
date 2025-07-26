@@ -23,6 +23,7 @@ Built with the **Django framework**, this platform reflects my 2+ years of Softw
 * **Views & Templates**: Dynamic views and responsive templates for seamless gallery and feed rendering.
 * **Authentication**: Secure user authentication and authorization using Django’s built-in system.
 * **REST API**: Enables future integration with mobile apps or third-party services.
+* **UNIT and INTEGRATION TESTS**: Comprehensive unit tests cover article approval and auction payment functionality, while integration tests ensure seamless new photo uploads.
 ---
 
 ## Presentation
