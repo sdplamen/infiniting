@@ -86,7 +86,7 @@
             <ul class="simple-list">
                 {% for article in photographer.articles.all %}
                     <li>
-                        <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}"</a>
+                        <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}</a>
                         <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
                     </li>
                 {% empty %}
