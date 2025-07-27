@@ -1,18 +1,28 @@
+import os
 from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import HttpRequest
+from django.conf import settings
+from articles.models import Photographer
 from photos.models import Photo
 from photos.views import PhotoCreateView
-from users.models import Photographer
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.conf import settings
-from django.http import HttpRequest
-import os
 
 User = get_user_model()
 
 class TestPhotoCreateView(TestCase):
     def setUp(self):
+        self._original_media_root = settings.MEDIA_ROOT
+        self._original_media_url = settings.MEDIA_URL
+
+        self.test_media_root = os.path.join(settings.BASE_DIR, 'test_media')
+        if not os.path.exists(self.test_media_root):
+            os.makedirs(self.test_media_root)
+
+        settings.MEDIA_ROOT = self.test_media_root
+        settings.MEDIA_URL = '/test_media/'
+
         self.superuser = User.objects.create_superuser(
             username='admin',
             email='admin@example.com',
@@ -20,6 +30,26 @@ class TestPhotoCreateView(TestCase):
         )
         self.create_url = reverse('photo-create')
         self.success_url = reverse('photo-home')
+
+    def _delete_directory_contents(self, path):
+        if not os.path.exists(path):
+            return
+
+        for entry in os.listdir(path):
+            entry_path = os.path.join(path, entry)
+            if os.path.isfile(entry_path):
+                os.remove(entry_path)
+            elif os.path.isdir(entry_path):
+                self._delete_directory_contents(entry_path)
+                os.rmdir(entry_path)
+
+    def tearDown(self):
+        self._delete_directory_contents(self.test_media_root)
+        if os.path.exists(self.test_media_root):
+            os.rmdir(self.test_media_root)
+
+        settings.MEDIA_ROOT = self._original_media_root
+        settings.MEDIA_URL = self._original_media_url
 
     def _create_user_and_photographer(self, user_id):
         username = f'test_user_{user_id}'
@@ -43,10 +73,12 @@ class TestPhotoCreateView(TestCase):
         request.user = user
         request.FILES = {'image': uploaded_image,}
         request.POST = {'caption': 'My Test Photo', 'description': 'A description for my test photo.',}
+
         request.META['SERVER_NAME'] = 'testserver'
         request.META['SERVER_PORT'] = '80'
         request.META['HTTP_HOST'] = 'testserver'
         request.path = self.create_url
+
         response = PhotoCreateView.as_view()(request)
 
         self.assertEqual(response.status_code, 302)
@@ -60,6 +92,3 @@ class TestPhotoCreateView(TestCase):
 
         expected_path = os.path.join(settings.MEDIA_ROOT, photo.image.name)
         self.assertTrue(os.path.exists(expected_path))
-
-        os.remove(expected_path)
-
