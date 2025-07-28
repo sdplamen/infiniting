@@ -1,94 +1,72 @@
-import os
-from django.test import TestCase
-from django.contrib.auth import get_user_model
+import os, io
+from PIL import Image
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpRequest
+from django.contrib.auth import get_user_model
+from photos.models import Photo, Photographer, Group
 from django.conf import settings
-from articles.models import Photographer
-from photos.models import Photo
-from photos.views import PhotoCreateView
 
-User = get_user_model()
+UserModel = get_user_model()
 
-class TestPhotoCreateView(TestCase):
-    def setUp(self):
-        self._original_media_root = settings.MEDIA_ROOT
-        self._original_media_url = settings.MEDIA_URL
-
-        self.test_media_root = os.path.join(settings.BASE_DIR, 'test_media')
-        if not os.path.exists(self.test_media_root):
-            os.makedirs(self.test_media_root)
-
-        settings.MEDIA_ROOT = self.test_media_root
-        settings.MEDIA_URL = '/test_media/'
-
-        self.superuser = User.objects.create_superuser(
-            username='admin',
-            email='admin@example.com',
-            password='adminpassword'
+class PhotoUploadIntegrationTest(TestCase) :
+    def setUp(self) :
+        self.client = Client()
+        self.user = UserModel.objects.create_user(
+            username='testuser',
+            password='testpassword123'
         )
-        self.create_url = reverse('photo-create')
-        self.success_url = reverse('photo-home')
+        self.client.login(username='testuser', password='testpassword123')
+        self.group = Group.objects.create(name='Test Group')
 
-    def _delete_directory_contents(self, path):
-        if not os.path.exists(path):
-            return
+    def create_test_image(self) :
+        image = Image.new('RGB', (100, 100), color='red')
+        image_file = io.BytesIO()
+        image.save(image_file, format='JPEG')
+        image_file.seek(0)
+        return SimpleUploadedFile('test_image.jpg', image_file.read(), content_type='image/jpeg')
 
-        for entry in os.listdir(path):
-            entry_path = os.path.join(path, entry)
-            if os.path.isfile(entry_path):
-                os.remove(entry_path)
-            elif os.path.isdir(entry_path):
-                self._delete_directory_contents(entry_path)
-                os.rmdir(entry_path)
+    def test_photo_upload_success(self) :
+        photographer = Photographer.objects.get(user=self.user)
+        image = self.create_test_image()
+        form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
+        response = self.client.post(reverse('photo-create'),{'image' :image, **form_data}, follow=True)
 
-    def tearDown(self):
-        self._delete_directory_contents(self.test_media_root)
-        if os.path.exists(self.test_media_root):
-            os.rmdir(self.test_media_root)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse('photo-home'))
+        photo = Photo.objects.filter(author=photographer).first()
+        self.assertIsNotNone(photo)
+        self.assertEqual(photo.caption, 'Test photo caption')
+        self.assertEqual(photo.group, self.group)
+        self.assertTrue(photo.image.name.startswith('photographer_pictures/test_image'))
 
-        settings.MEDIA_ROOT = self._original_media_root
-        settings.MEDIA_URL = self._original_media_url
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, photo.image.name)) :
+            os.remove(os.path.join(settings.MEDIA_ROOT, photo.image.name))
 
-    def _create_user_and_photographer(self, user_id):
-        username = f'test_user_{user_id}'
-        email = f'test_email_{user_id}@example.com'
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password='testpassword'
-        )
-        photographer, created = Photographer.objects.get_or_create(user=user)
-        return user, photographer
+    def test_photo_upload_without_photographer_profile(self) :
+        Photographer.objects.filter(user=self.user).delete()
 
-    def test_photo_upload_success(self):
-        user, photographer = self._create_user_and_photographer(1)
+        image = self.create_test_image()
+        form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
+        response = self.client.post(reverse('photo-create'),{'image' :image, **form_data})
 
-        image_content = b'GIF89a\x01\x00\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02L\x01\x00;'
-        uploaded_image = SimpleUploadedFile("test_image.png", image_content, content_type="image/png")
+        self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
 
-        request = HttpRequest()
-        request.method = 'POST'
-        request.user = user
-        request.FILES = {'image': uploaded_image,}
-        request.POST = {'caption': 'My Test Photo', 'description': 'A description for my test photo.',}
+    def test_photo_upload_unauthenticated(self) :
+        self.client.logout()
 
-        request.META['SERVER_NAME'] = 'testserver'
-        request.META['SERVER_PORT'] = '80'
-        request.META['HTTP_HOST'] = 'testserver'
-        request.path = self.create_url
+        image = self.create_test_image()
+        form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
 
-        response = PhotoCreateView.as_view()(request)
+        response = self.client.post(reverse('photo-create'),{'image' :image, **form_data}, follow=True)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, self.success_url)
-        self.assertEqual(Photo.objects.count(), 1)
-        photo = Photo.objects.first()
-        self.assertEqual(photo.caption, 'My Test Photo')
-        self.assertEqual(photo.author, photographer)
-        self.assertIn('test_image', photo.image.name)
-        self.assertTrue(photo.image.name.endswith('.png'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('accounts/login' in response.request['PATH_INFO'])
+        self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
 
-        expected_path = os.path.join(settings.MEDIA_ROOT, photo.image.name)
-        self.assertTrue(os.path.exists(expected_path))
+    def test_photo_upload_invalid_form(self) :
+        form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
+
+        response = self.client.post(reverse('photo-create'), form_data)
+
+        self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
