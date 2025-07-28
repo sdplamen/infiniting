@@ -24,7 +24,7 @@ class TestPaymentView(TestCase):
             is_active=False
         )
 
-    def test_payment_view_accessible_by_winner(self):
+    def test__payment_view__accessible_by_winner(self):
         self.client.login(username='testname', password='testpass')
         response = self.client.get(reverse('auction-payment', kwargs={'pk': self.auction.pk}))
         self.assertEqual(response.status_code, 200)

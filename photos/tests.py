@@ -26,7 +26,7 @@ class PhotoUploadIntegrationTest(TestCase) :
         image_file.seek(0)
         return SimpleUploadedFile('test_image.jpg', image_file.read(), content_type='image/jpeg')
 
-    def test_photo_upload_success(self) :
+    def test__photo_upload_success(self) :
         photographer = Photographer.objects.get(user=self.user)
         image = self.create_test_image()
         form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
@@ -43,7 +43,7 @@ class PhotoUploadIntegrationTest(TestCase) :
         if os.path.exists(os.path.join(settings.MEDIA_ROOT, photo.image.name)) :
             os.remove(os.path.join(settings.MEDIA_ROOT, photo.image.name))
 
-    def test_photo_upload_without_photographer_profile(self) :
+    def test__photo_upload__without_photographer_profile(self) :
         Photographer.objects.filter(user=self.user).delete()
 
         image = self.create_test_image()
@@ -52,7 +52,7 @@ class PhotoUploadIntegrationTest(TestCase) :
 
         self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
 
-    def test_photo_upload_unauthenticated(self) :
+    def test__photo_upload__unauthenticated(self) :
         self.client.logout()
 
         image = self.create_test_image()
@@ -64,7 +64,7 @@ class PhotoUploadIntegrationTest(TestCase) :
         self.assertTrue('accounts/login' in response.request['PATH_INFO'])
         self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
 
-    def test_photo_upload_invalid_form(self) :
+    def test__photo_upload__invalid_form(self) :
         form_data = {'caption' :'Test photo caption', 'group' :self.group.id}
 
         response = self.client.post(reverse('photo-create'), form_data)
