@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -9,7 +10,7 @@ User = get_user_model()
 class Photo(models.Model):
     author = models.ForeignKey(Photographer, on_delete=models.CASCADE, related_name='photos')
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True, related_name='photos')
-    image = models.ImageField(upload_to='photographer_pictures/')
+    image = CloudinaryField(folder='photos',)
     caption = models.CharField(max_length=200, blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

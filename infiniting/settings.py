@@ -9,11 +9,10 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
-from pathlib import Path
 import os
+from pathlib import Path
 from decouple import config
-import dj_database_url as db_url
+import cloudinary
 
 
 from django.urls import reverse_lazy
@@ -25,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*(okxblu5y96af)-(_q70gre)sgxdhp^o7p27&nd!$0dn&hb$j'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -51,7 +50,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'cloudinary',
+    'cloudinary_storage',
+
 ] + PROJECT_APPS
+
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+# SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+SECURE_BROWSER_XSS_FILTER = config('SECURE_BROWSER_XSS_FILTER', default=True, cast=bool)
+SECURE_CONTENT_TYPE_NOSNIFF = config('SECURE_CONTENT_TYPE_NOSNIFF', default=True, cast=bool)
+X_FRAME_OPTIONS = config('X_FRAME_OPTIONS', default='DENY')
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -118,15 +127,28 @@ WSGI_APPLICATION = 'infiniting.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'infiniting_db',
-    }
-}
+DATABASE_ENGINE = config('DATABASE_ENGINE', default='sqlite3')
 
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = db_url.parse(config('DATABASE_URL'))
+if DATABASE_ENGINE == 'sqlite3':
+    AZURE_DATABASE_PATH = os.path.join(os.environ.get('HOME', BASE_DIR), 'site', 'wwwroot', 'db.sqlite3')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME' :AZURE_DATABASE_PATH,
+            # 'NAME': BASE_DIR / 'infiniting_db',
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config('DB_NAME'),
+            "USER": config('DB_USER'),
+            "PASSWORD": config('DB_PASSWORD'),
+            "HOST": config('DB_HOST'),
+            "PORT": config('DB_PORT'),
+        }
+    }
 
 
 # Password validation
@@ -171,8 +193,34 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+
+
+cloudinary.config(
+    cloud_name=config('CLOUDINARY_CLOUD_NAME'),
+    api_key=config('CLOUDINARY_API_KEY'),
+    api_secret=config('CLOUDINARY_API_SECRET'),
+    secure=True
+)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET')
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'photographer_pictures'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'in-v3.mailjet.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('MAILJET_API_KEY')
+EMAIL_HOST_PASSWORD = config('MAILJET_SECRET_KEY')
+DEFAULT_FROM_EMAIL = config('COMPANY_EMAIL')
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -182,11 +230,11 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Email settings                                                                                                                 │
-DEFAULT_EMAIL = 'admin@infiniting.com'
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+# DEFAULT_EMAIL = 'admin@infiniting.com'
+# # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
 # EMAIL_HOST = 'smtp.example.com'
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
