@@ -8,9 +8,9 @@
     <div class="main-content-column">
         <div class="card-custom large-card">
             {% if photo.image %}
-                    <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
-                {% else %}
-                    <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
+                <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
+            {% else %}
+                <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
             {% endif %}
             <div class="card-text-content">
                 <h3>{{ photo.caption|default:'Без Заглавие' }}</h3>
@@ -29,81 +29,63 @@
                 <hr class="custom-hr">
 
                 <div class="interaction-buttons-container">
-                    <div class="interaction-buttons-container">
-                    <div class="interaction-buttons-container">
-                        <div>
-                            {% if form.can_like_or_rate %}
-                                {% if form.has_liked %}
-                                    <form method="POST" action="{% url 'photo-unlike' pk=photo.pk %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="icon-button icon-unlike"><i class="fa fa-thumbs-up"></i></button>
-                                    </form>
-                                    <span class="like-count">{{ photo.likes.count }}</span>
-                                {% else %}
-                                    <form method="POST" action="{% url 'photo-like' pk=photo.pk %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="icon-button icon-like"><i class="fa fa-thumbs-up"></i></button>
-                                    </form>
-                                    <span class="like-count">{{ photo.likes.count }}</span>
-                                {% endif %}
-                            {% else %}
-                                <button class="icon-button icon-disabled" disabled><i class="fa fa-thumbs-up"></i></button>
-                                <span class="like-count">{{ photo.likes.count }}</span>
-                                <span class="small-text text-muted">Влезте, за да харесате.</span>
-                            {% endif %}
-                        </div>
-
-                        <div>
-                            {% if form.can_like_or_rate %}
-                                {% if form.has_rated %}
-                                    <span class="small-text">Смени оценката:</span>
-                                    <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="icon-button icon-rate"><i class="fa fa-star"></i></button>
-                                        <span class="custom-badge custom-badge-success"><i></i> {{ form.user_rating.score }}</span>
-                                        <select name="score" class="custom-select custom-select-small">
-                                            {% for i in "12345"|make_list %}
-                                                <option value="{{ i }}" {% if form.user_rating.score == i|add:0 %}selected{% endif %}>{{ i }}</option>
-                                            {% endfor %}
-                                        </select>
-
-                                    </form>
-                                {% else %}
-                                    <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <span class="small-text">Оцени:</span>
-                                        <select name="score" class="custom-select custom-select-small">
-                                            <option value="1">1 звезда</option>
-                                            <option value="2">2 звезди</option>
-                                            <option value="3">3 звезди</option>
-                                            <option value="4">4 звезди</option>
-                                            <option value="5">5 звезди</option>
-                                        </select>
-                                        <button type="submit" class="icon-button icon-rate"><i class="fa fa-star"></i></button>
-                                    </form>
-                                {% endif %}
-                            {% else %}
-                                <button type="button" class="icon-button icon-disabled" disabled><i class="fa fa-star"></i></button>
-                                <span class="rating-count">{{ photo.ratings.count }}</span>
-                                <span class="small-text text-muted">Влезте, за да оцените.</span>
-                            {% endif %}
-                        </div>
+                    <div>
+                        {% if form.can_like_or_rate %}
+                            <form method="POST" action="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="icon-like-toggle">
+                                    <i class="{% if form.has_liked %}fas fa-thumbs-up{% else %}far fa-thumbs-up{% endif %}"></i>
+                                </button>
+                            </form>
+                            <span class="like-count">{{ photo.likes.count }}</span>
+                        {% else %}
+                            <button class="icon-button icon-disabled" disabled>
+                                <i class="far fa-thumbs-up"></i>
+                            </button>
+                            <span class="like-count">{{ photo.likes.count }}</span>
+                            <span class="small-text text-muted">Влезте, за да харесате.</span>
+                        {% endif %}
                     </div>
 
+                    <div>
+                        {% if form.can_like_or_rate %}
+                            {% if form.has_rated %}
+                                <span class="small-text">Вашата оценка:</span>
+                                <span class="icon-button icon-rate"><i class="bi bi-star-fill"></i></span>
+                                <span class="custom-badge custom-badge-success"><i></i> {{ form.user_rating.score }}</span>
+                            {% else %}
+                                <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <span class="small-text">Оцени:</span>
+                                    <select name="score" class="custom-select custom-select-small">
+                                        {% for i in "12345"|make_list %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="icon-button icon-rate"><i class="bi bi-star"></i></button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <button type="button" class="icon-button icon-disabled" disabled><i class="bi bi-star"></i></button>
+                            <span class="rating-count">{{ photo.ratings.count }}</span>
+                            <span class="small-text text-muted">Влезте, за да оцените.</span>
+                        {% endif %}
+                    </div>
+                </div>
+
                 {% if form.can_edit_delete %}
-                    <div class="actions-right">
-                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="icon-button icon-edit"><i class="fas fa-edit me-1"></i>Редактирай снимката</a>
-                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="icon-button icon-delete"><i class="fas fa-trash-alt me-1"></i>Изтрий снимката</a>
+                    <div class="text-center actions-right">
+                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="custom-button custom-button-warning"><i class="fas fa-edit me-1"></i>Редактирай снимката</a>
+                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий снимката</a>
                     </div>
                 {% endif %}
             </div>
+            <div class="text-center margin-top-large">
+                <a href="{% url 'photo-home' %}" class="custom-button custom-button-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Към всички снимки.
+                </a>
+            </div>
         </div>
-    </div>
-
-    <div class="text-center margin-top-large">
-        <a href="{% url 'photo-home' %}" class="custom-button custom-button-primary">
-            <i class="fas fa-arrow-left me-2"></i>Към всички снимки.
-        </a>
     </div>
 
     <div class="side-column">

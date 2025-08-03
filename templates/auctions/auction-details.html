@@ -89,12 +89,14 @@
                     {% endif %}
                 {% endif %}
 
+                <hr class="custom-hr">
+
                 {% if form.can_show_admin_actions and not form.auction_ended %}
-                    <div class="admin-actions">
+                    <div class="text-center admin-actions">
                         <a href="{% url 'auction-deactivate' pk=auction.pk %}" class="custom-button custom-button-danger">Деактивирай аукциона</a>
                     </div>
                 {% endif %}
-                <hr class="custom-hr">
+
                 <div class="text-center margin-top-large">
                     <a href="{% url 'auction-list' %}" class="custom-button custom-button-primary">
                         <i class="fas fa-arrow-left me-2"></i>Към всички аукциони.

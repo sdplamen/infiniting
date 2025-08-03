@@ -1,107 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Bad+Script&family=Comforter+Brush&family=Great+Vibes&family=Marck+Script&display=swap');
-body {
-    background-color: #002F5B;
-    background-size: cover;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
-    color: #D4ECFC;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-links {
-    background-color: #001535;
-    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    padding: 10px 0;
-    flex-wrap: wrap;
-}
-
-.nav-links p {
-    margin: 0 15px;
-}
-
-a:link, a:visited {
-    color: #D4ECFC;
-    text-decoration: none;
-}
-
-a {
-    padding: 1px 1px;
-    border: 5px solid transparent;
-    box-sizing: border-box;
-}
-
-a:hover {
-    color: #D4ECFC;
-    text-decoration: none;
-    text-shadow: 1px 1px 2px rgb(167, 166, 166);
-    background-color: #008999;
-    font-weight: 300;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-#logo-link:hover {
-    background-color: transparent;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-header {
-    background-color: #004899;
-    padding: 10px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.band-logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    width: 100%;
-}
-
-.band-logo #logo {
-    width: 100px;
-    height: 50px;
-    margin-right: 15px;
-    display: block;
-}
-
-.band-logo h1 {
-    font-family: "Oswald";
-    font-size: 3em;
-    font-weight: 500;
-    margin: 0;
-    color: #f8f6f6;
-}
-
-.photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
-    display: flex;
-    flex-direction: column;
-    width: 51%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.main-content {
-    max-width: 1400px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: rgba(0, 47, 91, 0.8);
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
 .messages-container {
     margin-bottom: 20px;
     padding: 10px;
 }
+
 .message-alert {
     max-width: 300px;
     padding: 10px 15px;
@@ -109,18 +10,22 @@ header {
     border-radius: 5px;
     font-weight: bold;
 }
+
 .message-alert.success {
     background-color: #4CAF50;
     color: white;
 }
+
 .message-alert.error {
     background-color: #f44336;
     color: white;
 }
+
 .message-alert.warning {
     background-color: #ff9800;
     color: white;
 }
+
 .message-alert.info {
     background-color: #2196F3;
     color: white;
@@ -196,6 +101,7 @@ header {
     color: #D4ECFC;
     box-sizing: border-box;
 }
+
 .form-field input[type="datetime-local"],
 .form-field textarea,
 .form-field select {
@@ -207,6 +113,7 @@ header {
     color: #D4ECFC;
     box-sizing: border-box;
 }
+
 .form-field input[type="file"] {
     width: 100%;
     color: #D4ECFC;
@@ -217,6 +124,7 @@ header {
     color: #A0B9D6;
     margin-top: 5px;
 }
+
 .form-field {
     color: #ff6347;
     font-size: 0.9em;
@@ -236,30 +144,37 @@ header {
     font-size: 1em;
     transition: background-color 0.3s ease;
 }
+
 .custom-button:hover {
     background-color: #006F79;
     color: white;
 }
+
 .custom-button-primary {
     background-color: #008999;
     color: white;
 }
+
 .custom-button-secondary {
     background-color: #6c757d;
     color: white;
 }
+
 .custom-button-danger {
     background-color: #dc3545;
     color: white;
 }
+
 .custom-button-success {
     background-color: #28a745;
     color: white;
 }
+
 .custom-button-warning {
-    background-color: #ffc107;
+    background-color: #ff9c07;
     color: #333;
 }
+
 .custom-button-info {
     background-color: #17a2b8;
     color: white;
@@ -283,7 +198,7 @@ header {
 }
 
 .icon-button.icon-rate i.bi-star-fill {
-    color: #0095af;
+    color: #ffc107;
 }
 
 .icon-button.icon-rate i.bi-star {
@@ -325,10 +240,12 @@ header {
     border: #1f6acd double 3px;
     border-radius: 50%;
 }
+
 .author {
     display: grid;
     justify-items: center;
 }
+
 .article-content {
     background-color: rgba(0, 21, 53, 0.5);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
@@ -338,6 +255,7 @@ header {
 .actions-right {
     display: inline-block;
 }
+
 .photo-item, .card {
     align-items: center;
     margin: 0 auto 20px auto;
@@ -347,6 +265,7 @@ header {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 .photo-item img.photo-display {
     max-width: 100%;
     height: auto;
@@ -392,103 +311,4 @@ img.photo-display {
     padding: 15px;
     padding-top: 0;
     color: #D4ECFC;
-}
-
-footer {
-    background-color: #001535;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    font-size: 0.9em;
-    justify-content: center;
-    align-items: center;
-    padding: 15px 10px;
-    margin-top: 30px;
-    color: #D4ECFC;
-}
-
-.margin-auto {
-    margin: auto;
-}
-.text-center {
-    margin: 10px auto;
-    text-align: center;
-}
-.full-width {
-    width: 100%;
-}
-.half-width {
-    width: 48%;
-}
-.flex-container {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-}
-.flex-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    min-width: 280px;
-    margin: 10px;
-}
-
-@media (max-width: 768px) {
-    .card-img-top {
-        margin-bottom: 20px;
-    }
-    .card-title {
-        margin-bottom: 10px;
-    }
-    .card-body p {
-        margin-bottom: 8px;
-    }
-    .card-body p:last-of-type {
-        margin-bottom: 15px;
-    }
-}
-
-@media (max-width: 768px) {
-    .photo-display-large.enlarged {
-        max-width: 120%;
-        align-items: center;
-        transform: scale(1.2);
-        opacity: 0.9;
-    }
-}
-
-@media (max-width: 768px) {
-    .band-logo h1 {
-        font-size: 1.5em;
-    }
-    .nav-links p {
-        margin: 5px 10px;
-        font-size: 0.9em;
-    }
-    .form-container, .card-body, .card-custom, .photo-item, .card-title {
-        align-items: flex-start;
-        max-width: 95%;
-        margin: 20px auto;
-        padding: 15px;
-    }
-
-    .main-content {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .band-logo {
-        flex-direction: column;
-    }
-    .band-logo #logo {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-    .nav-links {
-        flex-direction: column;
-    }
-    .nav-links p {
-        margin: 5px 0;
-    }
 }

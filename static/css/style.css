@@ -1,1 +1,4 @@
-@import "profil.css";
+@import "base.css";
+@import "nav-bar.css";
+@import "components.css";
+@import "layout.css";
