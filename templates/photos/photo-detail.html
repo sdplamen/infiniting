@@ -28,7 +28,7 @@
 
                 <hr class="custom-hr">
 
-                <div class="interaction-buttons-container">
+                <div class="form-field inline-form-field">
                     <div>
                         {% if form.can_like_or_rate %}
                             <form method="POST" action="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}" class="d-inline">
@@ -43,10 +43,10 @@
                                 <i class="far fa-thumbs-up"></i>
                             </button>
                             <span class="like-count">{{ photo.likes.count }}</span>
-                            <span class="small-text text-muted">Влезте, за да харесате.</span>
+                            <a href="{% url 'login' %}" class="custom-button">Влезте, за да харесате</a>
                         {% endif %}
                     </div>
-
+{#                    <hr class="custom-hr">#}
                     <div>
                         {% if form.can_like_or_rate %}
                             {% if form.has_rated %}
@@ -68,7 +68,7 @@
                         {% else %}
                             <button type="button" class="icon-button icon-disabled" disabled><i class="bi bi-star"></i></button>
                             <span class="rating-count">{{ photo.ratings.count }}</span>
-                            <span class="small-text text-muted">Влезте, за да оцените.</span>
+                            <a href="{% url 'login' %}" class="custom-button">Влезте, за да оцените</a>
                         {% endif %}
                     </div>
                 </div>

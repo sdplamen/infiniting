@@ -83,7 +83,7 @@
 }
 
 .form-field label {
-    display: block;
+    display: inline-block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #D4ECFC;
@@ -126,8 +126,9 @@
 }
 
 .form-field {
-    color: #ff6347;
-    font-size: 0.9em;
+    display: inline-block;
+    color: white;
+    font-size: 0.8em;
     list-style: none;
     padding: 0;
     margin-top: 5px;
