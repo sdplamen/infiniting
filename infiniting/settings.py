@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from decouple import config
 import cloudinary
-from django.core.wsgi import get_wsgi_application
 
 from django.urls import reverse_lazy
 
@@ -122,7 +121,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'infiniting.wsgi.application'
-application = get_wsgi_application()
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
