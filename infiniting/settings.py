@@ -125,28 +125,28 @@ WSGI_APPLICATION = 'infiniting.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASE_ENGINE = config('DATABASE_ENGINE', default='sqlite3')
-
-if DATABASE_ENGINE == 'sqlite3':
-    AZURE_DATABASE_PATH = os.path.join(os.environ.get('HOME', BASE_DIR), 'site', 'wwwroot', 'db.sqlite3')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME' :AZURE_DATABASE_PATH,
-            # 'NAME': BASE_DIR / 'infiniting_db',
-        }
+# DATABASE_ENGINE = config('DATABASE_ENGINE', default='postgresql')
+#
+# if DATABASE_ENGINE == 'sqlite3':
+#     AZURE_DATABASE_PATH = os.path.join(os.environ.get('HOME', BASE_DIR), 'site', 'wwwroot', 'db.sqlite3')
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME' :AZURE_DATABASE_PATH,
+#             # 'NAME': BASE_DIR / 'infiniting_db',
+#         }
+#     }
+# else:
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config('DB_NAME'),
+        "USER": config('DB_USER'),
+        "PASSWORD": config('DB_PASSWORD'),
+        "HOST": config('DB_HOST'),
+        "PORT": config('DB_PORT'),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": config('DB_NAME'),
-            "USER": config('DB_USER'),
-            "PASSWORD": config('DB_PASSWORD'),
-            "HOST": config('DB_HOST'),
-            "PORT": config('DB_PORT'),
-        }
-    }
+}
 
 
 # Password validation
