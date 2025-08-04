@@ -103,9 +103,17 @@
 }
 
 .form-field input[type="datetime-local"],
-.form-field textarea,
-.form-field select {
+.form-field textarea {
     width: 100%;
+    padding: 10px;
+    border: 1px solid #005F99;
+    border-radius: 5px;
+    background-color: #001021;
+    color: #D4ECFC;
+    box-sizing: border-box;
+}
+.form-field select {
+    width: 10%;
     padding: 10px;
     border: 1px solid #005F99;
     border-radius: 5px;
@@ -126,7 +134,7 @@
 }
 
 .form-field {
-    display: inline-block;
+    display: block;
     color: white;
     font-size: 0.8em;
     list-style: none;
