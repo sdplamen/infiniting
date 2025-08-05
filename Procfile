@@ -1,1 +1,1 @@
-gunicorn infiniting.wsgi:application
+web: gunicorn infiniting.wsgi
