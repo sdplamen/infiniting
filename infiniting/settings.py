@@ -130,7 +130,11 @@ DATABASE_URL = config('DATABASE_URL', default=None)
 
 if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
 else:
     DATABASES = {
@@ -139,7 +143,7 @@ else:
             "NAME": config('DB_NAME'),
             "USER": config('DB_USER'),
             "PASSWORD": config('DB_PASSWORD'),
-            "HOST": config('DB_HOST').split(','),
+            "HOST": config('DB_HOST'),
             "PORT": config('DB_PORT', cast=int),
         }
     }
