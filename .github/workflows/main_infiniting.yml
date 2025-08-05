@@ -57,8 +57,36 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check environment variables
-        run: env | grep SECRET_KEY
+      - name: Debug env vars
+        run: |
+          echo "SECRET_KEY length: ${#SECRET_KEY}"
+          echo "MAILJET_SECRET_KEY length: ${#MAILJET_SECRET_KEY}"
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          MAILJET_SECRET_KEY: ${{ secrets.MAILJET_SECRET_KEY }}
+
+      - name: Create .env file
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
+          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+          echo "MAILJET_API_KEY=${{ secrets.MAILJET_API_KEY }}" >> .env
+          echo "MAILJET_SECRET_KEY=${{ secrets.MAILJET_SECRET_KEY }}" >> .env
+          echo "COMPANY_EMAIL=${{ secrets.COMPANY_EMAIL }}" >> .env
+          echo "CSRF_COOKIE_SECURE=${{ secrets.CSRF_COOKIE_SECURE }}" >> .env
+          echo "SESSION_COOKIE_SECURE=${{ secrets.SESSION_COOKIE_SECURE }}" >> .env
+          echo "SECURE_BROWSER_XSS_FILTER=${{ secrets.SECURE_BROWSER_XSS_FILTER }}" >> .env
+          echo "SECURE_CONTENT_TYPE_NOSNIFF=${{ secrets.SECURE_CONTENT_TYPE_NOSNIFF }}" >> .env
+          echo "X_FRAME_OPTIONS=${{ secrets.X_FRAME_OPTIONS }}" >> .env
+
       - name: Run Django migrations
         run: |
           set -e
