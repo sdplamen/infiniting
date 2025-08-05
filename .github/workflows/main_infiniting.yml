@@ -10,6 +10,28 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      MAILJET_API_KEY: ${{ secrets.MAILJET_API_KEY }}
+      MAILJET_SECRET_KEY: ${{ secrets.MAILJET_SECRET_KEY }}
+      COMPANY_EMAIL: ${{ secrets.COMPANY_EMAIL }}
+      CSRF_COOKIE_SECURE: ${{ secrets.CSRF_COOKIE_SECURE }}
+      SESSION_COOKIE_SECURE: ${{ secrets.SESSION_COOKIE_SECURE }}
+      SECURE_BROWSER_XSS_FILTER: ${{ secrets.SECURE_BROWSER_XSS_FILTER }}
+      SECURE_CONTENT_TYPE_NOSNIFF: ${{ secrets.SECURE_CONTENT_TYPE_NOSNIFF }}
+      X_FRAME_OPTIONS: ${{ secrets.X_FRAME_OPTIONS }}
+      DJANGO_SETTINGS_MODULE: infiniting.settings
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,47 +41,33 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
+          set -e
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
 
-            - name: Run Django migrations
+      - name: Run Django migrations
         run: |
+          set -e
           source venv/bin/activate
-          export DJANGO_SETTINGS_MODULE=infiniting.settings
           python manage.py migrate
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          DEBUG: ${{ secrets.DEBUG }}
-          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          MAILJET_API_KEY: ${{ secrets.MAILJET_API_KEY }}
-          MAILJET_SECRET_KEY: ${{ secrets.MAILJET_SECRET_KEY }}
-          COMPANY_EMAIL: ${{ secrets.COMPANY_EMAIL }}
-          CSRF_COOKIE_SECURE: ${{ secrets.CSRF_COOKIE_SECURE }}
-          SESSION_COOKIE_SECURE: ${{ secrets.SESSION_COOKIE_SECURE }}
-          SECURE_BROWSER_XSS_FILTER: ${{ secrets.SECURE_BROWSER_XSS_FILTER }}
-          SECURE_CONTENT_TYPE_NOSNIFF: ${{ secrets.SECURE_CONTENT_TYPE_NOSNIFF }}
-          X_FRAME_OPTIONS: ${{ secrets.X_FRAME_OPTIONS }}
 
       - name: Collect static files
         run: |
+          set -e
           source venv/bin/activate
-          export DJANGO_SETTINGS_MODULE=infiniting.settings
           python manage.py collectstatic --noinput
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
