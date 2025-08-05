@@ -57,6 +57,34 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check environment variables
+        run: env | grep SECRET_KEY
+      - name: Run Django migrations
+        run: |
+          set -e
+          python -m venv venv
+          source venv/bin/activate
+          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
+          export DEBUG="${{ secrets.DEBUG }}"
+          export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
+          export DB_NAME="${{ secrets.DB_NAME }}"
+          export DB_USER="${{ secrets.DB_USER }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export DB_HOST="${{ secrets.DB_HOST }}"
+          export DB_PORT="${{ secrets.DB_PORT }}"
+          export CLOUDINARY_CLOUD_NAME="${{ secrets.CLOUDINARY_CLOUD_NAME }}"
+          export CLOUDINARY_API_KEY="${{ secrets.CLOUDINARY_API_KEY }}"
+          export CLOUDINARY_API_SECRET="${{ secrets.CLOUDINARY_API_SECRET }}"
+          export MAILJET_API_KEY="${{ secrets.MAILJET_API_KEY }}"
+          export MAILJET_SECRET_KEY="${{ secrets.MAILJET_SECRET_KEY }}"
+          export COMPANY_EMAIL="${{ secrets.COMPANY_EMAIL }}"
+          export CSRF_COOKIE_SECURE="${{ secrets.CSRF_COOKIE_SECURE }}"
+          export SESSION_COOKIE_SECURE="${{ secrets.SESSION_COOKIE_SECURE }}"
+          export SECURE_BROWSER_XSS_FILTER="${{ secrets.SECURE_BROWSER_XSS_FILTER }}"
+          export SECURE_CONTENT_TYPE_NOSNIFF="${{ secrets.SECURE_CONTENT_TYPE_NOSNIFF }}"
+          export X_FRAME_OPTIONS="${{ secrets.X_FRAME_OPTIONS }}"
+          python manage.py migrate
+
       - name: Run Django migrations
         run: |
           set -e
