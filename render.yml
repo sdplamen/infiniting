@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: infiniting-server
+    env: python
+    plan: starter  # or another plan you want
+    buildCommand: |
+      python -m venv .venv
+      source .venv/bin/activate
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn infiniting.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        fromDatabase: false
+        value: "<your-secret-key>"
+      - key: DEBUG
+        fromDatabase: false
+        value: "False"
+      - key: DB_NAME
+        fromDatabase: false
+        value: "<your-db-name>"
+      - key: DB_USER
+        fromDatabase: false
+        value: "<your-db-user>"
+      - key: DB_PASSWORD
+        fromDatabase: false
+        value: "<your-db-password>"
+      - key: DB_HOST
+        fromDatabase: false
+        value: "<your-db-host>"
+      - key: DB_PORT
+        fromDatabase: false
+        value: "<your-db-port>"
+      # Add other env vars you use similarly
