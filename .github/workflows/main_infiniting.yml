@@ -56,7 +56,7 @@ jobs:
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
-          app-name: 'infiniting'
+          app-name: 'infiniting-server'
+          resource-group: 'infiniting_social_media'
           slot-name: 'Production'
