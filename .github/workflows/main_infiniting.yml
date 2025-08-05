@@ -28,12 +28,12 @@ jobs:
 
       - name: Run Django migrations
         env:
-          DJANGO_SETTINGS_MODULE: infiniting.settings
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
         run: |
           source venv/bin/activate
           python manage.py migrate
+      
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
