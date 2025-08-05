@@ -1,1 +1,1 @@
-web: gunicorn infiniting.wsgi
+web: gunicorn infiniting.wsgi --bind=0.0.0.0:$PORT
