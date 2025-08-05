@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-import os
+import dj_database_url
 from pathlib import Path
 from decouple import config
 import cloudinary
@@ -126,28 +126,23 @@ WSGI_APPLICATION = 'infiniting.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASE_ENGINE = config('DATABASE_ENGINE', default='postgresql')
-#
-# if DATABASE_ENGINE == 'sqlite3':
-#     AZURE_DATABASE_PATH = os.path.join(os.environ.get('HOME', BASE_DIR), 'site', 'wwwroot', 'db.sqlite3')
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME' :AZURE_DATABASE_PATH,
-#             # 'NAME': BASE_DIR / 'infiniting_db',
-#         }
-#     }
-# else:
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config('DB_NAME'),
-        "USER": config('DB_USER'),
-        "PASSWORD": config('DB_PASSWORD'),
-        "HOST": config('DB_HOST'),
-        "PORT": config('DB_PORT'),
+DATABASE_URL = config('DATABASE_URL', default=None)
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config('DB_NAME'),
+            "USER": config('DB_USER'),
+            "PASSWORD": config('DB_PASSWORD'),
+            "HOST": config('DB_HOST'),
+            "PORT": config('DB_PORT'),
+        }
+    }
 
 
 # Password validation
