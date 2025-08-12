@@ -16,19 +16,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='auction',
-            name='photo',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='auction', to='photos.photo'),
-        ),
-        migrations.AddField(
-            model_name='bid',
-            name='auction',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bids', to='auctions.auction'),
-        ),
-        migrations.AddField(
-            model_name='bid',
-            name='bidder',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bids', to=settings.AUTH_USER_MODEL),
-        ),
     ]

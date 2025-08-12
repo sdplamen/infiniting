@@ -90,6 +90,13 @@ class ProfileDetailView(DetailView):
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         context['followers'] = self.object.user.followers.all()
         context['following'] = self.object.user.following.all()
+
+        # Re-add the new context variable
+        if self.request.user.is_authenticated:
+            context['is_following_photographer'] = self.request.user.following.filter(followed=self.object.user).exists()
+        else:
+            context['is_following_photographer'] = False
+
         return context
 
 class ProfileUpdateView(LoginRequiredMixin, UserIsProfileOwnerMixin, UpdateView):
@@ -131,13 +138,13 @@ def _handle_follow_action(request, pk, action):
 
     if action == 'follow':
         if request.user.following.filter(followed=user_to_handle).exists():
-            messages.info(request, f'Вие не следвате {user_to_handle.username}.')
+            messages.info(request, f'Вие вече следвате {user_to_handle.username}.')
         else:
             request.user.following.create(followed=user_to_handle)
             messages.success(request, f'Вие следвате {user_to_handle.username}.')
     elif action == 'unfollow':
         if not request.user.following.filter(followed=user_to_handle).exists():
-            messages.info(request, f'Вие вече следвате {user_to_handle.username}.')
+            messages.info(request, f'Вие не следвате {user_to_handle.username}.')
         else:
             request.user.following.filter(followed=user_to_handle).delete()
             messages.success(request, f'Вие вече не следвате {user_to_handle.username}.')
