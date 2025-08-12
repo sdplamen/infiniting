@@ -1,11 +1,14 @@
-    document.addEventListener("DOMContentLoaded", () => {
-        const scrollpos = sessionStorage.getItem('scrollpos');
-        if (scrollpos !== null) {
-            const restoreScroll = () => {
-                window.scrollTo({ top: parseInt(scrollpos, 10), behavior: 'auto' });
-                sessionStorage.removeItem('scrollpos');
-            };
-            // Wait for images or other resources to load
-            window.addEventListener('load', restoreScroll, { once: true });
-        }
-    });
+    window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('scrollpos', window.scrollY);
+    sessionStorage.setItem('scrollpath', window.location.pathname);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const scrollpos = sessionStorage.getItem('scrollpos');
+    const scrollpath = sessionStorage.getItem('scrollpath');
+    if (scrollpos && scrollpath === window.location.pathname) {
+        window.scrollTo(0, parseInt(scrollpos, 10));
+        sessionStorage.removeItem('scrollpos');
+        sessionStorage.removeItem('scrollpath');
+    }
+});

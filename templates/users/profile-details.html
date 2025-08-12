@@ -24,8 +24,41 @@
                 </div>
             {% endif %}
         </div>
-
         <div class="card-custom">
+            <h4>Следващи ме : {{ followers.count }}</h4>
+            {% if followers %}
+                <ul class="simple-list">
+                    {% for follow in followers %}
+                        <li>
+                            {% if follow.follower.photographer %}
+                                <a href="{% url 'user-profile-detail' pk=follow.follower.photographer.pk %}">{{ follow.follower.username }}</a>
+                            {% else %}
+                                {{ follow.follower.username }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Все още няма следващи ме.</p>
+            {% endif %}
+
+            <h4>Последвани : {{ following.count }}</h4>
+            {% if following %}
+                <ul class="simple-list">
+                    {% for follow in following %}
+                        <li>
+                            {% if follow.followed.photographer %}
+                                <a href="{% url 'user-profile-detail' pk=follow.followed.photographer.pk %}">{{ follow.followed.username }}</a>
+                            {% else %}
+                                {{ follow.followed.username }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Все още не следва никого.</p>
+            {% endif %}
+
             <h4>Членува в групи</h4>
             {% if photographer.user.user_groups.all %}
                 <ul class="simple-list">

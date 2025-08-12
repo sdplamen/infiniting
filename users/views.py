@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
 from users.mixins import UserIsProfileOwnerMixin
@@ -47,6 +49,8 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('user-profile-detail', kwargs={'pk': self.object.pk})
 
+from django.http import Http404
+
 class ProfileDetailView(DetailView):
     model = Photographer
     template_name = 'users/profile-details.html'
@@ -54,14 +58,38 @@ class ProfileDetailView(DetailView):
     pk_url_kwarg = 'pk'
 
     def get_object(self, queryset=None):
-        if self.kwargs.get(self.pk_url_kwarg) is None and self.request.user.is_authenticated:
-            return get_object_or_404(Photographer, user=self.request.user)
-        return super().get_object(queryset)
+        if self.kwargs.get(self.pk_url_kwarg) is None:
+            if self.request.user.is_authenticated:
+                try:
+                    return Photographer.objects.get(user=self.request.user)
+                except Photographer.DoesNotExist:
+                    return None
+            else:
+                return None
+        else:
+            try:
+                return super().get_object(queryset)
+            except Http404:
+                return None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object is None:
+            if not self.request.user.is_authenticated:
+                return redirect('login')
+            elif self.kwargs.get(self.pk_url_kwarg) is None:
+                return redirect('user-profile-create')
+            else:
+                return redirect('user-profile-list')
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['photos'] = self.object.photos.all().order_by('-uploaded_at')
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
+        context['followers'] = self.object.user.followers.all()
+        context['following'] = self.object.user.following.all()
         return context
 
 class ProfileUpdateView(LoginRequiredMixin, UserIsProfileOwnerMixin, UpdateView):
@@ -86,3 +114,44 @@ class ProfileDeleteView(LoginRequiredMixin, UserIsProfileOwnerMixin, DeleteView)
         logout(self.request)
         messages.success(self.request, f'Профилът на {user.username} беше изтрит успешно.')
         return super().form_valid(form)
+
+
+def _handle_follow_action(request, pk, action):
+    user_to_handle = get_object_or_404(UserModel, pk=pk)
+
+    if request.user == user_to_handle:
+        messages.warning(request, "You cannot follow yourself.")
+        return redirect('user-profile-detail', pk=pk)
+
+    try:
+        photographer_profile = user_to_handle.photographer
+    except Photographer.DoesNotExist:
+        messages.error(request, "Този потребител няма фотографски профил.")
+        return redirect('user-profile-list')
+
+    if action == 'follow':
+        if request.user.following.filter(followed=user_to_handle).exists():
+            messages.info(request, f"Вие не следвате {user_to_handle.username}.")
+        else:
+            request.user.following.create(followed=user_to_handle)
+            messages.success(request, f"Вие следвате {user_to_handle.username}.")
+    elif action == 'unfollow':
+        if not request.user.following.filter(followed=user_to_handle).exists():
+            messages.info(request, f"Вие вече следвате {user_to_handle.username}.")
+        else:
+            request.user.following.filter(followed=user_to_handle).delete()
+            messages.success(request, f"Вие вече не следвате {user_to_handle.username}.")
+
+    return redirect('user-profile-detail', pk=photographer_profile.pk)
+
+
+@login_required
+@require_POST
+def follow_user(request, pk):
+    return _handle_follow_action(request, pk, 'follow')
+
+
+@login_required
+@require_POST
+def unfollow_user(request, pk):
+    return _handle_follow_action(request, pk, 'unfollow')

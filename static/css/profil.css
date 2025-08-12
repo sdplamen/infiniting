@@ -49,6 +49,11 @@ a:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+.simple-list li {
+    margin-bottom: 0;
+    text-decoration: none;
+}
+
 header {
     background-color: #004899;
     padding: 10px 0;
@@ -467,8 +472,8 @@ footer {
     }
     .form-container, .card-body, .card-custom, .photo-item, .card-title {
         align-items: flex-start;
-        max-width: 95%;
-        margin: 20px auto;
+        max-width: 100%;
+        margin: 10px auto;
         padding: 15px;
     }
 
