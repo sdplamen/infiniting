@@ -120,27 +120,27 @@ def _handle_follow_action(request, pk, action):
     user_to_handle = get_object_or_404(UserModel, pk=pk)
 
     if request.user == user_to_handle:
-        messages.warning(request, "You cannot follow yourself.")
+        messages.warning(request, 'Не можеш да последваш себе си.')
         return redirect('user-profile-detail', pk=pk)
 
     try:
         photographer_profile = user_to_handle.photographer
     except Photographer.DoesNotExist:
-        messages.error(request, "Този потребител няма фотографски профил.")
+        messages.error(request, 'Този потребител няма фотографски профил.')
         return redirect('user-profile-list')
 
     if action == 'follow':
         if request.user.following.filter(followed=user_to_handle).exists():
-            messages.info(request, f"Вие не следвате {user_to_handle.username}.")
+            messages.info(request, f'Вие не следвате {user_to_handle.username}.')
         else:
             request.user.following.create(followed=user_to_handle)
-            messages.success(request, f"Вие следвате {user_to_handle.username}.")
+            messages.success(request, f'Вие следвате {user_to_handle.username}.')
     elif action == 'unfollow':
         if not request.user.following.filter(followed=user_to_handle).exists():
-            messages.info(request, f"Вие вече следвате {user_to_handle.username}.")
+            messages.info(request, f'Вие вече следвате {user_to_handle.username}.')
         else:
             request.user.following.filter(followed=user_to_handle).delete()
-            messages.success(request, f"Вие вече не следвате {user_to_handle.username}.")
+            messages.success(request, f'Вие вече не следвате {user_to_handle.username}.')
 
     return redirect('user-profile-detail', pk=photographer_profile.pk)
 
