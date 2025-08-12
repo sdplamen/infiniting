@@ -1,4 +1,6 @@
-from django.db import migrations
+from django.db import migrations, models
+import django.db.models.deletion
+from django.conf import settings
 
 class Migration(migrations.Migration):
 
@@ -7,16 +9,24 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            """
-            CREATE TABLE IF NOT EXISTS users_follow (
-                id BIGSERIAL PRIMARY KEY,
-                created_at timestamp with time zone NOT NULL,
-                follower_id bigint NOT NULL REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED,
-                followed_id bigint NOT NULL REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED,
-                CONSTRAINT users_follow_unique UNIQUE (follower_id, followed_id)
-            );
-            """,
-            reverse_sql="DROP TABLE IF EXISTS users_follow;"
-        )
+        migrations.CreateModel(
+            name='Follow',
+            fields=[
+                ('id', models.BigAutoField(primary_key=True, serialize=False)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('follower', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='following',
+                    to=settings.AUTH_USER_MODEL
+                )),
+                ('followed', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='followers',
+                    to=settings.AUTH_USER_MODEL
+                )),
+            ],
+            options={
+                'unique_together' :{('follower', 'followed')},
+            },
+        ),
     ]
