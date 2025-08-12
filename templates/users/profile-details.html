@@ -23,22 +23,23 @@
                     <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий профила</a>
                 </div>
             {% endif %}
-        </div>
-        {% if request.user.is_authenticated and request.user != photographer.user %}
-                <div class="follow-actions">
-                    {% if is_following_photographer %}
-                        <form method="post" action="{% url 'user-unfollow' pk=photographer.user.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="custom-button custom-button-danger">Не следвай.</button>
-                        </form>
-                    {% else %}
-                        <form method="post" action="{% url 'user-follow' pk=photographer.user.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="custom-button custom-button-primary">Последвай.</button>
-                        </form>
-                    {% endif %}
-                </div>
+            {% if request.user.is_authenticated and request.user != photographer.user %}
+            <div class="follow-actions">
+                {% if is_following_photographer %}
+                    <form method="post" action="{% url 'user-unfollow' pk=photographer.user.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="custom-button custom-button-danger">Не следвай.</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'user-follow' pk=photographer.user.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="custom-button custom-button-primary">Последвай.</button>
+                    </form>
+                {% endif %}
+            </div>
             {% endif %}
+        </div>
+
         <div class="card-custom">
             <h4>Следващи ме : {{ followers.count }}</h4>
             {% if followers %}
