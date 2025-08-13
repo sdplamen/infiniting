@@ -15,7 +15,7 @@
                     <h5 class="card-title"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></h5>
                     <p class="card-text">Автор: <a href="{% url 'user-profile-detail' pk=photo.author.pk %}">{{ photo.author.user.username }}</a></p>
                     <p class="card-text">Качено на: {{ photo.uploaded_at|date:"d.m.Y H:i" }}</p>
-                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="btn btn-primary">Виж детайли</a>
+{#                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="btn btn-primary">Виж детайли</a>#}
                 </div>
             </div>
         </div>
