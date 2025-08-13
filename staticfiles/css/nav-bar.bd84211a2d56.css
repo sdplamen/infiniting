@@ -48,3 +48,24 @@ header {
     margin: 0;
     color: #f8f6f6;
 }
+
+/* Darker Pagination Styles */
+.pagination .page-item .page-link {
+    background-color: #002F5B;
+    color: #ffffff;
+    border: 1px solid #003f7f;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #004080;
+    border-color: #004080;
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #002F5B;
+    color: #6c757d;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #002F5B;
+}
