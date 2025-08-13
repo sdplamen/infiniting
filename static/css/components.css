@@ -46,6 +46,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     margin: 20px auto;
     max-width: 600px;
+    color: white; /* Added to make text white */
 }
 
 .card-img-top {
@@ -303,7 +304,7 @@ img.photo-display {
     transform: scale(1.5);
     transition: transform 0.3s ease;
     border: #f7f8d9 solid 1px;
-    /*opacity: 0.9;*/
+    opacity: 0.9;
     cursor: pointer;
     z-index: 10;
     position: fixed;
