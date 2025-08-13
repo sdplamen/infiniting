@@ -8,7 +8,7 @@
     <div class="main-content-column">
         <div class="card-custom large-card">
             {% if photo.image %}
-                <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}">
+                <img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}" style="cursor: pointer;">
             {% else %}
                 <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
             {% endif %}
@@ -20,6 +20,18 @@
                 <p class="text-muted small-text">
                     Качена на: {{ photo.uploaded_at|date:"d M Y H:i" }}
                 </p>
+                <p class="text-muted small-text">
+                EXIF данни:
+                    {% if exif_data %}
+                    <ul>
+                        {% for key, value in exif_data.items %}
+                            <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                        Няма налични.
+                    {% endif %}
+
                 {% if photo.group %}
                     <p class="text-muted small-text">
                         <i class="fas fa-users me-1"></i> Група: <a href="{% url 'group-detail' pk=photo.group.pk %}">{{ photo.group.name }}</a>

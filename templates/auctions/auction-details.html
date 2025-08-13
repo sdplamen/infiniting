@@ -11,7 +11,7 @@
         <div class="card-custom large-card">
             <div class="auction-image-container">
                 {% if auction.photo.image %}
-                    <img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
+                    <img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}" style="cursor: pointer;">
                 {% else %}
                     <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
                 {% endif %}

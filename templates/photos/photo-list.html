@@ -10,9 +10,7 @@
     {% for photo in photos %}
         <div class="photo-grid-container">
             <div class="card-custom">
-                <a href="{% url 'photo-detail' pk=photo.pk %}">
-                <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}">
-                </a>
+                <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}" onclick="window.location.href='{% url 'photo-detail' pk=photo.pk %}'" style="cursor: pointer;">
                 <div class="card-body">
                     <h5 class="card-title"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></h5>
                     <p class="card-text">Автор: <a href="{% url 'user-profile-detail' pk=photo.author.pk %}">{{ photo.author.user.username }}</a></p>

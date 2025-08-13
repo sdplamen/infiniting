@@ -7,6 +7,9 @@ from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailFo
 from photos.models import Photo, Like, Rating
 from users.models import Photographer
 from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
+from django.core.files.storage import default_storage
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 
 # Create your views here.
@@ -25,6 +28,24 @@ class PhotoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        photo = self.object
+
+        exif_data = {}
+        if photo.image :
+            try :
+                with default_storage.open(photo.image.name, 'rb') as f :
+                    image = Image.open(f)
+
+                    exif_raw = image._getexif()
+
+                    if exif_raw :
+                        for tag_id, value in exif_raw.items() :
+                            tag_name = TAGS.get(tag_id, tag_id)
+                            exif_data[tag_name] = value
+            except (IOError, AttributeError, KeyError) :
+                pass
+
+        context['exif_data'] = exif_data
         context['comments'] = self.object.comments.all().order_by('-created_at')
         context['comment_form'] = CommentForm()
         context['rating_form'] = RatingForm()
