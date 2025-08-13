@@ -12,25 +12,26 @@
         </div>
     {% endif %}
 
-    <div class="sort-options-container text-center">
-        <label for="sort-by">Сортирай по:</label>
-        <select id="sort-by" onchange="location = this.value;">
-            <option value="{% url 'auction-list' %}" {% if current_sort == 'latest' %}selected{% endif %}>Най-нови</option>
-            <option value="{% url 'auction-list' %}?sort_by=likes" {% if current_sort == 'likes' %}selected{% endif %}>Харесвания на снимката</option>
-            <option value="{% url 'auction-list' %}?sort_by=rating" {% if current_sort == 'rating' %}selected{% endif %}>Рейтинг на снимката</option>
-        </select>
-    </div>
+{#    <div class="sort-options-container text-center">#}
+{#        <label for="sort-by">Сортирай по:</label>#}
+{#        <select id="sort-by" onchange="location = this.value;">#}
+{#            <option value="{% url 'auction-list' %}" {% if current_sort == 'latest' %}selected{% endif %}>Най-нови</option>#}
+{#            <option value="{% url 'auction-list' %}?sort_by=likes" {% if current_sort == 'likes' %}selected{% endif %}>Харесвания на снимката</option>#}
+{#            <option value="{% url 'auction-list' %}?sort_by=rating" {% if current_sort == 'rating' %}selected{% endif %}>Рейтинг на снимката</option>#}
+{#        </select>#}
+{#    </div>#}
 
     <div class="auction-grid-container">
         {% for auction in auctions %}
             <div class="card-custom">
 {#                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">#}
                     {% if auction.photo.image %}
+                        <a href="{% url 'auction-detail' pk=auction.pk %}">
                         <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}">
+                        </a>
                     {% else %}
                         <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
                     {% endif %}
-                </a>
                 <div class="card-text-content">
                     <h3>Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></h3>
                     <p class="text-muted small-text">
