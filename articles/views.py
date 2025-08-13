@@ -16,7 +16,7 @@ class ArticleListView(ArticleApprovalMixin, ListView):
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
     ordering = ['-created_at']
-    paginate_by = 10
+    paginate_by = 2
 
 class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article

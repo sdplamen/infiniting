@@ -18,7 +18,7 @@ class IndexView(ListView):
     template_name = 'photos/photo-list.html'
     context_object_name = 'photos'
     ordering = ['-uploaded_at']
-    paginate_by = 12
+    paginate_by = 2
 
 class PhotoDetailView(DetailView):
     model = Photo

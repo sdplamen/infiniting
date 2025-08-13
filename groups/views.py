@@ -22,7 +22,7 @@ class GroupListView(ListView):
     model = Group
     template_name = 'groups/group-list.html'
     context_object_name = 'groups'
-    # paginate_by = 5
+    paginate_by = 2
 
 class GroupDetailView(DetailView):
     model = Group
