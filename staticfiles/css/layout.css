@@ -61,7 +61,7 @@ footer {
     .photo-display-large.enlarged {
         max-width: 120%;
         align-items: center;
-        transform: scale(1.2);
+        transform: scale(1.2) translateX(-10%);
         /*opacity: 0.9;*/
     }
 }

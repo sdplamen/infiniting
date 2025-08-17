@@ -295,20 +295,19 @@ img.photo-display {
     max-width: 100%;
     height: auto;
     display: block;
-    margin: 0 auto;
+    /*margin: 0 auto;*/
 }
 
 .photo-display-large.enlarged {
     max-width: 50%;
-    transform: scale(1.5);
-    transition: transform 0.3s ease;
+    transform: scale(1.2) translate(-50%, -50%);
     border: #f7f8d9 solid 1px;
-    /*opacity: 0.9;*/
+    opacity: 0.9;
     cursor: pointer;
     z-index: 10;
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 50%;
+    top: 50%;
 }
 
 .photo-link {
