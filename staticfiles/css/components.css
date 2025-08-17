@@ -307,8 +307,8 @@ img.photo-display {
     cursor: pointer;
     z-index: 10;
     position: fixed;
-    left: 25%;
-    top: 20%;
+    left: 0;
+    top: 0;
 }
 
 .photo-link {

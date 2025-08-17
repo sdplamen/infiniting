@@ -300,15 +300,15 @@ img.photo-display {
 
 .photo-display-large.enlarged {
     max-width: 50%;
-    transform: scale(1.5);
+    transform: scale(2);
     transition: transform 0.3s ease;
     border: #f7f8d9 solid 1px;
-    /*opacity: 0.9;*/
+    opacity: 0.9;
     cursor: pointer;
     z-index: 10;
-    position: fixed;
-    left: 25%;
-    top: 20%;
+    /*position: fixed;*/
+    /*left: 0;*/
+    /*top: 0;*/
 }
 
 .photo-link {
