@@ -292,7 +292,7 @@ img.photo-display {
 }
 
 .photo-display-large {
-    max-width: 100%;
+    max-width: 50%;
     height: auto;
     display: block;
     margin: 0 auto;
@@ -309,6 +309,25 @@ img.photo-display {
     position: fixed;
     left: 50%;
     top: 50%;
+}
+
+.full-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    max-height: 80vh;
+    margin: 20px auto;
+    padding: 0;
+    overflow: hidden;
+}
+
+.full-photo {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
 }
 
 .photo-link {
