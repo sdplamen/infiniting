@@ -311,6 +311,25 @@ img.photo-display {
     top: 50%;
 }
 
+.full-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.full-photo {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
 .photo-link {
     display: block;
     line-height: 0;

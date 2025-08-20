@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static cloudinary %}
+{% block title %}Снимка: {{ photo.caption|default:'Без Заглавие' }}{% endblock %}
+{% block content %}
+    <div class="full-image-container">
+        {% if photo.image and photo.image.url %}
+            <a href="{% url 'photo-detail' photo.id %}"><img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Full Photo' }}"></a>
+        {% else %}
+            <p>No image available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -20,6 +20,16 @@ class IndexView(ListView):
     ordering = ['-uploaded_at']
     paginate_by = 2
 
+# def full_photo_view(request, photo_id):
+#     photo = get_object_or_404(Photo, id=photo_id)
+#     return render(request, 'photo-full-photo.html', {'photo': photo})
+
+class FullPhotoView(DetailView):
+    model = Photo
+    template_name = 'photos/photo-full-photo.html'
+    context_object_name = 'photo'
+
+
 class PhotoDetailView(DetailView):
     model = Photo
     template_name = 'photos/photo-detail.html'
