@@ -1,7 +1,7 @@
-
-<div class="full-image-container">
+{% load static %}
+<div class="photo-item">
     {% if photo.image and photo.image.url %}
-        <a href="{% url 'photo-detail' photo.id %}"><img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Full Photo' }}" class="full-photo"></a>
+        <a href="{% url 'photo-detail' photo.id %}"><img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Photo Display' }}" class="photo-display"></a>
     {% else %}
         <p>No image available.</p>
     {% endif %}
