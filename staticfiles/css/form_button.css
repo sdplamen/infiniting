@@ -1,0 +1,44 @@
+.form-field { display: block; color: #D4ECFC; font-size: 0.9em; list-style: none; padding: 0; margin-top: 5px; }
+.form-field label { display: block; margin-bottom: 5px; font-weight: bold; color: #D4ECFC; }
+.form-field input[type="text"], .form-field input[type="email"], .form-field input[type="password"], .form-field input[type="number"], .form-field input[type="datetime-local"], .form-field textarea, .form-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #005F99;
+    border-radius: 5px;
+    background-color: #001021;
+    color: #D4ECFC;
+    box-sizing: border-box;
+}
+.form-field input[type="text"], .form-field input[type="email"], .form-field input[type="password"], .form-field input[type="number"] { width: 50%; }
+.form-field select { width: 10%; }
+.form-field input[type="file"] { width: 100%; color: #D4ECFC; }
+.form-field .help-text { font-size: 0.8em; color: #A0B9D6; margin-top: 5px; }
+
+.custom-button {
+    background-color: #008999;
+    color: #D4ECFC;
+    margin: 5px auto;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+.custom-button:hover { background-color: #006F79; color: white; }
+.custom-button-primary { background-color: #008999; color: white; }
+.custom-button-secondary { background-color: #6c757d; color: white; }
+.custom-button-danger { background-color: #dc3545; color: white; }
+.custom-button-success { background-color: #28a745; color: white; }
+.custom-button-warning { background-color: #ffc107; color: #333; }
+.custom-button-info { background-color: #17a2b8; color: white; }
+
+.icon-button { border: none; background: none; padding: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #0095af; font-size: 1rem; }
+.icon-button i.bi { font-size: 1.2rem; line-height: 1; }
+.icon-button.icon-rate i.bi-star-fill { color: #ffc107; }
+.icon-button.icon-rate i.bi-star { color: #0095af; }
+.icon-like-toggle { border: none; background: none; padding: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.icon-like-toggle i { font-size: 1.2rem; color: #0095af; }
+.icon-like-toggle i.fas.fa-thumbs-up { color: #0095af; }
+.icon-button.icon-disabled i { color: #0095af; cursor: not-allowed; }
+.like-count, .rating-count { margin-left: 5px; font-size: 0.9rem; vertical-align: middle; }

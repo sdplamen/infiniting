@@ -1,19 +1,25 @@
 <nav class="nav-links">
-    <p><a href="{% url 'photo-home' %}">Начало</a></p>
-    <p><a href="{% url 'article-list' %}">Статии</a></p>
-    <p><a href="{% url 'auction-list' %}">Аукциони</a></p>
-    <p><a href="{% url 'group-list' %}">Групи</a></p>
+    <ul>
+        <li><a href="{% url 'photo-home' %}" title="Начало"><i class="bi bi-house"></i></a></li>
+        <li><a href="{% url 'article-list' %}" title="Статии"><i class="bi bi-book"></i></a></li>
+        <li><a href="{% url 'auction-list' %}" title="Аукциони"><i class="bi bi-cash"></i></a></li>
+        <li><a href="{% url 'group-list' %}" title="Групи"><i class="bi bi-people"></i></a></li>
 
-    {% if user.is_authenticated %}
-        <p><a href="{% url 'user-profile' %}">Профил ({{ user.username }})</a></p>
-        <p>
-            <form action="{% url 'logout' %}" method="POST" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="custom-button">Изход</button>
-            </form>
-        </p>
-    {% else %}
-        <p><a href="{% url 'login' %}">Вход</a></p>
-        <p><a href="{% url 'register' %}">Регистрация</a></p>
-    {% endif %}
+        {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'user-profile' %}" title="Профил ({{ user.username }})">
+                    <i class="bi bi-person-circle"></i>
+                </a>
+            </li>
+            <li>
+                <form action="{% url 'logout' %}" method="POST" title="Изход">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button"><i class="bi bi-box-arrow-right"></i></button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'login' %}" title="Вход"><i class="bi bi-door-open"></i></a></li>
+            <li><a href="{% url 'register' %}" title="Регистрация"><i class="bi bi-person-plus"></i></a></li>
+        {% endif %}
+    </ul>
 </nav>

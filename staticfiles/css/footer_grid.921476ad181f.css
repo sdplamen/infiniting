@@ -1,0 +1,19 @@
+footer {
+    background-color: #001535;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    font-size: 0.9em;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 10px;
+    margin-top: 30px;
+    color: #D4ECFC;
+}
+
+.photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
+    display: flex;
+    flex-direction: column;
+    width: 51%;
+    margin-left: auto;
+    margin-right: auto;
+}

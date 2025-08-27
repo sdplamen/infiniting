@@ -16,6 +16,10 @@ class AuctionListView(ListView):
     template_name = 'auctions/auction-list.html'
     context_object_name = 'auctions'
     ordering = ['-start_time']
+    paginate_by = 2
+
+    def get_queryset(self):
+        queryset = Auction.objects.all().order_by('-start_time')
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(is_active=True)

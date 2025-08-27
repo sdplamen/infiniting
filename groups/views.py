@@ -24,6 +24,9 @@ class GroupListView(ListView):
     context_object_name = 'groups'
     paginate_by = 2
 
+    def get_queryset(self):
+        return Group.objects.all().order_by('name')
+
 class GroupDetailView(DetailView):
     model = Group
     template_name = 'groups/group-detail.html'

@@ -18,6 +18,9 @@ class ArticleListView(ArticleApprovalMixin, ListView):
     ordering = ['-created_at']
     paginate_by = 2
 
+    def get_queryset(self):
+        return Article.objects.all().order_by('-created_at')
+
 class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article
     template_name = 'articles/article-detail.html'

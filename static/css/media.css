@@ -1,0 +1,23 @@
+@media (max-width: 768px) {
+    .band-logo h1 { font-size: 1.5em; }
+    .nav-links p { margin: 5px 10px; font-size: 0.9em; }
+    .form-container, .card-body, .card-custom, .photo-item, .card-title {
+        align-items: flex-start;
+        max-width: 95%;
+        margin: 20px auto;
+        padding: 15px;
+    }
+    .main-content { padding: 10px; }
+    .photo-display-large.enlarged { max-width: 120%; align-items: center; transform: scale(1.2); opacity: 0.9; }
+    .card-img-top { margin-bottom: 20px; }
+    .card-title { margin-bottom: 10px; }
+    .card-body p { margin-bottom: 8px; }
+    .card-body p:last-of-type { margin-bottom: 15px; }
+}
+
+@media (max-width: 480px) {
+    .band-logo { flex-direction: column; }
+    .band-logo #logo { margin-right: 0; margin-bottom: 10px; }
+    .nav-links { flex-direction: column; }
+    .nav-links p { margin: 5px 0; }
+}

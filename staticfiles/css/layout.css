@@ -1,102 +1,45 @@
-.photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
+header {
+    background-color: #004899;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    width: 51%;
-    margin-left: auto;
-    margin-right: auto;
+    align-items: center;
+}
+
+.band-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%;
+}
+
+.band-logo #logo {
+    width: 100px;
+    height: 50px;
+    margin-right: 15px;
+    display: block;
+}
+
+.band-logo h1 {
+    font-family: "Oswald";
+    font-size: 3em;
+    font-weight: 500;
+    margin: 0;
+    color: #f8f6f6;
+}
+
+#logo-link:hover {
+    background-color: transparent;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .main-content {
     max-width: 1400px;
-    margin: 20px auto;
     padding: 20px;
     background-color: rgba(0, 47, 91, 0.8);
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-footer {
-    background-color: #001535;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    font-size: 0.9em;
-    justify-content: center;
-    align-items: center;
-    padding: 15px 10px;
-    margin-top: 30px;
-    color: #D4ECFC;
-}
-
-.flex-container {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-}
-
-.flex-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    min-width: 280px;
-    margin: 10px;
-}
-
-@media (max-width: 768px) {
-    .card-img-top {
-        margin-bottom: 20px;
-    }
-    .card-title {
-        margin-bottom: 10px;
-    }
-    .card-body p {
-        margin-bottom: 8px;
-    }
-    .card-body p:last-of-type {
-        margin-bottom: 15px;
-    }
-}
-
-@media (max-width: 768px) {
-    .photo-display-large.enlarged {
-        max-width: 120%;
-        align-items: center;
-        transform: scale(1.2);
-        /*opacity: 0.9;*/
-    }
-}
-
-@media (max-width: 768px) {
-    .band-logo h1 {
-        font-size: 1.5em;
-    }
-    .nav-links p {
-        margin: 5px 10px;
-        font-size: 0.9em;
-    }
-    .form-container, .card-body, .card-custom, .photo-item, .card-title {
-        align-items: flex-start;
-        max-width: 95%;
-        margin: 20px auto;
-        padding: 15px;
-    }
-    .main-content {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .band-logo {
-        flex-direction: column;
-    }
-    .band-logo #logo {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-    .nav-links {
-        flex-direction: column;
-    }
-    .nav-links p {
-        margin: 5px 0;
-    }
+    margin: 10px 10px 10px 50px;
 }
