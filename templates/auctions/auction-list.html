@@ -4,13 +4,14 @@
 {% block title %}Аукциони{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">Аукциони</h2>
+    <div class="text-center">
+        <h2 class="text-center">Аукциони</h2>
 
-    {% if user.is_authenticated and user.is_staff %}
-        <div class="text-center">
-            <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
-        </div>
-    {% endif %}
+        {% if user.is_authenticated and user.is_staff %}
+            <div class="text-center">
+                <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
+            </div>
+        {% endif %}
 
 {#    <div class="sort-options-container text-center">#}
 {#        <label for="sort-by">Сортирай по:</label>#}
@@ -21,46 +22,45 @@
 {#        </select>#}
 {#    </div>#}
 
-    <div class="auction-grid-container">
-        {% for auction in auctions %}
-            <div class="card-custom">
-{#                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">#}
-                    {% if auction.photo.image %}
-                        <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}" onclick="window.location.href='{% url 'auction-detail' pk=auction.pk %}'" style="cursor: pointer;">
-                    {% else %}
-                        <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
-                    {% endif %}
-                <div class="card-text-content">
-                    <h3>Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></h3>
-                    <p class="text-muted small-text">
-                        <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
-                    </p>
-                    <p class="auction-price">
-                        Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
-                    </p>
-                    <p class="auction-price">
-                        Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
-                    </p>
-                    {% if auction.highest_bidder %}
-                        <p class="small-text">
-                            С най-висока оферта: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
+        <div class="auction-grid-container">
+            {% for auction in auctions %}
+                <div class="card-custom">
+    {#                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">#}
+                        {% if auction.photo.image %}
+                            <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}" onclick="window.location.href='{% url 'auction-detail' pk=auction.pk %}'" style="cursor: pointer;">
+                        {% else %}
+                            <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
+                        {% endif %}
+                    <div class="card-text-content">
+                        <h3>Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></h3>
+                        <p class="text-muted small-text">
+                            <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
                         </p>
-                    {% else %}
-                        <p class="small-text">Няма оферти все още.</p>
-                    {% endif %}
-                    <p class="small-text">
-                        <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
-                    </p>
-                    <div class="text-center">
-                        <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж детайли и направи оферта.</a>
+                        <p class="auction-price">
+                            Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
+                        </p>
+                        <p class="auction-price">
+                            Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
+                        </p>
+                        {% if auction.highest_bidder %}
+                            <p class="small-text">
+                                С най-висока оферта: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a>
+                            </p>
+                        {% else %}
+                            <p class="small-text">Няма оферти все още.</p>
+                        {% endif %}
+                        <p class="small-text">
+                            <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
+                        </p>
+                        <div class="text-center">
+                            <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж детайли и направи оферта.</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <p class="text-center">Все още няма активни аукциони.</p>
-        {% endfor %}
-    </div>
-    <div class="text-center">
+            {% empty %}
+                <p class="text-center">Все още няма активни аукциони.</p>
+            {% endfor %}
+
             {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
@@ -102,4 +102,5 @@
                 </nav>
             {% endif %}
         </div>
+    </div>
 {% endblock %}

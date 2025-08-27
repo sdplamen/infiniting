@@ -4,36 +4,36 @@
 {% block title %}Всички статии{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">Последни статии</h2>
-    {% if user.is_authenticated and user.photographer %}
-        <div class="text-center">
-            <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-newspaper me-2"></i>Създай нова статия</a>
-        </div>
-    {% elif user.is_authenticated and not user.photographer %}
-        <p class="text-center">За да можете да пишете статии</p>
-        <div class="message-alert info text-center">
-            <a href="{% url 'user-profile-create' %}">Създайте профил.</a>
-        </div>
-    {% endif %}
-    <div class="article-grid-container">
-        {% for article in articles %}
-            <div class="card-custom flex-item">
-{#            <a href="{% url 'article-detail' pk=article.pk %}">#}
-                <h3 class="text-center"><strong>{{ article.title }}</strong></h3>
-                <p class="text-muted small-text">
-                    <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
-                </p>
-                <p class="text-muted small-text">
-                    Публикувано на: {{ article.created_at|date:"d M Y H:i" }}
-                </p>
-                <p>{{ article.content|truncatewords:10|default:'Няма съдържание.' }}</p>
-                <a href="{% url 'article-detail' pk=article.pk %}" class="custom-button custom-button-secondary custom-button-small">Прочети повече</a>
+    <div class="text-center">
+        <h2 class="text-center">Последни статии</h2>
+        {% if user.is_authenticated and user.photographer %}
+            <div class="text-center">
+                <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-newspaper me-2"></i>Създай нова статия</a>
             </div>
-        {% empty %}
-            <p class="text-center">Все още няма публикувани статии.</p>
-        {% endfor %}
+        {% elif user.is_authenticated and not user.photographer %}
+            <p class="text-center">За да можете да пишете статии</p>
+            <div class="message-alert info text-center">
+                <a href="{% url 'user-profile-create' %}">Създайте профил.</a>
+            </div>
+        {% endif %}
+        <div class="article-grid-container">
+            {% for article in articles %}
+                <div class="card-custom flex-item">
+    {#            <a href="{% url 'article-detail' pk=article.pk %}">#}
+                    <h3 class="text-center"><strong>{{ article.title }}</strong></h3>
+                    <p class="text-muted small-text">
+                        <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
+                    </p>
+                    <p class="text-muted small-text">
+                        Публикувано на: {{ article.created_at|date:"d M Y H:i" }}
+                    </p>
+                    <p>{{ article.content|truncatewords:10|default:'Няма съдържание.' }}</p>
+                    <a href="{% url 'article-detail' pk=article.pk %}" class="custom-button custom-button-secondary custom-button-small">Прочети повече</a>
+                </div>
+            {% empty %}
+                <p class="text-center">Все още няма публикувани статии.</p>
+            {% endfor %}
 
-        <div class="text-center">
             {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
