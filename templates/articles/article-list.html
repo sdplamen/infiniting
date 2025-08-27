@@ -16,8 +16,9 @@
                 <a href="{% url 'user-profile-create' %}">Създайте профил.</a>
             </div>
         {% endif %}
-        <div class="article-grid-container">
-            {% for article in articles %}
+
+        {% for article in articles %}
+            <div class="article-grid-container">
                 <div class="card-custom flex-item">
     {#            <a href="{% url 'article-detail' pk=article.pk %}">#}
                     <h3 class="text-center"><strong>{{ article.title }}</strong></h3>
