@@ -13,7 +13,7 @@ footer {
 .photo-grid-container, .group-grid-container, .article-grid-container, .auction-grid-container {
     display: flex;
     flex-direction: column;
-    width: 51%;
+    /*width: 51%;*/
     margin-left: auto;
     margin-right: auto;
 }
