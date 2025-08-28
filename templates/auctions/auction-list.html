@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% load static %}
 
@@ -5,13 +6,11 @@
 
 {% block content %}
     <div class="text-center">
-        <h2 class="text-center">Аукциони</h2>
-
         {% if user.is_authenticated and user.is_staff %}
-            <div class="text-center">
-                <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
-            </div>
+            <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
         {% endif %}
+
+        <h2 class="text-center">Аукциони</h2>
 
 {#    <div class="sort-options-container text-center">#}
 {#        <label for="sort-by">Сортирай по:</label>#}
@@ -25,7 +24,6 @@
         {% for auction in auctions %}
             <div class="auction-grid-container">
                 <div class="card-custom">
-    {#                <a href="{% url 'auction-detail' pk=auction.pk %}" class="photo-link">#}
                         {% if auction.photo.image %}
                             <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}" onclick="window.location.href='{% url 'auction-detail' pk=auction.pk %}'" style="cursor: pointer;">
                         {% else %}
@@ -57,50 +55,50 @@
                         </div>
                     </div>
                 </div>
-            {% empty %}
+            </div>
+        {% empty %}
                 <p class="text-center">Все още няма активни аукциони.</p>
-            {% endfor %}
+        {% endfor %}
 
-            {% if is_paginated %}
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предишна</a>
+        {% if is_paginated %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предишна</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Предишна</a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">
+                                    {{ i }}
+                                    <span class="sr-only">(current)</span>
+                                </span>
                             </li>
                         {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Предишна</a>
-                            </li>
-                        {% endif %}
-
-                        {% for i in paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">
-                                        {{ i }}
-                                        <span class="sr-only">(current)</span>
-                                    </span>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следваща</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Следваща</a>
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
                             </li>
                         {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-        </div>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следваща</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Следваща</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
     </div>
 {% endblock %}

@@ -5,12 +5,11 @@
 
 {% block content %}
     <div class="text-center">
-        <h2 class="text-center">Всички групи</h2>
         {% if user.is_authenticated and user.is_staff %}
-            <div class="text-center">
-                <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
-            </div>
+            <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
         {% endif %}
+
+        <h2 class="text-center">Всички групи</h2>
 
         {% for group in groups %}
             <div class="group-grid-container">
@@ -41,6 +40,7 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
         {% empty %}
             <p class="text-center">Все още няма създадени групи.</p>
         {% endfor %}
@@ -85,6 +85,5 @@
                 </ul>
             </nav>
         {% endif %}
-        </div>
     </div>
 {% endblock %}
