@@ -20,6 +20,8 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     margin: 20px auto;
     max-width: 600px;
+    width: 700px;
+    overflow: hidden;
 }
 
 .card-img-top { max-width: 100%; height: auto; border-radius: 10px; display: block; margin-bottom: 20px; }
