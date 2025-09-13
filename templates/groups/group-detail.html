@@ -17,7 +17,7 @@
             </form>
         {% endif %}
         {% if form.can_edit_group %}
-            <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-primary">Редактирай групата</a>
+            <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-warning">Редактирай групата</a>
         {% endif %}
     {% endif %}
     <h3>Снимки в групата</h3>
