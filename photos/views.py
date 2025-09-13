@@ -20,7 +20,7 @@ class IndexView(ListView):
     ordering = ['-uploaded_at']
     paginate_by = 2
 
-    def get_context_data(self, **kwargs) :
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         paginator = context['paginator']
@@ -28,10 +28,10 @@ class IndexView(ListView):
 
         max_pages_to_show = 5
 
-        start_page = max(1, page_obj.number - max_pages_to_show // 2)
+        start_page = max(1, page_obj.number - max_pages_to_show)
         end_page = min(paginator.num_pages, start_page + max_pages_to_show - 1)
 
-        if (end_page - start_page + 1) < max_pages_to_show :
+        if (end_page - start_page + 1) < max_pages_to_show:
             start_page = max(1, end_page - max_pages_to_show + 1)
 
         context['limited_page_range'] = range(start_page, end_page + 1)
