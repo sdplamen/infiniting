@@ -88,6 +88,12 @@
                         {% endif %}
                     {% endfor %}
 
+                    {% if page_obj.paginator.num_pages > end_page %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+
                     {% if page_obj.has_next %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следваща</a>
