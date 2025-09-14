@@ -22,7 +22,7 @@ class GroupListView(ListView):
     model = Group
     template_name = 'groups/group-list.html'
     context_object_name = 'groups'
-    paginate_by = 2
+    paginate_by = 5
 
     def get_queryset(self):
         return Group.objects.all().order_by('name')
@@ -36,7 +36,7 @@ class GroupListView(ListView):
         max_pages_to_show = 5
 
         start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show - 1)
+        end_page = min(paginator.num_pages, start_page + max_pages_to_show + 1)
 
         if (end_page - start_page + 1) < max_pages_to_show :
             start_page = max(1, end_page - max_pages_to_show + 1)

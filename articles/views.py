@@ -16,7 +16,7 @@ class ArticleListView(ArticleApprovalMixin, ListView):
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
     ordering = ['-created_at']
-    paginate_by = 2
+    paginate_by = 5
 
     # def get_queryset(self):
     #     return Article.objects.all().order_by('-created_at')
@@ -30,12 +30,12 @@ class ArticleListView(ArticleApprovalMixin, ListView):
         max_pages_to_show = 5
 
         start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show - 1)
+        end_page = min(paginator.num_pages, start_page + max_pages_to_show + 1)
 
         if (end_page - start_page + 1) < max_pages_to_show :
             start_page = max(1, end_page - max_pages_to_show + 1)
 
-        context['limited_page_range'] = range(start_page, end_page + 1)
+        context['limited_page_range'] = range(start_page, end_page)
 
         return context
 

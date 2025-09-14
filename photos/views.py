@@ -18,7 +18,7 @@ class IndexView(ListView):
     template_name = 'photos/photo-list.html'
     context_object_name = 'photos'
     ordering = ['-uploaded_at']
-    paginate_by = 2
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -29,7 +29,7 @@ class IndexView(ListView):
         max_pages_to_show = 5
 
         start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show - 1)
+        end_page = min(paginator.num_pages, start_page + max_pages_to_show + 1)
 
         if (end_page - start_page + 1) < max_pages_to_show:
             start_page = max(1, end_page - max_pages_to_show + 1)
