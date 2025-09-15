@@ -27,7 +27,7 @@ class ArticleListView(ArticleApprovalMixin, ListView):
         paginator = context['paginator']
         page_obj = context['page_obj']
 
-        max_pages_to_show = 5
+        max_pages_to_show = 1
 
         start_page = max(1, page_obj.number - max_pages_to_show)
         end_page = min(paginator.num_pages, start_page + max_pages_to_show + 1)
