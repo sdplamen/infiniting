@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.paginator import Paginator
+
 
 class UserIsProfileOwnerMixin(UserPassesTestMixin):
     def test_func(self):
@@ -7,6 +9,23 @@ class UserIsProfileOwnerMixin(UserPassesTestMixin):
 
 class PaginationMixin:
     max_pages_to_show = 3
+
+    def get_paginated_queryset(self, queryset, request):
+        paginator = Paginator(queryset, self.paginate_by)
+        page = request.GET.get('page')
+
+        # try:
+        #     page_obj = paginator.page(page)
+        # except PageNotAnInteger:
+        #     page_obj = paginator.page(1)
+        # except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+        return {
+            'paginator': paginator,
+            'page_obj': page_obj,
+            'is_paginated': page_obj.has_other_pages(),
+        }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
