@@ -7,37 +7,17 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, DetailView, FormView
 from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm
-from auctions.mixins import StaffOrSuperuserRequiredMixin
+from auctions.mixins import StaffOrSuperuserRequiredMixin, PaginationMixin
 from auctions.models import Auction
 
+
 # Create your views here.
-class AuctionListView(ListView):
+class AuctionListView(PaginationMixin, ListView):
     model = Auction
     template_name = 'auctions/auction-list.html'
     context_object_name = 'auctions'
     ordering = ['-start_time']
     paginate_by = 5
-
-    # def get_queryset(self):
-    #     queryset = Auction.objects.all().order_by('-start_time')
-
-    def get_context_data(self, **kwargs) :
-        context = super().get_context_data(**kwargs)
-
-        paginator = context['paginator']
-        page_obj = context['page_obj']
-
-        max_pages_to_show = 1
-
-        start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show  + 1)
-
-        if (end_page - start_page + 1) < max_pages_to_show :
-            start_page = max(1, end_page - max_pages_to_show + 1)
-
-        context['limited_page_range'] = range(start_page, end_page + 1)
-
-        return context
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(is_active=True)

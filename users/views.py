@@ -2,14 +2,13 @@ from django.contrib.auth import get_user_model, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from photos.models import Photo
 from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
-from users.mixins import UserIsProfileOwnerMixin
+from users.mixins import UserIsProfileOwnerMixin, PaginationMixin
 from users.models import Photographer
 
 UserModel = get_user_model()
@@ -54,7 +53,7 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
 from django.http import Http404
 
 
-class ProfileDetailView(DetailView) :
+class ProfileDetailView(PaginationMixin, DetailView):
     model = Photographer
     template_name = 'users/profile-details.html'
     context_object_name = 'photographer'
@@ -86,27 +85,14 @@ class ProfileDetailView(DetailView) :
                 return redirect('user-profile-list')
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs) :
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         photos = Photo.objects.filter(author=self.object).order_by('-uploaded_at')
 
-        paginate_by = 5
-        paginator = Paginator(photos, paginate_by)
-        page_number = self.request.GET.get('page', 1)
-        page_obj = paginator.get_page(page_number)
+        pagination_context = self.get_paginated_queryset(photos, self.request)
 
-        max_pages_to_show = 1
-        start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show * 2)
-
-        if (end_page - start_page + 1) <= max_pages_to_show * 2:
-            start_page = max(1, end_page - max_pages_to_show * 2)
-
-        context['photos'] = page_obj
-        context['is_paginated'] = page_obj.has_other_pages()
-        context['page_obj'] = page_obj
-        context['paginator'] = paginator
-        context['limited_page_range'] = range(start_page, end_page + 1)
+        context.update(pagination_context)
+        context['photos'] = context['page_obj']
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         context['followers'] = self.object.user.followers.all()
         context['following'] = self.object.user.following.all()

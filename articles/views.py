@@ -4,40 +4,20 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from articles.forms import ArticleForm, ArticleDetailForm
-from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
+from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin, PaginationMixin
 from articles.models import Article
 from users.models import Photographer
 from django.core.mail import send_mail
 from django.conf import settings
 
+
 # Create your views here.
-class ArticleListView(ArticleApprovalMixin, ListView):
+class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
     model = Article
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
     ordering = ['-created_at']
     paginate_by = 5
-
-    # def get_queryset(self):
-    #     return Article.objects.all().order_by('-created_at')
-
-    def get_context_data(self, **kwargs) :
-        context = super().get_context_data(**kwargs)
-
-        paginator = context['paginator']
-        page_obj = context['page_obj']
-
-        max_pages_to_show = 1
-
-        start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, start_page + max_pages_to_show + 1)
-
-        if (end_page - start_page + 1) < max_pages_to_show :
-            start_page = max(1, end_page - max_pages_to_show + 1)
-
-        context['limited_page_range'] = range(start_page, end_page)
-
-        return context
 
 class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article
