@@ -48,6 +48,11 @@
     margin-bottom: 10px;
 }
 
+.pagination .current {
+    background-color: #08458f;
+    color: antiquewhite;
+    font-weight: 600;
+}
 .pagination .page-item .page-link {
     background-color: #0f3763;
     color: #ffffff;
