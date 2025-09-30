@@ -59,8 +59,6 @@ class ProfileDetailView(PaginationMixin, DetailView):
     context_object_name = 'photographer'
     pk_url_kwarg = 'pk'
 
-    paginate_by = 10
-
     def get_object(self, queryset=None):
         if self.kwargs.get(self.pk_url_kwarg) is None:
             if self.request.user.is_authenticated:
@@ -78,21 +76,19 @@ class ProfileDetailView(PaginationMixin, DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object is None:
-            if not self.request.user.is_authenticated:
+        if self.object is None :
+            if not self.request.user.is_authenticated :
                 return redirect('login')
-            elif self.kwargs.get(self.pk_url_kwarg) is None:
+            elif self.kwargs.get(self.pk_url_kwarg) is None :
                 return redirect('user-profile-create')
-            else:
+            else :
                 return redirect('user-profile-list')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         photos = Photo.objects.filter(author=self.object).order_by('-uploaded_at')
-
         pagination_context = self.get_paginated_queryset(photos, self.request)
-
         context.update(pagination_context)
         context['photos'] = context['page_obj']
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
