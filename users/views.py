@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
@@ -51,49 +52,78 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
 
 from django.http import Http404
 
-class ProfileDetailView(DetailView):
+
+class ProfileDetailView(DetailView) :
     model = Photographer
     template_name = 'users/profile-details.html'
     context_object_name = 'photographer'
     pk_url_kwarg = 'pk'
 
-    def get_object(self, queryset=None):
-        if self.kwargs.get(self.pk_url_kwarg) is None:
-            if self.request.user.is_authenticated:
-                try:
+    # Define how many photos per page and how many page links to show
+    PHOTOS_PER_PAGE = 5  # Example: 5 photos per page
+    MAX_PAGES_TO_SHOW = 2  # Example: show current page + 2 pages on each side (max 5 links total)
+
+    # ... (get_object and dispatch methods remain unchanged) ...
+    def get_object(self, queryset=None) :
+        if self.kwargs.get(self.pk_url_kwarg) is None :
+            if self.request.user.is_authenticated :
+                try :
                     return Photographer.objects.get(user=self.request.user)
-                except Photographer.DoesNotExist:
+                except Photographer.DoesNotExist :
                     return None
-            else:
+            else :
                 return None
-        else:
-            try:
+        else :
+            try :
                 return super().get_object(queryset)
-            except Http404:
+            except Http404 :
                 return None
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) :
         self.object = self.get_object()
-        if self.object is None:
-            if not self.request.user.is_authenticated:
+        if self.object is None :
+            if not self.request.user.is_authenticated :
                 return redirect('login')
-            elif self.kwargs.get(self.pk_url_kwarg) is None:
+            elif self.kwargs.get(self.pk_url_kwarg) is None :
                 return redirect('user-profile-create')
-            else:
+            else :
                 return redirect('user-profile-list')
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) :
         context = super().get_context_data(**kwargs)
-        context['photos'] = self.object.photos.all().order_by('-uploaded_at')
+        photo_list = self.object.photos.all().order_by('-uploaded_at')
+        paginator = Paginator(photo_list, self.PHOTOS_PER_PAGE)
+        page = self.request.GET.get('page')
+
+        # try:
+        #     page_obj = paginator.page(page)
+        # except PageNotAnInteger :
+        #     page_obj = paginator.page(1)
+        # except EmptyPage :
+        page_obj = paginator.page(paginator.num_pages)
+
+        max_pages_to_show = self.MAX_PAGES_TO_SHOW
+        start_page = max(1, page_obj.number - max_pages_to_show)
+        end_page = min(paginator.num_pages, page_obj.number + max_pages_to_show)
+        if (end_page - start_page + 1) < (2 * max_pages_to_show + 1) :
+            start_page = max(1, end_page - (2 * max_pages_to_show))
+            end_page = min(paginator.num_pages, start_page + (2 * max_pages_to_show))
+
+        context['photos'] = page_obj.object_list
+        context['page_obj'] = page_obj
+        context['is_paginated'] = paginator.num_pages > 1
+        context['limited_page_range'] = range(start_page, end_page + 1)
+        context['end_page'] = end_page
+
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         context['followers'] = self.object.user.followers.all()
         context['following'] = self.object.user.following.all()
 
-        # Re-add the new context variable
-        if self.request.user.is_authenticated:
-            context['is_following_photographer'] = self.request.user.following.filter(followed=self.object.user).exists()
+        if self.request.user.is_authenticated :
+            context['is_following_photographer'] = self.request.user.following.filter(
+                followed=self.object.user).exists()
         else:
             context['is_following_photographer'] = False
 
