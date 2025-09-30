@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from photos.models import Photo
 from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
 from users.mixins import UserIsProfileOwnerMixin
 from users.models import Photographer
@@ -59,74 +60,62 @@ class ProfileDetailView(DetailView) :
     context_object_name = 'photographer'
     pk_url_kwarg = 'pk'
 
-    # Define how many photos per page and how many page links to show
-    PHOTOS_PER_PAGE = 5  # Example: 5 photos per page
-    MAX_PAGES_TO_SHOW = 2  # Example: show current page + 2 pages on each side (max 5 links total)
-
-    # ... (get_object and dispatch methods remain unchanged) ...
-    def get_object(self, queryset=None) :
-        if self.kwargs.get(self.pk_url_kwarg) is None :
-            if self.request.user.is_authenticated :
-                try :
+    def get_object(self, queryset=None):
+        if self.kwargs.get(self.pk_url_kwarg) is None:
+            if self.request.user.is_authenticated:
+                try:
                     return Photographer.objects.get(user=self.request.user)
-                except Photographer.DoesNotExist :
+                except Photographer.DoesNotExist:
                     return None
-            else :
+            else:
                 return None
-        else :
-            try :
+        else:
+            try:
                 return super().get_object(queryset)
-            except Http404 :
+            except Http404:
                 return None
 
-    def dispatch(self, request, *args, **kwargs) :
+    def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object is None :
-            if not self.request.user.is_authenticated :
+        if self.object is None:
+            if not self.request.user.is_authenticated:
                 return redirect('login')
-            elif self.kwargs.get(self.pk_url_kwarg) is None :
+            elif self.kwargs.get(self.pk_url_kwarg) is None:
                 return redirect('user-profile-create')
-            else :
+            else:
                 return redirect('user-profile-list')
-
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) :
         context = super().get_context_data(**kwargs)
-        photo_list = self.object.photos.all().order_by('-uploaded_at')
-        paginator = Paginator(photo_list, self.PHOTOS_PER_PAGE)
-        page = self.request.GET.get('page')
+        photos = Photo.objects.filter(author=self.object).order_by('-uploaded_at')
 
-        # try:
-        #     page_obj = paginator.page(page)
-        # except PageNotAnInteger :
-        #     page_obj = paginator.page(1)
-        # except EmptyPage :
-        page_obj = paginator.page(paginator.num_pages)
+        paginate_by = 5
+        paginator = Paginator(photos, paginate_by)
+        page_number = self.request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
 
-        max_pages_to_show = self.MAX_PAGES_TO_SHOW
+        max_pages_to_show = 1
         start_page = max(1, page_obj.number - max_pages_to_show)
-        end_page = min(paginator.num_pages, page_obj.number + max_pages_to_show)
-        if (end_page - start_page + 1) < (2 * max_pages_to_show + 1) :
-            start_page = max(1, end_page - (2 * max_pages_to_show))
-            end_page = min(paginator.num_pages, start_page + (2 * max_pages_to_show))
+        end_page = min(paginator.num_pages, start_page + max_pages_to_show * 2)
 
-        context['photos'] = page_obj.object_list
+        if (end_page - start_page + 1) <= max_pages_to_show * 2:
+            start_page = max(1, end_page - max_pages_to_show * 2)
+
+        context['photos'] = page_obj
+        context['is_paginated'] = page_obj.has_other_pages()
         context['page_obj'] = page_obj
-        context['is_paginated'] = paginator.num_pages > 1
+        context['paginator'] = paginator
         context['limited_page_range'] = range(start_page, end_page + 1)
-        context['end_page'] = end_page
-
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         context['followers'] = self.object.user.followers.all()
         context['following'] = self.object.user.following.all()
 
-        if self.request.user.is_authenticated :
+        if self.request.user.is_authenticated:
             context['is_following_photographer'] = self.request.user.following.filter(
                 followed=self.object.user).exists()
         else:
             context['is_following_photographer'] = False
-
         return context
 
 class ProfileUpdateView(LoginRequiredMixin, UserIsProfileOwnerMixin, UpdateView):
