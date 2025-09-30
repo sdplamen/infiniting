@@ -59,6 +59,8 @@ class ProfileDetailView(PaginationMixin, DetailView):
     context_object_name = 'photographer'
     pk_url_kwarg = 'pk'
 
+    paginate_by = 10
+
     def get_object(self, queryset=None):
         if self.kwargs.get(self.pk_url_kwarg) is None:
             if self.request.user.is_authenticated:
