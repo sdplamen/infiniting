@@ -9,6 +9,7 @@ class UserIsProfileOwnerMixin(UserPassesTestMixin):
 
 class PaginationMixin:
     max_pages_to_show = 3
+    paginate_by = 10
 
     def get_paginated_queryset(self, queryset, request):
         paginator = Paginator(queryset, self.paginate_by)

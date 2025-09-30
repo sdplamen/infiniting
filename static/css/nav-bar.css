@@ -38,6 +38,16 @@
     border-radius: 5px;
 }
 
+.pagination .step-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .pagination .page-item .page-link {
     background-color: #0f3763;
     color: #ffffff;
