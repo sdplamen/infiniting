@@ -7,8 +7,9 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, DetailView, FormView
 from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm
-from auctions.mixins import StaffOrSuperuserRequiredMixin, PaginationMixin
+from auctions.mixins import StaffOrSuperuserRequiredMixin
 from auctions.models import Auction
+from users.mixins import PaginationMixin
 
 
 # Create your views here.
@@ -30,6 +31,9 @@ class AuctionListView(PaginationMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        pagination_data = self.get_paginated_queryset(queryset, self.request)
+        context.update(pagination_data)
         context['sort_options'] = ['latest', 'rating', 'likes']
         context['current_sort'] = self.request.GET.get('sort_by', 'latest')
         return context

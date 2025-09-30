@@ -4,11 +4,12 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from articles.forms import ArticleForm, ArticleDetailForm
-from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin, PaginationMixin
+from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
 from articles.models import Article
 from users.models import Photographer
 from django.core.mail import send_mail
 from django.conf import settings
+from users.mixins import PaginationMixin
 
 
 # Create your views here.
@@ -18,6 +19,13 @@ class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
     context_object_name = 'articles'
     ordering = ['-created_at']
     paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        pagination_data = self.get_paginated_queryset(queryset, self.request)
+        context.update(pagination_data)
+        return context
 
 class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article

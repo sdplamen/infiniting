@@ -127,6 +127,9 @@
                     <p class="text-center">Този фотограф все още не е качил снимки.</p>
                 {% endfor %}
             </div>
+            {% if is_paginated %}
+                {% include 'paginator.html' %}
+            {% endif %}
         </section>
     </div>
     <div class="profile-content-column">

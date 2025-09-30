@@ -3,8 +3,9 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from groups.forms import GroupCreateForm, GroupDetailForm
-from groups.mixins import GroupMemberRequiredMixin, PaginationMixin
+from groups.mixins import GroupMemberRequiredMixin
 from groups.models import Group
+from users.mixins import PaginationMixin
 
 
 # Create your views here.
@@ -29,7 +30,14 @@ class GroupListView(PaginationMixin, ListView):
     def get_queryset(self):
         return Group.objects.all().order_by('name')
 
-class GroupDetailView(DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        pagination_data = self.get_paginated_queryset(queryset, self.request)
+        context.update(pagination_data)
+        return context
+
+class GroupDetailView(PaginationMixin, DetailView):
     model = Group
     template_name = 'groups/group-detail.html'
     context_object_name = 'group'
@@ -37,7 +45,10 @@ class GroupDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['photos'] = self.object.photos.all().order_by('-uploaded_at')
+        photos = self.object.photos.all().order_by('-uploaded_at')
+        pagination_data = self.get_paginated_queryset(photos, self.request)
+        context.update(pagination_data)
+        context['photos'] = context['page_obj']
         context['form'] = GroupDetailForm(group=self.object, user=self.request.user)
         return context
 

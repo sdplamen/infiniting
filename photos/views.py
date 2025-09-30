@@ -6,10 +6,11 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, D
 from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailForm
 from photos.models import Photo, Like, Rating
 from users.models import Photographer
-from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin, PaginationMixin
+from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
 from django.core.files.storage import default_storage
 from PIL import Image
 from PIL.ExifTags import TAGS
+from users.mixins import PaginationMixin
 
 
 # Create your views here.
@@ -19,6 +20,13 @@ class IndexView(PaginationMixin, ListView):
     context_object_name = 'photos'
     ordering = ['-uploaded_at']
     paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        pagination_data = self.get_paginated_queryset(queryset, self.request)
+        context.update(pagination_data)
+        return context
 
 # def full_photo_view(request, photo_id):
 #     photo = get_object_or_404(Photo, id=photo_id)
