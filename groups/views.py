@@ -95,7 +95,7 @@ class GroupApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
-        if not group.is_approved:
+        if not group.is_approved and group.author:
             group.is_approved = True
             group.save()
             subject = f'Вашата група {group.name} беше одобрена за ползване!'
