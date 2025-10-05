@@ -5,8 +5,13 @@
 
 {% block content %}
     <div class="text-center">
-        {% if user.is_authenticated and user.is_staff %}
+        {% if user.is_authenticated and user.photographer %}
             <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
+        {% elif user.is_authenticated and not user.photographer %}
+            <p class="text-center">За да можете да създадете група</p>
+            <div class="message-alert info text-center">
+                <a href="{% url 'user-profile-create' %}">Създайте профил.</a>
+            </div>
         {% endif %}
 
         <h2 class="text-center">Всички групи</h2>

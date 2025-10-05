@@ -7,6 +7,7 @@ urlpatterns = [
     path('<int:pk>/', views.GroupDetailView.as_view(), name='group-detail'),
     path('<int:pk>/edit/', views.GroupUpdateView.as_view(), name='group-edit'),
     path('<int:pk>/delete/', views.GroupDeleteView.as_view(), name='group-delete'),
+    path('<int:pk>/approve/', views.GroupApproveView.as_view(), name='group-approve'),
     path('<int:pk>/join/', views.join_group, name='group-join'),
     path('<int:pk>/leave/', views.leave_group, name='group-leave'),
 ]

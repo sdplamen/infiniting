@@ -1,6 +1,13 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 
+class GroupApprovalMixin:
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.has_perm('groups.can_approve_groups'):
+            queryset = queryset.filter(is_approved=True)
+        return queryset
+
 class GroupMemberRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user in self.get_object().members.all()

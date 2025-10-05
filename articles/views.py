@@ -13,7 +13,7 @@ from users.mixins import PaginationMixin
 
 
 # Create your views here.
-class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
+class ArticleListView(PaginationMixin, ListView):
     model = Article
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
@@ -27,7 +27,7 @@ class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
         context.update(pagination_data)
         return context
 
-class ArticleDetailView(ArticleApprovalMixin, DetailView):
+class ArticleDetailView(DetailView):
     model = Article
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'

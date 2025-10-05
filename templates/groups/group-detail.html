@@ -19,6 +19,14 @@
         {% if form.can_edit_group %}
             <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-warning">Редактирай групата</a>
         {% endif %}
+        {% if form.can_user_approve %}
+            <div class="groups-right">
+                <form action="{% url 'group-approve' group.pk %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button custom-button-success">Потвърди групата</button>
+                </form>
+            </div>
+        {% endif %}
     {% endif %}
     <h3>Снимки в групата</h3>
     <div>

@@ -28,3 +28,8 @@ class GroupDetailForm(forms.Form):
         if not self.user or not self.user.is_authenticated:
             return False
         return self.user.is_staff
+
+    def can_user_approve(self):
+        if not self.user or not self.user.is_authenticated:
+            return False
+        return not self.group.is_approved and (self.user.is_staff or self.user.is_superuser)

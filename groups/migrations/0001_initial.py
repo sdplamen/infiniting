@@ -20,7 +20,11 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100, unique=True)),
                 ('description', models.TextField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('is_approved', models.BooleanField(default=False)),
                 ('members', models.ManyToManyField(related_name='user_groups', to=settings.AUTH_USER_MODEL)),
             ],
+            options={
+                'permissions': [('can_approve_groups', 'Can approve new groups')],
+            },
         ),
     ]

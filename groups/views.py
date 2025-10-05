@@ -1,6 +1,9 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from groups.forms import GroupCreateForm, GroupDetailForm
 from groups.mixins import GroupMemberRequiredMixin
@@ -85,3 +88,22 @@ def join_group(request, pk):
 
 def leave_group(request, pk):
     return _handle_group_membership_change(request, pk, 'remove')
+
+class GroupApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
+
+    def post(self, request, pk):
+        group = get_object_or_404(Group, pk=pk)
+        if not group.is_approved:
+            group.is_approved = True
+            group.save()
+            subject = f'Вашата група {group.name} беше одобрена за ползване!'
+            message = f'Скъпи {group.author.user.username},\n\nВашата група {group.name} беше одобрена и вече може да бъде обогатявана в Infiniting.\n\nБлагодарим ви за съдействието!\n\nПоздрави,\nЕкипът на Infiniting'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [group.author.user.email]
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        return redirect('group-list')
+
+    def get(self, request, pk) :
+        return redirect('group-list')

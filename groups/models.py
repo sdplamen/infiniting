@@ -8,6 +8,10 @@ class Group(models.Model):
     description = models.TextField(blank=True, null=True)
     members = models.ManyToManyField(User, related_name='user_groups')
     created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    class Meta:
+        permissions = [('can_approve_groups', 'Can approve new groups')]
 
     def __str__(self):
         return self.name
