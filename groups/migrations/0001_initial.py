@@ -22,10 +22,10 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('is_approved', models.BooleanField(default=False)),
                 ('members', models.ManyToManyField(related_name='user_groups', to=settings.AUTH_USER_MODEL)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_groups',to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_groups', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'permissions': [('can_approve_groups', 'Can approve new groups')],
+                'permissions' :[('can_approve_groups', 'Can approve new groups')],
             },
         ),
     ]
