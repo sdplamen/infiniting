@@ -101,7 +101,7 @@ class GroupApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
             subject = f'Вашата група {group.name} беше одобрена за ползване!'
             message = f'Скъпи {group.author.username},\n\nВашата група {group.name} беше одобрена и вече може да бъде обогатявана в Infiniting.\n\nБлагодарим ви за съдействието!\n\nПоздрави,\nЕкипът на Infiniting'
             from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [group.author.user.email]
+            recipient_list = [group.author.email]
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
         return redirect('group-list')
 
