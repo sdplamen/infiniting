@@ -15,7 +15,7 @@ class Photo(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Photo by {self.author.user.username} - {self.caption if self.caption else self.id}'
+        return f'Photo by {self.author} - {self.caption or self.id}'
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
@@ -47,4 +47,4 @@ class Rating(models.Model):
         unique_together = ('user', 'photo')
 
     def __str__(self):
-        return f'{self.user.user.username} rated {self.photo.id} with {self.score}'
+        return f'{self.user} rated {self.photo.id} with {self.score}'
