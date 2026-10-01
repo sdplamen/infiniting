@@ -67,3 +67,6 @@ What This Means :
   * To build a mobile app? We can start by thinking about the features of the app and how they would map to the existing API endpoints.
   * To create a new frontend for your web app? Setting up a project with a modern JavaScript framework and how to connect it to your API.
   * To improve the existing API? Looking for areas to improve, for example, by adding more advanced features like filtering, searching, or pagination to your API endpoints.
+
+**Live Demo:** [https://infiniting.onrender.com](https://infiniting.onrender.com)
+Note: Hosted on Render's free tier. If the link takes ~30 seconds to load initially, it is waking up the server instance.
