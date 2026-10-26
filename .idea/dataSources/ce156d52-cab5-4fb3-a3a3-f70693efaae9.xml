@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="infiniting">
-  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.54">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.55">
     <root id="1">
       <DateStyle>mdy</DateStyle>
       <Grants>1||-9223372036854775808|c|G
@@ -8582,7 +8582,7 @@ true posixrules
       <OwnerName>plamen</OwnerName>
     </table>
     <column id="558" parent="535" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2801</StateNumber>
@@ -8664,7 +8664,7 @@ true posixrules
       <UnderlyingIndexId>22357</UnderlyingIndexId>
     </key>
     <column id="569" parent="536" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2807</StateNumber>
@@ -8789,7 +8789,7 @@ true posixrules
       <UnderlyingIndexId>22480</UnderlyingIndexId>
     </key>
     <column id="586" parent="537" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2807</StateNumber>
@@ -8872,7 +8872,7 @@ true posixrules
       <UnderlyingIndexId>22486</UnderlyingIndexId>
     </key>
     <column id="597" parent="538" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -8933,7 +8933,7 @@ true posixrules
       <UnderlyingIndexId>22517</UnderlyingIndexId>
     </key>
     <column id="604" parent="539" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -9015,7 +9015,7 @@ permission_id</ColNames>
       <UnderlyingIndexId>22252</UnderlyingIndexId>
     </key>
     <column id="615" parent="540" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -9095,7 +9095,7 @@ default</CollationNames>
       <UnderlyingIndexId>22243</UnderlyingIndexId>
     </key>
     <column id="625" parent="541" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -9218,7 +9218,7 @@ default</CollationNames>
       <UnderlyingIndexId>22512</UnderlyingIndexId>
     </key>
     <column id="641" parent="542" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -9300,7 +9300,7 @@ group_id</ColNames>
       <UnderlyingIndexId>22267</UnderlyingIndexId>
     </key>
     <column id="652" parent="543" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2793</StateNumber>
@@ -9388,7 +9388,7 @@ permission_id</ColNames>
       <StateNumber>2795</StateNumber>
     </check>
     <column id="664" parent="544" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2795</StateNumber>
@@ -9490,7 +9490,7 @@ permission_id</ColNames>
       <UnderlyingIndexId>22302</UnderlyingIndexId>
     </key>
     <column id="678" parent="545" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2792</StateNumber>
@@ -9548,7 +9548,7 @@ pg_catalog</CollationParentNames>
       <UnderlyingIndexId>22201</UnderlyingIndexId>
     </key>
     <column id="685" parent="546" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2791</StateNumber>
@@ -9652,7 +9652,7 @@ pg_catalog</CollationParentNames>
       <UnderlyingIndexId>22525</UnderlyingIndexId>
     </key>
     <column id="698" parent="548" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2803</StateNumber>
@@ -9738,7 +9738,7 @@ pg_catalog</CollationParentNames>
       <UnderlyingIndexId>22373</UnderlyingIndexId>
     </key>
     <column id="709" parent="549" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2803</StateNumber>
@@ -9820,7 +9820,7 @@ user_id</ColNames>
       <UnderlyingIndexId>22382</UnderlyingIndexId>
     </key>
     <column id="720" parent="550" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2805</StateNumber>
@@ -9903,7 +9903,7 @@ user_id</ColNames>
       <UnderlyingIndexId>22408</UnderlyingIndexId>
     </key>
     <column id="731" parent="551" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2805</StateNumber>
@@ -9992,7 +9992,7 @@ photo_id</ColNames>
       <UnderlyingIndexId>22446</UnderlyingIndexId>
     </key>
     <column id="743" parent="552" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2805</StateNumber>
@@ -10080,7 +10080,7 @@ photo_id</ColNames>
       <UnderlyingIndexId>22400</UnderlyingIndexId>
     </key>
     <column id="755" parent="553" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2805</StateNumber>
@@ -10176,7 +10176,7 @@ photo_id</ColNames>
       <UnderlyingIndexId>22460</UnderlyingIndexId>
     </key>
     <column id="768" parent="554" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2840</StateNumber>
@@ -10238,7 +10238,7 @@ photo_id</ColNames>
       <UnderlyingIndexId>22588</UnderlyingIndexId>
     </key>
     <column id="776" parent="555" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2840</StateNumber>
@@ -10338,7 +10338,7 @@ photo_id</ColNames>
       <UnderlyingIndexId>22558</UnderlyingIndexId>
     </key>
     <column id="789" parent="556" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2799</StateNumber>
@@ -10427,7 +10427,7 @@ followed_id</ColNames>
       <UnderlyingIndexId>22337</UnderlyingIndexId>
     </key>
     <column id="801" parent="557" name="id">
-      <IdentityKind>by-default</IdentityKind>
+      <GeneratedKind>unknown-migrated</GeneratedKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2799</StateNumber>
