@@ -1,0 +1,20 @@
+# secrets: pass these at runtime with --env-file, never bake into the image
+.env
+.env.*
+
+# local environments, VCS and IDE files
+venv/
+.venv/
+.git/
+.github/
+.idea/
+.DS_Store
+__pycache__/
+*.pyc
+
+# generated / local-only data
+staticfiles/
+server.log
+infiniting_db
+photographer_pictures/
+trigger.txt
