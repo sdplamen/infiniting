@@ -6,6 +6,18 @@ body {
     color: #D4ECFC;
     margin: 0;
     padding: 0;
+    /* sticky footer: page is at least one screen tall, main grows to fill it */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body > main {
+    flex: 1 0 auto;
+}
+
+body > footer {
+    flex-shrink: 0;
 }
 
 a:link, a:visited {

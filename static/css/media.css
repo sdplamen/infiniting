@@ -16,8 +16,9 @@
 }
 
 @media (max-width: 480px) {
-    .band-logo { flex-direction: column; }
+    .band-logo { display: flex; flex-direction: column; align-items: center; }
+    .band-logo #logo-link { justify-self: auto; }
     .band-logo #logo { margin-right: 0; margin-bottom: 10px; }
-    .nav-links { flex-direction: column; }
+    .nav-links ul { gap: 4px; }
     .nav-links p { margin: 5px 0; }
 }

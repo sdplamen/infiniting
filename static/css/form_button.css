@@ -42,3 +42,15 @@
 .icon-like-toggle i.fas.fa-thumbs-up { color: #0095af; }
 .icon-button.icon-disabled i { color: #0095af; cursor: not-allowed; }
 .like-count, .rating-count { margin-left: 5px; font-size: 0.9rem; vertical-align: middle; }
+
+/* login / registration: centre every item, button lined up with the inputs */
+.form-centered,
+.form-centered .form-field,
+.form-centered .form-field label,
+.form-centered .help-text { text-align: center; }
+.form-centered .form-field input,
+.form-centered .form-field textarea,
+.form-centered .form-field select { display: block; margin-left: auto; margin-right: auto; }
+.form-centered .help-text ul { list-style-position: inside; padding-left: 0; }
+.form-centered .message-alert { margin-left: auto; margin-right: auto; }
+.form-centered .custom-button { display: block; width: 50%; margin: 20px auto 10px; }

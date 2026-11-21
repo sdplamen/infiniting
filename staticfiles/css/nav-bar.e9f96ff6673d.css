@@ -1,0 +1,119 @@
+.nav-links {
+    background-color: #001535;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    border-radius: 12px;
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 32px);
+    z-index: 1000;
+}
+
+.nav-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-links li {
+    margin: 0;
+}
+
+.nav-links li form {
+    margin: 0;
+}
+
+.nav-links li a i {
+    color: #f8f6f6;
+    text-decoration: none;
+    font-size: 1.2em;
+    vertical-align: middle;
+    display: block;
+    padding: 2px 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* undo the global `a` and `.custom-button` styles inside the nav bar:
+   their 5px border, padding and margins made the bar taller, and the
+   inline <a> wrapping a block <i> painted two thin hover slivers */
+.nav-links li a,
+.nav-links li .custom-button {
+    display: block;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    line-height: 1;
+}
+
+.nav-links li .custom-button i {
+    color: #f8f6f6;
+    font-size: 1.2em;
+    display: block;
+    padding: 2px 5px;
+}
+
+.nav-links li a:hover,
+.nav-links li .custom-button:hover {
+    background-color: #004899;
+    border-radius: 5px;
+    text-shadow: none;
+}
+
+/* keep page content and footer from hiding behind the fixed bottom bar */
+body {
+    padding-bottom: 75px;
+}
+
+.pagination .step-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #0f3763;
+    max-width: 400px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.pagination .current {
+    background-color: #08458f;
+    color: antiquewhite;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+.pagination .page-item .page-link {
+    background-color: #0f3763;
+    color: #ffffff;
+    border: 1px solid #003f7f;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #08458f;
+    border-color: #004080;
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #003f7f;
+    color: #6c757d;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #003f7f;
+}
