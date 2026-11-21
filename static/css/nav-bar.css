@@ -77,7 +77,16 @@ body {
     padding-bottom: 75px;
 }
 
+/* shared by every list page via templates/paginator.html */
+.pagination {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .pagination .step-links {
+    gap: 8px;
+    flex-wrap: wrap;
     display: flex;
     flex-direction: row;
     align-items: center;
