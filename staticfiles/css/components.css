@@ -30,6 +30,14 @@
 .card-body p { margin-bottom: 10px; }
 .card-body p:last-of-type { margin-bottom: 10px; }
 .card-body .btn { margin-top: 5px; }
+
+/* Photo cards: tighter spacing around the title */
+.card-custom:has(> .photo-frame + .card-body) { padding-bottom: 12px; }
+/* The frame carries the gap so the author badge sits on the image corner */
+.photo-frame { margin-bottom: 10px; }
+.photo-frame .card-img-top, .photo-frame .photo-display { margin-bottom: 0; }
+.photo-frame + .card-body,
+.photo-frame + .card-body .card-title { margin: 0 auto; padding: 0; }
 .article-content { background-color: rgba(0, 21, 53, 0.5); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); margin: 40px auto; }
 .actions-right { display: inline-block; }
 .photo-item, .card {
