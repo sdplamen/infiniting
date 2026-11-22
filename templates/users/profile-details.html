@@ -19,8 +19,8 @@
 
             {% if form.can_edit_delete_profile %}
                 <div class="profile-actions">
-                    <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="custom-button custom-button-secondary">Редактирай профила</a>
-                    <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="custom-button custom-button-danger">Изтрий профила</a>
+                    <a href="{% url 'user-profile-edit' pk=photographer.pk %}" class="owner-action owner-action-edit" title="Редактирай профила" aria-label="Редактирай профила"><i class="fas fa-pen"></i></a>
+                    <a href="{% url 'user-profile-delete' pk=photographer.pk %}" class="owner-action owner-action-delete" title="Изтрий профила" aria-label="Изтрий профила"><i class="fas fa-trash-alt"></i></a>
                 </div>
             {% endif %}
             {% if request.user.is_authenticated and request.user != photographer.user %}

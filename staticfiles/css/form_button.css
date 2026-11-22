@@ -79,3 +79,6 @@ a.owner-action-delete:hover { background-color: #dc3545; border-color: #dc3545; 
 a.star-rating-static { flex-direction: row; border: 0; padding: 0; }
 a.star-rating-static:hover { background: none; text-shadow: none; }
 a.star-rating-static .star { cursor: pointer; }
+
+/* profile page: same round edit/delete icons, centred under the bio */
+.profile-actions { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
