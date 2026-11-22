@@ -32,7 +32,28 @@
 .card-body .btn { margin-top: 5px; }
 
 /* Photo cards: tighter spacing around the title */
-.card-custom:has(> .photo-frame + .card-body) { padding-bottom: 12px; }
+.card-custom:has(> .photo-frame + .card-body),
+.card-custom:has(> .photo-frame + .card-text-content) { padding-bottom: 12px; }
+/* Auction cards: same tight spacing as photo cards */
+.photo-frame + .card-text-content { padding: 0; }
+.photo-frame + .card-text-content h3 { margin-top: 0; }
+.photo-frame + .card-text-content > :last-child { margin-bottom: 0; }
+/* Article and group cards: same tight spacing as photo cards */
+.article-grid-container .card-custom,
+.group-grid-container .card-custom { padding-bottom: 12px; }
+.article-grid-container .card-custom h3,
+.group-grid-container .card-custom h3 { margin-top: 0; margin-bottom: 10px; }
+.article-grid-container .card-custom > :last-child,
+.group-grid-container .card-custom > :last-child { margin-bottom: 0; }
+/* Profile cards — the profile list (avatar on top) and the profile page's info column:
+   same tight spacing as photo cards, with small gaps between all items */
+.card-custom:has(> .profile-picture-small, > .default-profile-icon),
+.profile-info-column .card-custom { padding-bottom: 12px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > * { margin-top: 0; margin-bottom: 6px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > h3 { margin-top: 8px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > h4:not(:first-child) { margin-top: 12px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > :last-child { margin-bottom: 0; }
+.profile-info-column .comment-list li p { margin-bottom: 2px; }
 /* The frame carries the gap so the author badge sits on the image corner */
 .photo-frame { margin-bottom: 10px; }
 .photo-frame .card-img-top, .photo-frame .photo-display { margin-bottom: 0; }
