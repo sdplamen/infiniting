@@ -18,4 +18,6 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "exec gunicorn infiniting.wsgi:application --bind 0.0.0.0:${PORT} --workers 3"]
+# apply pending migrations on every start (DB settings only exist at runtime),
+# then hand the process over to gunicorn
+CMD ["sh", "-c", "python manage.py migrate --noinput && exec gunicorn infiniting.wsgi:application --bind 0.0.0.0:${PORT} --workers 3"]
