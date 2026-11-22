@@ -54,3 +54,13 @@
 .form-centered .help-text ul { list-style-position: inside; padding-left: 0; }
 .form-centered .message-alert { margin-left: auto; margin-right: auto; }
 .form-centered .custom-button { display: block; width: 50%; margin: 20px auto 10px; }
+
+/* photo detail: like · rating · edit/delete on one row */
+.photo-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.photo-actions-bar > div { display: flex; align-items: center; gap: 4px; }
+.photo-actions-bar .owner-actions { margin-left: auto; gap: 8px; }
+.owner-action { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid currentColor; border-radius: 50%; font-size: 0.9rem; transition: background-color 0.2s ease, color 0.2s ease; }
+a.owner-action-edit:link, a.owner-action-edit:visited { color: #ffc107; }
+a.owner-action-delete:link, a.owner-action-delete:visited { color: #ff6b78; }
+a.owner-action-edit:hover { background-color: #ffc107; color: #333; text-shadow: none; }
+a.owner-action-delete:hover { background-color: #dc3545; border-color: #dc3545; color: #fff; text-shadow: none; }

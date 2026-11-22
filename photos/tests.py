@@ -70,3 +70,76 @@ class PhotoUploadIntegrationTest(TestCase) :
         response = self.client.post(reverse('photo-create'), form_data)
 
         self.assertFalse(Photo.objects.filter(caption='Test photo caption').exists())
+
+from unittest import mock
+from cloudinary import CloudinaryResource
+from PIL.TiffImagePlugin import IFDRational
+from photos.exif import extract_exif
+
+
+def jpeg_with_exif(gps=True):
+    image = Image.new('RGB', (64, 48), color='blue')
+    exif = image.getexif()
+    exif[0x010F] = 'Canon'
+    exif[0x0110] = 'Canon EOS R6'
+    sub = exif.get_ifd(0x8769)
+    sub[0x829A] = IFDRational(1, 250)    # ExposureTime
+    sub[0x829D] = IFDRational(28, 10)    # FNumber
+    sub[0x8827] = 400                    # ISO
+    sub[0x920A] = IFDRational(50, 1)     # FocalLength
+    sub[0xA434] = 'RF50mm F1.8 STM'      # LensModel
+    sub[0x9003] = '2024:05:17 18:42:05'  # DateTimeOriginal
+    if gps:
+        exif.get_ifd(0x8825)[2] = (IFDRational(42, 1), IFDRational(41, 1), IFDRational(0, 1))
+    buf = io.BytesIO()
+    image.save(buf, format='JPEG', exif=exif)
+    return buf.getvalue()
+
+
+class ExifExtractionTest(TestCase):
+    def test_reads_display_fields_and_drops_gps(self):
+        self.assertEqual(extract_exif(io.BytesIO(jpeg_with_exif())), {
+            'camera': 'Canon EOS R6',
+            'lens': 'RF50mm F1.8 STM',
+            'exposure': '1/250 s',
+            'aperture': 'f/2.8',
+            'iso': '400',
+            'focal_length': '50 mm',
+            'taken_at': '17.05.2024 18:42',
+        })
+
+    def test_image_without_exif_and_non_image(self):
+        buf = io.BytesIO()
+        Image.new('RGB', (10, 10)).save(buf, format='PNG')
+        self.assertEqual(extract_exif(buf), {})
+        self.assertEqual(extract_exif(io.BytesIO(b'not an image')), {})
+
+
+@mock.patch('cloudinary.models.uploader.upload_resource',
+            return_value=CloudinaryResource('photos/test', format='jpg', version=1,
+                                            type='upload', resource_type='image', metadata={}))
+class PhotoSaveExifTest(TestCase):
+    def setUp(self):
+        user = UserModel.objects.create_user(username='exifuser', password='pw-12345678')
+        self.photographer = Photographer.objects.get_or_create(user=user)[0]
+
+    def test_exif_saved_on_upload_and_shown(self, upload):
+        upload_file = SimpleUploadedFile('p.jpg', jpeg_with_exif(), content_type='image/jpeg')
+        photo = Photo.objects.create(author=self.photographer, image=upload_file)
+        upload.assert_called_once()
+        photo.refresh_from_db()
+        self.assertEqual(photo.exif['camera'], 'Canon EOS R6')
+        self.assertNotIn('gps', str(photo.exif).lower())
+
+        page = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
+        self.assertContains(page, '<strong>Камера:</strong> Canon EOS R6', html=True)
+        self.assertContains(page, '<strong>Експонация:</strong> 1/250 s', html=True)
+
+    def test_saving_without_new_file_keeps_exif(self, upload):
+        photo = Photo.objects.create(author=self.photographer,
+                                     image=SimpleUploadedFile('p.jpg', jpeg_with_exif(), content_type='image/jpeg'))
+        photo = Photo.objects.get(pk=photo.pk)
+        photo.caption = 'edited'
+        photo.save()
+        self.assertEqual(upload.call_count, 1)
+        self.assertEqual(Photo.objects.get(pk=photo.pk).exif['iso'], '400')

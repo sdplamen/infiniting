@@ -13,7 +13,6 @@ __pycache__/
 *.pyc
 
 # generated / local-only data
-staticfiles/
 server.log
 infiniting_db
 photographer_pictures/

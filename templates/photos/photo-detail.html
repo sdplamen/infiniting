@@ -23,17 +23,18 @@
                 <p class="text-muted small-text">
                     Качена на: {{ photo.uploaded_at|date:"d M Y H:i" }}
                 </p>
-                <p class="text-muted small-text">
-                EXIF данни:
-                    {% if exif_data %}
-                    <ul>
-                        {% for key, value in exif_data.items %}
-                            <li><strong>{{ key }}:</strong> {{ value }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="text-muted small-text">
+                    EXIF данни:
+                    {% if photo.exif_items %}
+                        <ul class="exif-list">
+                            {% for label, value in photo.exif_items %}
+                                <li><strong>{{ label }}:</strong> {{ value }}</li>
+                            {% endfor %}
+                        </ul>
                     {% else %}
                         Няма налични.
                     {% endif %}
+                </div>
 
                 {% if photo.group %}
                     <p class="text-muted small-text">
@@ -43,7 +44,7 @@
 
                 <hr class="custom-hr">
 
-                <div class="form-field inline-form-field">
+                <div class="form-field inline-form-field photo-actions-bar">
                     <div>
                         {% if form.can_like_or_rate %}
                             <form method="POST" action="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}" class="d-inline">
@@ -86,14 +87,14 @@
                             <a href="{% url 'login' %}" class="custom-button">Влезте, за да оцените</a>
                         {% endif %}
                     </div>
+                    {% if form.can_edit_delete %}
+                        <div class="owner-actions">
+                            <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
+                            <a href="{% url 'photo-delete' pk=photo.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий снимката"><i class="fas fa-trash-alt"></i></a>
+                        </div>
+                    {% endif %}
                 </div>
 
-                {% if form.can_edit_delete %}
-                    <div class="text-center actions-right">
-                        <a href="{% url 'photo-edit' pk=photo.pk %}" class="custom-button custom-button-warning"><i class="fas fa-edit me-1"></i>Редактирай снимката</a>
-                        <a href="{% url 'photo-delete' pk=photo.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий снимката</a>
-                    </div>
-                {% endif %}
             </div>
             <div class="text-center margin-top-large">
                 <a href="{% url 'photo-home' %}" class="custom-button custom-button-primary">
