@@ -143,3 +143,39 @@ class PhotoSaveExifTest(TestCase):
         photo.save()
         self.assertEqual(upload.call_count, 1)
         self.assertEqual(Photo.objects.get(pk=photo.pk).exif['iso'], '400')
+
+
+@mock.patch('cloudinary.models.uploader.upload_resource',
+            return_value=CloudinaryResource('photos/test', format='jpg', version=1,
+                                            type='upload', resource_type='image', metadata={}))
+class StarRatingTest(TestCase):
+    def setUp(self):
+        owner = UserModel.objects.create_user(username='owner', password='pw-12345678')
+        self.photo = Photo.objects.create(
+            author=Photographer.objects.get_or_create(user=owner)[0],
+            image=SimpleUploadedFile('p.jpg', jpeg_with_exif(gps=False), content_type='image/jpeg'))
+        self.url = reverse('photo-detail', kwargs={'pk': self.photo.pk})
+        self.rater = UserModel.objects.create_user(username='rater', password='pw-12345678')
+        Photographer.objects.get_or_create(user=self.rater)
+
+    def test_clicking_a_star_saves_and_lights_that_many(self, upload):
+        self.client.force_login(self.rater)
+        page = self.client.get(self.url)
+        self.assertContains(page, 'class="star"', count=5)
+        self.assertNotContains(page, 'is-on')
+
+        self.client.post(reverse('photo-rate', kwargs={'pk': self.photo.pk}), {'score': '4'})
+        self.assertEqual(self.photo.ratings.get().score, 4)
+        page = self.client.get(self.url)
+        self.assertContains(page, 'class="star is-on"', count=4)
+        self.assertContains(page, 'title="Вашата оценка: 4"')
+
+        # clicking another star changes the rating instead of adding one
+        self.client.post(reverse('photo-rate', kwargs={'pk': self.photo.pk}), {'score': '2'})
+        self.assertEqual(self.photo.ratings.get().score, 2)
+        self.assertContains(self.client.get(self.url), 'class="star is-on"', count=2)
+
+    def test_logged_out_sees_login_link(self, upload):
+        page = self.client.get(self.url)
+        self.assertContains(page, 'class="star-rating star-rating-static"')
+        self.assertNotContains(page, 'name="score"')
