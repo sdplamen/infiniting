@@ -63,3 +63,18 @@ class TestApproveArticle(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+class ArticleListTitleLinkTest(TestCase):
+    def test_title_opens_full_article_and_no_read_more_button(self):
+        author = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='writer', password='pw-12345678'))[0]
+        words = ' '.join(f'word{i}' for i in range(30))
+        article = Article.objects.create(title='Светлина', content=words, author=author, is_approved=True)
+        detail_url = reverse('article-detail', kwargs={'pk': article.pk})
+
+        page = self.client.get(reverse('article-list'))
+        self.assertContains(page, f'<a href="{detail_url}" class="article-title-link"')
+        self.assertNotContains(page, 'Прочети повече')
+        self.assertNotContains(page, 'word29')  # list still shows a short excerpt
+
+        self.assertContains(self.client.get(detail_url), 'word29')  # title leads to the full text

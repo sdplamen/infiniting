@@ -19,7 +19,7 @@
         {% for article in articles %}
             <div class="article-grid-container">
                 <div class="card-custom flex-item">
-                    <h3 class="text-center"><strong>{{ article.title }}</strong></h3>
+                    <h3 class="text-center"><a href="{% url 'article-detail' pk=article.pk %}" class="article-title-link" title="Прочети цялата статия"><strong>{{ article.title }}</strong></a></h3>
                     <p class="text-muted small-text">
                         <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
                     </p>
@@ -27,7 +27,6 @@
                         Публикувано на: {{ article.created_at|date:"d M Y H:i" }}
                     </p>
                     <p>{{ article.content|truncatewords:10|default:'Няма съдържание.' }}</p>
-                    <a href="{% url 'article-detail' pk=article.pk %}" class="custom-button custom-button-secondary custom-button-small">Прочети повече</a>
                 </div>
             </div>
         {% empty %}

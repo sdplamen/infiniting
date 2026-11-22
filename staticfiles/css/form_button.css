@@ -82,3 +82,7 @@ a.star-rating-static .star { cursor: pointer; }
 
 /* profile page: same round edit/delete icons, centred under the bio */
 .profile-actions { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
+
+/* article list: the title is the link to the full article */
+a.article-title-link:link, a.article-title-link:visited { color: inherit; border: 0; padding: 0; }
+a.article-title-link:hover, a.article-title-link:focus-visible { color: #00b3c7; background: none; text-shadow: none; font-weight: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
