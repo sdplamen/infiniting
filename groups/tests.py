@@ -77,13 +77,14 @@ class GroupOwnershipTest(TestCase):
         self.assertEqual(group.author, self.author)
         self.assertIn(self.author, group.members.all())
 
-    def test_list_icons_for_author_and_staff_only(self):
+    def test_icons_only_on_group_page_for_author_and_staff(self):
         group = self._group()
         edit_url = reverse('group-edit', kwargs={'pk': group.pk})
+        detail_url = reverse('group-detail', kwargs={'pk': group.pk})
         for user, visible in ((self.author, True), (self.staff, True), (self.member, False)):
             self.client.force_login(user)
-            page = self.client.get(reverse('group-list'))
-            (self.assertContains if visible else self.assertNotContains)(page, edit_url)
+            self.assertNotContains(self.client.get(reverse('group-list')), f'href="{edit_url}"')  # never on cards
+            (self.assertContains if visible else self.assertNotContains)(self.client.get(detail_url), f'href="{edit_url}"')
 
     def test_edit_and_delete_pages_author_and_staff_only(self):
         group = self._group()
@@ -101,7 +102,7 @@ class GroupOwnershipTest(TestCase):
 
 
 class GroupPagePhotoIconsTest(TestCase):
-    def test_photo_icons_only_for_photo_author(self):
+    def test_no_photo_icons_on_group_photo_cards(self):
         from photos.models import Photo
         from users.models import Photographer
         owner = UserModel.objects.create_user(username='gowner', password='pw-12345678')
@@ -112,13 +113,10 @@ class GroupPagePhotoIconsTest(TestCase):
         url = reverse('group-detail', kwargs={'pk': group.pk})
         photo_edit = reverse('photo-edit', kwargs={'pk': photo.pk})
 
-        self.client.force_login(snapper)
-        page = self.client.get(url)
-        self.assertContains(page, f'href="{photo_edit}" class="owner-action owner-action-edit"')
-        self.assertContains(page, f'href="{reverse("photo-delete", kwargs={"pk": photo.pk})}" class="owner-action owner-action-delete"')
-
-        self.client.force_login(owner)  # group author, not photo author
-        self.assertNotContains(self.client.get(url), photo_edit)
+        # photo icons live only on the photo page, not on the group's photo cards
+        for user in (snapper, owner):
+            self.client.force_login(user)
+            self.assertNotContains(self.client.get(url), photo_edit)
 
 
 from groups.models import GroupComment
@@ -267,3 +265,18 @@ class GroupJoinTextButtonsTest(TestCase):
         page = self.client.get(reverse('user-profile-detail', kwargs={'pk': profile.pk}))
         self.assertContains(page, 'Пейзаж')
         self.assertNotContains(page, reverse('group-leave', kwargs={'pk': group.pk}))
+
+
+class GroupCardMembersChipTest(TestCase):
+    def test_member_count_pill_with_join_on_same_row(self):
+        founder = UserModel.objects.create_user(username='chip-founder', password='pw-12345678')
+        group = Group.objects.create(name='Пил', author=founder, is_approved=True)
+        group.members.add(founder)
+        page = self.client.get(reverse('group-list'))
+        self.assertContains(page, '<span class="author-chip" title="Членове"><i class="fas fa-users me-1"></i>1 член</span>', html=True)
+        group.members.add(UserModel.objects.create_user(username='chip-2', password='pw-12345678'))
+        self.client.force_login(UserModel.objects.create_user(username='chip-3', password='pw-12345678'))
+        page = self.client.get(reverse('group-list'))
+        self.assertContains(page, '<span class="author-chip" title="Членове"><i class="fas fa-users me-1"></i>2 члена</span>', html=True)
+        self.assertContains(page, 'class="card-footer-row"')
+        self.assertContains(page, 'Присъедини се')

@@ -22,12 +22,6 @@
                 <h3><a href="{% url 'user-profile-detail' pk=profile.pk %}" class="title-link" title="Виж профила">{{ profile.user.username }}</a></h3>
                 <p class="text-muted">Член от {{ profile.created_at|date:"d M Y" }}</p>
                 <p>{{ profile.bio|truncatechars:100|default:'Няма биография.' }}</p>
-                {% if user.is_authenticated and user.id == profile.user_id %}
-                    <div class="profile-actions">
-                        <a href="{% url 'user-profile-edit' pk=profile.pk %}" class="owner-action owner-action-edit" title="Редактирай профила" aria-label="Редактирай профила"><i class="fas fa-pen"></i></a>
-                        <a href="{% url 'user-profile-delete' pk=profile.pk %}" class="owner-action owner-action-delete" title="Изтрий профила" aria-label="Изтрий профила"><i class="fas fa-trash-alt"></i></a>
-                    </div>
-                {% endif %}
                 {% if user.is_authenticated and user != profile.user %}
                     {% if user|is_following:profile.user %}
                         <form method="post" action="{% url 'user-unfollow' pk=profile.user.pk %}">

@@ -215,23 +215,18 @@ class PhotoDetailLinksTest(TestCase):
 
 
 class PhotoListOwnerIconsTest(TestCase):
+    """Photo edit/delete icons live only on the photo page, not on photo cards."""
     def setUp(self):
         self.me = UserModel.objects.create_user(username='me-photo', password='pw-12345678')
-        other = UserModel.objects.create_user(username='other-photo', password='pw-12345678')
         self.mine = Photo.objects.create(author=Photographer.objects.get_or_create(user=self.me)[0], image='dummy_image.jpg')
-        self.theirs = Photo.objects.create(author=Photographer.objects.get_or_create(user=other)[0], image='dummy_image.jpg')
 
-    def test_icons_only_on_own_photos(self):
+    def test_no_icons_on_list_cards_but_on_photo_page(self):
         self.client.force_login(self.me)
-        page = self.client.get(reverse('photo-home'))
-        self.assertContains(page, f'href="{reverse("photo-edit", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-edit"')
+        edit_url = reverse("photo-edit", kwargs={"pk": self.mine.pk})
+        self.assertNotContains(self.client.get(reverse('photo-home')), edit_url)
+        page = self.client.get(reverse('photo-detail', kwargs={'pk': self.mine.pk}))
+        self.assertContains(page, f'href="{edit_url}" class="owner-action owner-action-edit"')
         self.assertContains(page, f'href="{reverse("photo-delete", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-delete"')
-        self.assertNotContains(page, reverse('photo-edit', kwargs={'pk': self.theirs.pk}))
-        self.assertContains(page, 'card-owner-actions', count=1)
-
-    def test_logged_out_sees_no_icons(self):
-        self.assertNotContains(self.client.get(reverse('photo-home')), 'owner-action')
-
 
 from photos.models import Comment
 
@@ -388,3 +383,19 @@ class CreateLinksAndButtonsTest(TestCase):
             self.assertContains(page, 'class="text-button text-button-success"', msg_prefix=create_name)
             self.assertContains(page, f'{label}</button>', msg_prefix=create_name)
             self.assertNotContains(page, 'custom-button-primary full-width', msg_prefix=create_name)
+
+
+class PhotoCardAuthorLabelTest(TestCase):
+    def test_author_label_on_picture_and_no_upload_date(self):
+        from groups.models import Group
+        user = UserModel.objects.create_user(username='labelled', password='pw-12345678')
+        profile = Photographer.objects.get_or_create(user=user)[0]
+        group = Group.objects.create(name='Етикет', author=user, is_approved=True)
+        Photo.objects.create(author=profile, image='dummy_image.jpg', caption='Залез', group=group)
+        label = (f'<a href="{reverse("user-profile-detail", kwargs={"pk": profile.pk})}" class="photo-author" title="Автор">'
+                 '<i class="fas fa-camera me-1"></i>labelled</a>')
+        for url in (reverse('photo-home'), reverse('group-detail', kwargs={'pk': group.pk})):
+            page = self.client.get(url)
+            self.assertContains(page, label, html=True, msg_prefix=url)
+            self.assertNotContains(page, 'Качено на', msg_prefix=url)
+            self.assertNotContains(page, 'Автор: <a', msg_prefix=url)

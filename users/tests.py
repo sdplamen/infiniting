@@ -78,25 +78,21 @@ class ProfileDetailLinksTest(TestCase):
 
 
 class ProfileListOwnerIconsTest(TestCase):
-    def test_icons_only_on_own_card(self):
+    """Profile edit/delete icons live only on the profile page, not on profile cards."""
+    def test_no_icons_on_own_card_but_on_profile_page(self):
         me = UserModel.objects.create_user(username='self', password='pw-12345678')
         mine = Photographer.objects.get_or_create(user=me)[0]
-        theirs = Photographer.objects.get_or_create(
-            user=UserModel.objects.create_user(username='else', password='pw-12345678'))[0]
+        edit_url = reverse("user-profile-edit", kwargs={"pk": mine.pk})
         self.client.force_login(me)
         page = self.client.get(reverse('user-profile-list'))
-        self.assertContains(page, f'href="{reverse("user-profile-edit", kwargs={"pk": mine.pk})}" class="owner-action owner-action-edit"')
-        self.assertContains(page, f'href="{reverse("user-profile-delete", kwargs={"pk": mine.pk})}" class="owner-action owner-action-delete"')
-        self.assertNotContains(page, reverse('user-profile-edit', kwargs={'pk': theirs.pk}))
-        self.assertNotContains(page, f'action="{reverse("user-follow", kwargs={"pk": me.pk})}"')
-
-    def test_logged_out_sees_no_icons(self):
-        Photographer.objects.get_or_create(user=UserModel.objects.create_user(username='x1', password='pw-12345678'))
-        self.assertNotContains(self.client.get(reverse('user-profile-list')), 'owner-action')
-
+        self.assertNotContains(page, f'href="{edit_url}"')
+        self.assertNotContains(page, 'owner-action')
+        self.assertNotContains(page, f'action="{reverse("user-follow", kwargs={"pk": me.pk})}"')  # still no follow on own card
+        detail = self.client.get(reverse('user-profile-detail', kwargs={'pk': mine.pk}))
+        self.assertContains(detail, f'href="{edit_url}" class="owner-action owner-action-edit"')
 
 class ProfilePageContentIconsTest(TestCase):
-    def test_owner_gets_icons_on_photos_and_articles(self):
+    def test_no_photo_or_article_icons_on_profile_page(self):
         from articles.models import Article
         from photos.models import Photo
         owner = UserModel.objects.create_user(username='owner3', password='pw-12345678')
@@ -109,8 +105,8 @@ class ProfilePageContentIconsTest(TestCase):
 
         self.client.force_login(owner)
         page = self.client.get(url)
-        for link in links:
-            self.assertContains(page, f'href="{link}" class="owner-action')
+        for link in links:  # photo and article icons live only on their own pages
+            self.assertNotContains(page, f'href="{link}"')
 
         self.client.force_login(UserModel.objects.create_user(username='visitor', password='pw-12345678'))
         page = self.client.get(url)

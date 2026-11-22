@@ -107,13 +107,14 @@ class ArticleListOwnerIconsTest(TestCase):
         self.theirs = Article.objects.create(title='Чужда', content='б', is_approved=True,
                                              author=Photographer.objects.get_or_create(user=other)[0])
 
-    def test_icons_only_on_own_articles(self):
+    def test_no_icons_on_list_cards_but_on_article_page(self):
         self.client.force_login(self.me)
+        edit_url = reverse("article-edit", kwargs={"pk": self.mine.pk})
         page = self.client.get(reverse('article-list'))
-        self.assertContains(page, f'href="{reverse("article-edit", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-edit"')
-        self.assertContains(page, f'href="{reverse("article-delete", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-delete"')
-        self.assertNotContains(page, reverse('article-edit', kwargs={'pk': self.theirs.pk}))
-        self.assertContains(page, 'card-owner-actions', count=1)
+        self.assertNotContains(page, f'href="{edit_url}"')
+        self.assertNotContains(page, 'card-owner-actions')
+        detail = self.client.get(reverse('article-detail', kwargs={'pk': self.mine.pk}))
+        self.assertContains(detail, f'href="{edit_url}" class="owner-action owner-action-edit"')
 
     def test_logged_out_sees_no_icons(self):
         self.assertNotContains(self.client.get(reverse('article-list')), 'owner-action')
@@ -254,3 +255,15 @@ class ApproveTextButtonsTest(TestCase):
                             f'<button type="submit" class="text-button text-button-success">{icon}Потвърди статията</button>', html=True)
         self.assertContains(self.client.get(reverse('group-detail', kwargs={'pk': group.pk})),
                             f'<button type="submit" class="text-button text-button-success">{icon}Потвърди групата</button>', html=True)
+
+
+class ArticleCardAuthorChipTest(TestCase):
+    def test_author_chip_and_no_publish_date_on_cards(self):
+        user = UserModel.objects.create_user(username='chip', password='pw-12345678')
+        profile = Photographer.objects.get_or_create(user=user)[0]
+        Article.objects.create(title='Т', content='с', author=profile, is_approved=True)
+        page = self.client.get(reverse('article-list'))
+        self.assertContains(page, f'<a href="{reverse("user-profile-detail", kwargs={"pk": profile.pk})}" class="author-chip" title="Автор">'
+                                  '<i class="fas fa-user-edit me-1"></i>chip</a>', html=True)
+        self.assertNotContains(page, 'Публикувано на')
+        self.assertNotContains(page, 'Автор: <a')

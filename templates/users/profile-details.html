@@ -164,12 +164,6 @@
                                 <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings.count }} оценки</span>
                             {% endif %}
                         </div>
-                        {% if form.can_edit_delete_profile %}
-                            <div class="card-owner-actions">
-                                <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
-                                <a href="{% url 'photo-delete' pk=photo.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий снимката"><i class="fas fa-trash-alt"></i></a>
-                            </div>
-                        {% endif %}
                     </div>
                 {% empty %}
                     <p class="text-center">Този фотограф все още не е качил снимки.</p>
@@ -188,12 +182,6 @@
                     <li>
                         <a href="{% url 'article-detail' pk=article.pk %}" class="title-link" title="Прочети цялата статия">{{ article.title }}</a>
                         <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
-                        {% if form.can_edit_delete_profile %}
-                            <span class="inline-owner-actions">
-                                <a href="{% url 'article-edit' pk=article.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай статията"><i class="fas fa-pen"></i></a>
-                                <a href="{% url 'article-delete' pk=article.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий статията"><i class="fas fa-trash-alt"></i></a>
-                            </span>
-                        {% endif %}
                     </li>
                 {% empty %}
                     <p class="text-center">Този фотограф все още не е публикувал статии.</p>

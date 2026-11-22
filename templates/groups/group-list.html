@@ -21,35 +21,27 @@
                 <div class="card-custom flex-item">
                     <h3><a href="{% url 'group-detail' pk=group.pk %}" class="title-link" title="Виж групата">{{ group.name }}</a></h3>
                     {% if not group.is_approved %}<p><span class="draft-badge">Чака одобрение</span></p>{% endif %}
-                    <p class="text-muted small-text">
-                        {% if group.members.count == 1 %}
-                            <i class="fas fa-users me-1"></i> {{ group.members.count }} член
-                        {% else %}
-                            <i class="fas fa-users me-1"></i> {{ group.members.count }} члена
-                        {% endif %}
-                    </p>
                     <p>{{ group.description|truncatechars:150|default:'Няма описание.' }}</p>
-                    {% if user.is_authenticated %}
-                        <div class="group-actions">
-                            {% if user in group.members.all %}
-                                <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-button text-button-danger"><i class="fas fa-sign-out-alt me-1"></i>Напусни</button>
-                                </form>
-                            {% else %}
-                                <form method="POST" action="{% url 'group-join' pk=group.pk %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-button"><i class="fas fa-plus-circle me-1"></i>Присъедини се</button>
-                                </form>
+                    <div class="card-footer-row">
+                        <div>
+                            {% if user.is_authenticated %}
+                                {% if user in group.members.all %}
+                                    <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-button text-button-danger"><i class="fas fa-sign-out-alt me-1"></i>Напусни</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{% url 'group-join' pk=group.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-button"><i class="fas fa-plus-circle me-1"></i>Присъедини се</button>
+                                    </form>
+                                {% endif %}
                             {% endif %}
                         </div>
-                    {% endif %}
-                    {% if user.is_authenticated %}{% if user.is_staff or group.author_id == user.id %}
-                        <div class="card-owner-actions">
-                            <a href="{% url 'group-edit' pk=group.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай групата"><i class="fas fa-pen"></i></a>
-                            <a href="{% url 'group-delete' pk=group.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий групата"><i class="fas fa-trash-alt"></i></a>
-                        </div>
-                    {% endif %}{% endif %}
+                        {% with count=group.members.count %}
+                            <span class="author-chip" title="Членове"><i class="fas fa-users me-1"></i>{{ count }} {% if count == 1 %}член{% else %}члена{% endif %}</span>
+                        {% endwith %}
+                    </div>
                 </div>
             </div>
         {% empty %}

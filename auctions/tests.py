@@ -82,16 +82,12 @@ class AuctionListStaffIconTest(TestCase):
                                               start_time=now, end_time=now + timedelta(days=1), starting_bid=5)
         self.deactivate_url = reverse('auction-deactivate', kwargs={'pk': self.auction.pk})
 
-    def test_staff_sees_deactivate_icon_with_confirm(self):
+    def test_no_deactivate_icon_on_cards_but_on_auction_page(self):
         self.client.force_login(User.objects.create_user(username='st', password='pw-12345678', is_staff=True))
-        page = self.client.get(reverse('auction-list'))
+        self.assertNotContains(self.client.get(reverse('auction-list')), self.deactivate_url)
+        page = self.client.get(reverse('auction-detail', kwargs={'pk': self.auction.pk}))
         self.assertContains(page, f'<form method="POST" action="{self.deactivate_url}"')
         self.assertContains(page, "confirm('Деактивирай аукциона?')")
-
-    def test_regular_user_does_not(self):
-        self.client.force_login(User.objects.create_user(username='reg', password='pw-12345678'))
-        self.assertNotContains(self.client.get(reverse('auction-list')), self.deactivate_url)
-
 
 from auctions.models import AuctionComment
 

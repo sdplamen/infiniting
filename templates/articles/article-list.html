@@ -23,19 +23,8 @@
                     {% if not article.is_approved %}
                         <p class="text-center"><span class="draft-badge">Чака одобрение</span></p>
                     {% endif %}
-                    <p class="text-muted small-text">
-                        <i class="fas fa-user-edit me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=article.author.pk %}">{{ article.author.user.username }}</a>
-                    </p>
-                    <p class="text-muted small-text">
-                        Публикувано на: {{ article.created_at|date:"d M Y H:i" }}
-                    </p>
                     <p>{{ article.content|truncatewords:10|default:'Няма съдържание.' }}</p>
-                    {% if user.is_authenticated and article.author.user_id == user.id %}
-                        <div class="card-owner-actions">
-                            <a href="{% url 'article-edit' pk=article.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай статията"><i class="fas fa-pen"></i></a>
-                            <a href="{% url 'article-delete' pk=article.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий статията"><i class="fas fa-trash-alt"></i></a>
-                        </div>
-                    {% endif %}
+                    <div class="text-end"><a href="{% url 'user-profile-detail' pk=article.author.pk %}" class="author-chip" title="Автор"><i class="fas fa-user-edit me-1"></i>{{ article.author.user.username }}</a></div>
                 </div>
             </div>
         {% empty %}

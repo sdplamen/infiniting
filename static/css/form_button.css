@@ -98,12 +98,8 @@ a.image-link, a.image-link:hover { display: block; border: 0; padding: 0; backgr
 a.like-login-link, a.like-login-link:hover { border: 0; background: none; text-shadow: none; }
 a.like-login-link:hover i { color: #00b3c7; }
 
-/* list cards: the author's edit/delete icons, bottom right of the card */
-.card-owner-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-
-/* compact lists (profile page articles): smaller icons at the end of the line */
+/* comment bins: inline after the comment date, same size as the other round icons */
 .inline-owner-actions { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
-.inline-owner-actions .owner-action { width: 26px; height: 26px; font-size: 0.75rem; }
 
 /* delete-comment bin is a <button> (POST form), so give it the link icons' colours */
 button.owner-action { background: none; cursor: pointer; }
@@ -135,5 +131,11 @@ button.owner-action-save:hover, button.owner-action-save:focus-visible { backgro
 a.owner-action-cancel:link, a.owner-action-cancel:visited { color: rgba(212, 236, 252, 0.75); }
 a.owner-action-cancel:hover, a.owner-action-cancel:focus-visible { background-color: #6c757d; border-color: #6c757d; color: #fff; }
 
-/* comment bins: same size as the other round icons (the compact profile article list keeps the small ones) */
-form.inline-owner-actions .owner-action { width: 34px; height: 34px; font-size: 0.9rem; }
+/* cards: the author as a small pill — on the picture's corner (photos) or the card's corner (articles) */
+.photo-frame { position: relative; }
+a.photo-author, a.author-chip, span.author-chip { display: inline-block; padding: 2px 10px; border: 0; border-radius: 999px; font-size: 0.75rem; line-height: 1.6; background-color: rgba(0, 21, 53, 0.7); }
+a.photo-author:hover, a.photo-author:focus-visible, a.author-chip:hover, a.author-chip:focus-visible { background-color: rgba(0, 21, 53, 0.9); }
+a.photo-author { position: absolute; right: 8px; bottom: 8px; }
+
+/* cards: actions on the left, info pill on the right, on one bottom row */
+.card-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
