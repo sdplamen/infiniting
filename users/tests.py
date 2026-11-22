@@ -214,3 +214,11 @@ class AuthPageButtonsTest(TestCase):
         UserModel.objects.create_user(username='signin', password='pw-12345678')
         response = self.client.post(reverse('login'), {'username': 'signin', 'password': 'pw-12345678'})
         self.assertEqual(response.status_code, 302)
+
+
+class NavBarProfilesLinkTest(TestCase):
+    def test_nav_bar_links_to_profiles_list_for_everyone(self):
+        link = f'<a href="{reverse("user-profile-list")}" title="Профили"><i class="bi bi-person-lines-fill"></i></a>'
+        self.assertContains(self.client.get(reverse('photo-home')), link, html=True)
+        self.client.force_login(UserModel.objects.create_user(username='navuser', password='pw-12345678'))
+        self.assertContains(self.client.get(reverse('article-list')), link, html=True)

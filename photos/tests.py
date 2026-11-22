@@ -285,8 +285,8 @@ class PhotoCommentFormLookTest(TestCase):
 
 
 class BackLinksTest(TestCase):
-    """The 'Към всички …' links at the bottom of the detail pages are plain text links."""
-    def test_back_links_on_photo_article_and_auction_pages(self):
+    """Detail pages have no 'Към всички …' back links; form links are text links."""
+    def test_no_back_links_on_photo_article_and_auction_pages(self):
         from datetime import timedelta
         from django.utils import timezone
         from articles.models import Article
@@ -301,8 +301,9 @@ class BackLinksTest(TestCase):
                 (reverse('article-detail', kwargs={'pk': article.pk}), reverse('article-list'), 'Към всички статии'),
                 (reverse('auction-detail', kwargs={'pk': auction.pk}), reverse('auction-list'), 'Към всички аукциони')):
             page = self.client.get(page_url)
-            self.assertContains(page, f'<a href="{list_url}" class="back-link"><i class="fas fa-arrow-left me-1"></i>{label}</a>', html=True)
-            self.assertNotContains(page, f'{label}.')
+            self.assertNotContains(page, label)  # removed: the bottom nav bar links to every list
+            self.assertNotContains(page, 'class="back-link"')
+            self.assertContains(page, f'href="{list_url}"')  # still reachable via the nav bar
 
     def test_cancel_is_a_text_link_on_edit_and_delete_pages(self):
         from articles.models import Article
