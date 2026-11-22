@@ -1,17 +1,32 @@
-<div class="pagination">
-    <span class="step-links">
+{% load pagination_tags %}
+<nav class="pagination" aria-label="Страници">
+    <ul class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <li><a class="page-btn" href="{% page_url 1 %}" title="Първа" aria-label="Първа страница"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li><a class="page-btn" href="{% page_url page_obj.previous_page_number %}" title="Предишна" aria-label="Предишна страница"><i class="bi bi-chevron-left"></i></a></li>
+        {% else %}
+            <li><span class="page-btn disabled" aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span></li>
+            <li><span class="page-btn disabled" aria-hidden="true"><i class="bi bi-chevron-left"></i></span></li>
         {% endif %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
+        {% elided_pages page_obj as pages %}
+        {% for num in pages %}
+            {% if num == page_obj.number %}
+                <li><span class="page-btn current" aria-current="page">{{ num }}</span></li>
+            {% elif num == page_obj.paginator.ELLIPSIS %}
+                <li><span class="page-ellipsis">&hellip;</span></li>
+            {% else %}
+                <li><a class="page-btn" href="{% page_url num %}" aria-label="Страница {{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last</a>
+            <li><a class="page-btn" href="{% page_url page_obj.next_page_number %}" title="Следваща" aria-label="Следваща страница"><i class="bi bi-chevron-right"></i></a></li>
+            <li><a class="page-btn" href="{% page_url page_obj.paginator.num_pages %}" title="Последна" aria-label="Последна страница"><i class="bi bi-chevron-double-right"></i></a></li>
+        {% else %}
+            <li><span class="page-btn disabled" aria-hidden="true"><i class="bi bi-chevron-right"></i></span></li>
+            <li><span class="page-btn disabled" aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span></li>
         {% endif %}
-    </span>
-</div>
+    </ul>
+    <div class="page-summary">Страница {{ page_obj.number }} от {{ page_obj.paginator.num_pages }}</div>
+</nav>

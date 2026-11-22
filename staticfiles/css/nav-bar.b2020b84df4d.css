@@ -1,0 +1,166 @@
+.nav-links {
+    background-color: rgba(0, 21, 53, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 12px;
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 32px);
+    z-index: 1000;
+}
+
+.nav-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-links li {
+    margin: 0;
+}
+
+.nav-links li form {
+    margin: 0;
+}
+
+.nav-links li a i {
+    color: #f8f6f6;
+    text-decoration: none;
+    font-size: 1.2em;
+    vertical-align: middle;
+    display: block;
+    padding: 6px 8px;
+    transition: background-color 0.3s ease;
+}
+
+/* undo the global `a` and `.custom-button` styles inside the nav bar:
+   their 5px border, padding and margins made the bar taller, and the
+   inline <a> wrapping a block <i> painted two thin hover slivers */
+.nav-links li a,
+.nav-links li .custom-button {
+    display: block;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    line-height: 1;
+}
+
+.nav-links li .custom-button i {
+    color: #f8f6f6;
+    font-size: 1.2em;
+    display: block;
+    padding: 6px 8px;
+}
+
+.nav-links li a:hover,
+.nav-links li .custom-button:hover {
+    background-color: rgba(0, 72, 153, 0.5);
+    border-radius: 5px;
+    text-shadow: none;
+}
+
+/* keep page content and footer from hiding behind the fixed bottom bar */
+body {
+    padding-bottom: 75px;
+}
+
+/* shared by every list page via templates/paginator.html */
+.pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin: 16px 0;
+}
+
+.pagination .step-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 10px;
+    background-color: rgba(15, 55, 99, 0.5);
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.pagination .step-links li {
+    margin: 0;
+}
+
+/* .page-btn also overrides the global `a` border/padding/hover from base.css */
+.pagination .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    color: #D4ECFC;
+    font-weight: 500;
+    line-height: 1;
+    text-shadow: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.pagination a.page-btn:hover,
+.pagination a.page-btn:focus-visible {
+    background-color: #008999;
+    color: #ffffff;
+    font-weight: 500;
+    text-shadow: none;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.pagination .page-btn.current {
+    background-color: #08458f;
+    color: antiquewhite;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 2px rgba(212, 236, 252, 0.35);
+}
+
+.pagination .page-btn.disabled {
+    color: rgba(212, 236, 252, 0.3);
+    cursor: default;
+}
+
+.pagination .page-ellipsis {
+    display: inline-flex;
+    align-items: flex-end;
+    height: 36px;
+    padding: 0 2px 8px;
+    color: rgba(212, 236, 252, 0.6);
+}
+
+.pagination .page-summary {
+    font-size: 0.85em;
+    color: rgba(212, 236, 252, 0.75);
+}
+
+@media (max-width: 480px) {
+    .pagination .page-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+    }
+}
