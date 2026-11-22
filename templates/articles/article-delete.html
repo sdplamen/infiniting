@@ -11,8 +11,10 @@
     <p class="text-muted">Това действие е необратимо.</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="text-button text-button-danger"><i class="fas fa-trash-alt me-1"></i>Да, изтрий</button>
-        <a href="{% url 'article-detail' pk=article.pk %}" class="cancel-link">Откажи</a>
+        <div class="detail-actions">
+            <button type="submit" class="owner-action owner-action-delete" title="Да, изтрий" aria-label="Да, изтрий"><i class="fas fa-trash-alt"></i></button>
+            <a href="{% url 'article-detail' pk=article.pk %}" class="owner-action owner-action-cancel" title="Откажи" aria-label="Откажи"><i class="fas fa-times"></i></a>
+        </div>
     </form>
 </div>
 {% endblock %}

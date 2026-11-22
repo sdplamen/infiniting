@@ -117,9 +117,6 @@ form.inline-owner-actions { margin: 0 0 0 8px; }
 /* "← Към всички …" at the bottom of detail pages: a plain text link, colour change on hover */
 a.back-link { border: 0; padding: 0; font-size: 0.95rem; }
 
-/* "Откажи" on edit/delete forms: a plain text link beside or under the main button */
-a.cancel-link { display: inline-block; border: 0; padding: 0; margin: 10px 12px; font-size: 0.95rem; }
-
 /* "Влезте, за да добавяте коментари" in comment sections: a plain text link */
 a.login-link { display: inline-block; border: 0; padding: 0; margin: 6px 0 10px; font-size: 0.95rem; }
 
@@ -131,3 +128,12 @@ a.login-link { display: inline-block; border: 0; padding: 0; margin: 6px 0 10px;
 
 /* "Качи снимка" / "Създай нова …" at the top of lists: a text link with its icon */
 a.create-link { display: inline-block; border: 0; padding: 0; margin: 6px 0 10px; font-size: 1.05rem; font-weight: 600; }
+
+/* edit forms: round ✓ save and ✕ cancel icons (text lives in the hover hint) */
+button.owner-action-save { color: #3ddc84; }
+button.owner-action-save:hover, button.owner-action-save:focus-visible { background-color: #28a745; border-color: #28a745; color: #fff; }
+a.owner-action-cancel:link, a.owner-action-cancel:visited { color: rgba(212, 236, 252, 0.75); }
+a.owner-action-cancel:hover, a.owner-action-cancel:focus-visible { background-color: #6c757d; border-color: #6c757d; color: #fff; }
+
+/* comment bins: same size as the other round icons (the compact profile article list keeps the small ones) */
+form.inline-owner-actions .owner-action { width: 34px; height: 34px; font-size: 0.9rem; }

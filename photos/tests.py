@@ -322,11 +322,14 @@ class BackLinksTest(TestCase):
         }
         for name, (pk, back) in pages.items():
             page = self.client.get(reverse(name, kwargs={'pk': pk}))
-            self.assertContains(page, f'<a href="{reverse(back, kwargs={"pk": pk})}" class="cancel-link">Откажи</a>', html=True, msg_prefix=name)
-            if name.endswith('-delete'):
-                self.assertContains(page, '<button type="submit" class="text-button text-button-danger"><i class="fas fa-trash-alt me-1"></i>Да, изтрий</button>', html=True, msg_prefix=name)
+            back_url = reverse(back, kwargs={'pk': pk})
+            # icons only, text in the hover hint: ✓ save on edit pages, bin on delete pages, ✕ cancel on both
             if name.endswith('-edit'):
-                self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-save me-1"></i>Запази промените</button>', html=True, msg_prefix=name)
+                self.assertContains(page, '<button type="submit" class="owner-action owner-action-save" title="Запази промените" aria-label="Запази промените"><i class="fas fa-check"></i></button>', html=True, msg_prefix=name)
+            else:
+                self.assertContains(page, '<button type="submit" class="owner-action owner-action-delete" title="Да, изтрий" aria-label="Да, изтрий"><i class="fas fa-trash-alt"></i></button>', html=True, msg_prefix=name)
+            self.assertContains(page, f'<a href="{back_url}" class="owner-action owner-action-cancel" title="Откажи" aria-label="Откажи"><i class="fas fa-times"></i></a>', html=True, msg_prefix=name)
+            self.assertNotContains(page, 'class="cancel-link"', msg_prefix=name)
 
     def test_comment_login_links_return_to_the_same_page(self):
         from datetime import timedelta
