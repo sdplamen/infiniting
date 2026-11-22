@@ -1,12 +1,24 @@
-{% load static %}
-<div class="photo-item">
-    {% if photo.image and photo.image.url %}
-    <div class="full-image-container">
-        <a href="{% url 'photo-detail' photo.id %}" class="photo-link">
-            <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Photo Display' }}" class="photo-display full-photo">
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ photo.caption|default:'Снимка' }}</title>
+    <style>
+        /* Full-size view: the photo fills the window, no margins or white space */
+        html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
+        .full-photo-link { display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; height: 100dvh; cursor: zoom-out; }
+        .full-photo { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .no-image { color: #D4ECFC; font-family: sans-serif; text-align: center; margin: 0; padding-top: 40vh; }
+    </style>
+</head>
+<body>
+    {% if photo.image %}
+        <a href="{% url 'photo-detail' photo.id %}" class="full-photo-link" title="Назад към снимката">
+            <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Снимка' }}" class="full-photo">
         </a>
-    </div>
     {% else %}
-        <p>No image available.</p>
+        <p class="no-image">Няма изображение.</p>
     {% endif %}
-</div>
+</body>
+</html>
