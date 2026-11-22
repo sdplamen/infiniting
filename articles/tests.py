@@ -151,7 +151,7 @@ class ArticleCommentsTest(TestCase):
     def test_logged_out_cannot_add_and_sees_login_link(self):
         self.client.post(reverse('article-comment', kwargs={'pk': self.article.pk}), {'text': 'x'})
         self.assertFalse(ArticleComment.objects.exists())
-        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари.')
+        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари')
 
     def test_empty_comment_is_ignored(self):
         self.client.force_login(self.writer)
@@ -239,3 +239,18 @@ class ArticleListApprovalTest(TestCase):
         self.assertNotContains(page, 'Чернова')
         self.client.force_login(self.author)
         self.assertContains(self.client.get(profile_url), 'Чернова')
+
+
+class ApproveTextButtonsTest(TestCase):
+    def test_approve_buttons_are_text_buttons(self):
+        from groups.models import Group
+        staff = UserModel.objects.create_user(username='appr', password='pw-12345678', is_staff=True, is_superuser=True)
+        author = Photographer.objects.get_or_create(user=staff)[0]
+        article = Article.objects.create(title='т', content='с', author=author, is_approved=False)
+        group = Group.objects.create(name='Чакаща', author=staff, is_approved=False)
+        self.client.force_login(staff)
+        icon = '<i class="fas fa-check-circle me-1"></i>'
+        self.assertContains(self.client.get(reverse('article-detail', kwargs={'pk': article.pk})),
+                            f'<button type="submit" class="text-button text-button-success">{icon}Потвърди статията</button>', html=True)
+        self.assertContains(self.client.get(reverse('group-detail', kwargs={'pk': group.pk})),
+                            f'<button type="submit" class="text-button text-button-success">{icon}Потвърди групата</button>', html=True)

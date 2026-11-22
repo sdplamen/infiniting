@@ -24,9 +24,6 @@ class ProfileDetailForm(forms.Form):
     def can_edit_delete_profile(self):
         return self.user.is_authenticated and self.user == self.photographer.user
 
-    def can_leave_group(self, group):
-        return self.user.is_authenticated and self.user in group.members.all()
-
 
 class ProfileCommentForm(forms.ModelForm):
     class Meta:

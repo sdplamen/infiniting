@@ -20,9 +20,14 @@ class Auction(models.Model) :
         return f'Auction for Photo {self.photo.id}'
 
     @property
+    def is_open(self):
+        """Active and not yet ended: bidding and comments are possible."""
+        return self.is_active and self.end_time > timezone.now()
+
+    @property
     def comments_open(self):
         """Comments are allowed until the auction ends or staff deactivate it."""
-        return self.is_active and self.end_time > timezone.now()
+        return self.is_open
 
 
 class Bid(models.Model) :

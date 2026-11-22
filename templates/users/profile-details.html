@@ -28,12 +28,12 @@
                 {% if is_following_photographer %}
                     <form method="post" action="{% url 'user-unfollow' pk=photographer.user.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="custom-button custom-button-danger custom-button-small">Не следвай</button>
+                        <button type="submit" class="text-button text-button-danger"><i class="fas fa-user-minus me-1"></i>Не следвай</button>
                     </form>
                 {% else %}
                     <form method="post" action="{% url 'user-follow' pk=photographer.user.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="custom-button custom-button-success custom-button-small">Последвай</button>
+                        <button type="submit" class="text-button"><i class="fas fa-user-plus me-1"></i>Последвай</button>
                     </form>
                 {% endif %}
             </div>
@@ -81,10 +81,10 @@
                     {% for group in photographer.user.user_groups.all %}
                         <li>
                             {% if group.is_approved or user == photographer.user %}<a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>{% else %}{{ group.name }}{% endif %}
-                            {% if form.can_leave_group %}
+                            {% if user == photographer.user %}{# own profile: these are your groups #}
                                 <form method="post" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
+                                    <button type="submit" class="text-button text-button-danger ms-2"><i class="fas fa-sign-out-alt me-1"></i>Напусни</button>
                                 </form>
                             {% endif %}
                         </li>
@@ -104,13 +104,13 @@
                         {{ comment_form.text.label_tag }}
                         {{ comment_form.text }}
                     </div>
-                    <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                    <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
                 </form>
             {% elif user.is_authenticated %}
                 <p class="text-center text-muted">Последвайте този фотограф, за да коментирате.</p>
             {% else %}
                 <div class="text-center">
-                    <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                    <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
                 </div>
             {% endif %}
 

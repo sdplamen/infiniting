@@ -6,7 +6,7 @@
 {% block content %}
 <div class="form-container text-center">
     <h2>Вие излязохте успешно</h2>
-    <p><a href="{% url 'login' %}" class="custom-button custom-button-primary">Вход отново</a></p>
-    <p><a href="{% url 'home' %}" class="custom-button custom-button-secondary">Начална страница</a></p>
+    <p><a href="{% url 'login' %}" class="create-link"><i class="fas fa-sign-in-alt me-1"></i>Вход отново</a></p>
+    <p><a href="{% url 'photo-home' %}" class="back-link"><i class="fas fa-home me-1"></i>Начална страница</a></p>
 </div>
 {% endblock %}

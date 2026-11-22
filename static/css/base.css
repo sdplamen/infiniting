@@ -31,14 +31,12 @@ a {
     box-sizing: border-box;
 }
 
+/* hovered links only change colour (no box, shadow or thinner text);
+   buttons and icons have their own, more specific hover rules */
 a:hover {
-    color: #D4ECFC;
+    color: #00b3c7;
     text-decoration: none;
-    text-shadow: 1px 1px 2px rgb(167, 166, 166);
-    background-color: #008999;
-    font-weight: 300;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .margin-auto { margin: auto; }

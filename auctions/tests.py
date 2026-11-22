@@ -124,7 +124,7 @@ class AuctionCommentsTest(TestCase):
 
     def test_logged_out_and_empty_are_rejected(self):
         self.client.post(reverse('auction-comment', kwargs={'pk': self.auction.pk}), {'text': 'x'})
-        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари.')
+        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари')
         self.client.force_login(self.writer)
         self.client.post(reverse('auction-comment', kwargs={'pk': self.auction.pk}), {'text': ''})
         self.assertFalse(AuctionComment.objects.exists())
@@ -192,3 +192,73 @@ class AuctionDeactivatePostOnlyTest(TestCase):
         self.assertEqual(self.client.post(self.url).status_code, 403)
         self.auction.refresh_from_db()
         self.assertTrue(self.auction.is_active)
+
+
+class AuctionBidSectionTest(TestCase):
+    def setUp(self):
+        self.seller = User.objects.create_user(username='b-seller', password='pw-12345678')
+        photo = Photo.objects.create(author=Photographer.objects.get_or_create(user=self.seller)[0], image='dummy_image.jpg')
+        now = timezone.now()
+        self.auction = Auction.objects.create(photo=photo, start_time=now, end_time=now + timedelta(days=1), starting_bid=5)
+        self.url = reverse('auction-detail', kwargs={'pk': self.auction.pk})
+        self.bid_url = reverse('auction-bid', kwargs={'pk': self.auction.pk})
+        self.cannot = 'Не можете да направите оферта за този аукцион.'
+
+    def test_logged_out_on_open_auction_gets_login_link(self):
+        page = self.client.get(self.url)
+        self.assertContains(page, f'href="{reverse("login")}?next={self.url}" class="login-link"')
+        self.assertContains(page, 'Влезте, за да направите оферта')
+        self.assertNotContains(page, self.cannot)
+
+    def test_signed_in_bidder_gets_form(self):
+        self.client.force_login(User.objects.create_user(username='b-buyer', password='pw-12345678'))
+        page = self.client.get(self.url)
+        self.assertContains(page, f'action="{self.bid_url}"')
+        self.assertNotContains(page, 'Влезте, за да направите оферта')
+        self.assertContains(page, '<button type="submit" class="text-button text-button-success ms-2"><i class="fas fa-gavel me-1"></i>Направи оферта</button>', html=True)
+
+    def test_seller_and_closed_auction_get_warning(self):
+        self.client.force_login(self.seller)
+        self.assertContains(self.client.get(self.url), self.cannot)
+        self.client.logout()
+        Auction.objects.filter(pk=self.auction.pk).update(is_active=False)
+        page = self.client.get(self.url)
+        self.assertContains(page, self.cannot)
+        self.assertNotContains(page, 'Влезте, за да направите оферта')
+
+
+class AuctionEuroPricesTest(TestCase):
+    def test_prices_are_shown_in_euro(self):
+        from auctions.models import Bid
+        seller = User.objects.create_user(username='eu-seller', password='pw-12345678')
+        buyer = User.objects.create_user(username='eu-buyer', password='pw-12345678')
+        Photographer.objects.get_or_create(user=buyer)
+        photo = Photo.objects.create(author=Photographer.objects.get_or_create(user=seller)[0], image='dummy_image.jpg')
+        now = timezone.now()
+        auction = Auction.objects.create(photo=photo, start_time=now, end_time=now + timedelta(days=1),
+                                         starting_bid=10, current_highest_bid=25, highest_bidder=buyer)
+        Bid.objects.create(auction=auction, bidder=buyer, amount=25)
+        self.client.force_login(buyer)
+        for url in (reverse('auction-list'), reverse('auction-detail', kwargs={'pk': auction.pk})):
+            page = self.client.get(url)
+            self.assertContains(page, '10.00 €')
+            self.assertContains(page, '25.00 €')
+            self.assertNotContains(page, 'лв')
+        self.assertContains(self.client.get(reverse('auction-detail', kwargs={'pk': auction.pk})), '<span class="input-addon">€</span>', html=True)
+
+
+class PaymentButtonsTest(TestCase):
+    def test_winner_sees_payment_link_and_payment_page_button(self):
+        winner = User.objects.create_user(username='winner', password='pw-12345678')
+        Photographer.objects.get_or_create(user=winner)
+        seller = Photographer.objects.get_or_create(user=User.objects.create_user(username='p-seller', password='pw-12345678'))[0]
+        now = timezone.now()
+        auction = Auction.objects.create(photo=Photo.objects.create(author=seller, image='dummy_image.jpg'),
+                                         start_time=now - timedelta(days=2), end_time=now - timedelta(hours=1),
+                                         starting_bid=5, current_highest_bid=30, highest_bidder=winner, is_active=False)
+        pay_url = reverse('auction-payment', kwargs={'pk': auction.pk})
+        self.client.force_login(winner)
+        page = self.client.get(reverse('auction-detail', kwargs={'pk': auction.pk}))
+        self.assertContains(page, f'<a href="{pay_url}" class="create-link"><i class="fas fa-credit-card me-1"></i>Към плащане</a>', html=True)
+        page = self.client.get(pay_url)
+        self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-credit-card me-1"></i>Завърши плащането</button>', html=True)

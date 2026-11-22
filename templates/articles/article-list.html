@@ -6,7 +6,7 @@
 {% block content %}
     <div class="text-center">
         {% if user.is_authenticated and user.photographer %}
-            <a href="{% url 'article-create' %}" class="custom-button custom-button-success"><i class="fas fa-newspaper me-2"></i>Създай нова статия</a>
+            <a href="{% url 'article-create' %}" class="create-link"><i class="fas fa-newspaper me-1"></i>Създай нова статия</a>
         {% elif user.is_authenticated and not user.photographer %}
             <p class="text-center">За да можете да пишете статии</p>
             <div class="message-alert info text-center">

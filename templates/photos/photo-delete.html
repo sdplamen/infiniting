@@ -11,8 +11,8 @@
     <p class="text-muted">Това действие е необратимо.</p>
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" class="custom-button custom-button-danger">Да, изтрий</button>
-        <a href="{% url 'photo-detail' pk=photo.pk %}" class="custom-button custom-button-secondary">Откажи</a>
+        <button type="submit" class="text-button text-button-danger"><i class="fas fa-trash-alt me-1"></i>Да, изтрий</button>
+        <a href="{% url 'photo-detail' pk=photo.pk %}" class="cancel-link">Откажи</a>
     </form>
 </div>
 {% endblock %}

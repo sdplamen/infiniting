@@ -153,7 +153,7 @@ class GroupCommentsTest(TestCase):
 
     def test_logged_out_and_empty_are_rejected(self):
         self.client.post(reverse('group-comment', kwargs={'pk': self.group.pk}), {'text': 'x'})
-        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари.')
+        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари')
         self.client.force_login(self.writer)
         self.client.post(reverse('group-comment', kwargs={'pk': self.group.pk}), {'text': ''})
         self.assertFalse(GroupComment.objects.exists())
@@ -238,3 +238,32 @@ class GroupApprovalVisibilityTest(TestCase):
         member_choices = {g.name for g in PhotoUploadForm(user=self.member).fields['group'].queryset}
         self.assertEqual(reader_choices, {'Видима'})
         self.assertEqual(member_choices, {'Видима', 'Скрита'})
+
+
+class GroupJoinTextButtonsTest(TestCase):
+    def test_join_and_leave_are_text_buttons_on_all_pages(self):
+        from users.models import Photographer
+        user = UserModel.objects.create_user(username='joiner2', password='pw-12345678')
+        profile = Photographer.objects.get_or_create(user=user)[0]
+        group = Group.objects.create(name='Портрет', author=UserModel.objects.create_user(username='gfounder', password='pw-12345678'), is_approved=True)
+        self.client.force_login(user)
+        join = '<i class="fas fa-plus-circle me-1"></i>Присъедини се'
+        for url in (reverse('group-list'), reverse('group-detail', kwargs={'pk': group.pk})):
+            self.assertContains(self.client.get(url), f'<button type="submit" class="text-button">{join}</button>', html=True)
+
+        group.members.add(user)
+        leave = '<i class="fas fa-sign-out-alt me-1"></i>'
+        self.assertContains(self.client.get(reverse('group-list')), f'<button type="submit" class="text-button text-button-danger">{leave}Напусни</button>', html=True)
+        self.assertContains(self.client.get(reverse('group-detail', kwargs={'pk': group.pk})), f'<button type="submit" class="text-button text-button-danger">{leave}Напусни групата</button>', html=True)
+        self.assertContains(self.client.get(reverse('user-profile-detail', kwargs={'pk': profile.pk})), f'<button type="submit" class="text-button text-button-danger ms-2">{leave}Напусни</button>', html=True)
+
+    def test_leave_on_profile_only_for_the_profile_owner(self):
+        from users.models import Photographer
+        owner = UserModel.objects.create_user(username='member-x', password='pw-12345678')
+        profile = Photographer.objects.get_or_create(user=owner)[0]
+        group = Group.objects.create(name='Пейзаж', author=owner, is_approved=True)
+        group.members.add(owner)
+        self.client.force_login(UserModel.objects.create_user(username='visitor-x', password='pw-12345678'))
+        page = self.client.get(reverse('user-profile-detail', kwargs={'pk': profile.pk}))
+        self.assertContains(page, 'Пейзаж')
+        self.assertNotContains(page, reverse('group-leave', kwargs={'pk': group.pk}))

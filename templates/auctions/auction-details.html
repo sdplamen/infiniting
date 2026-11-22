@@ -28,9 +28,9 @@
                     <p>Описание: {{ auction.photo.caption|default:'Няма описание на снимката.' }}</p>
                     <p>Начало на аукциона: <strong>{{ auction.start_time|date:"d M Y H:i" }}</strong></p>
                     <p>Край на аукциона: <strong>{{ auction.end_time|date:"d M Y H:i" }}</strong></p>
-                    <p>Начална оферта: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong></p>
+                    <p>Начална оферта: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} €</strong></p>
                     <p class="large-text">
-                        Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
+                        Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} €</strong>
                     </p>
                     {% if auction.highest_bidder %}
                         <p>С най-висока оферта: <a href="{% url 'user-profile-detail' pk=auction.highest_bidder.photographer.pk %}">{{ auction.highest_bidder.username }}</a></p>
@@ -48,8 +48,8 @@
                             {% csrf_token %}
                             <div class="form-field inline-form-field">
                                 {{ bid_form.amount }}
-                                <span class="input-addon">лв.</span>
-                                <button type="submit" class="custom-button custom-button-primary">Направи оферта</button>
+                                <span class="input-addon">€</span>
+                                <button type="submit" class="text-button text-button-success ms-2"><i class="fas fa-gavel me-1"></i>Направи оферта</button>
                             </div>
                             {% if bid_form.amount.errors %}
                                 <div class="errorlist">
@@ -66,15 +66,15 @@
                                 </div>
                             {% endif %}
                         </form>
-                    {% else %}
-                        <div class="text-center">
-                            <a href="{% url 'login' %}" class="custom-button custom-button-primary">Влезте, за да направите оферта</a>
-                        </div>
                     {% endif %}
                 </div>
+                {% elif not user.is_authenticated and auction.is_open %}
+                    <div class="text-center">
+                        <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да направите оферта</a>
+                    </div>
                 {% else %}
                     <div class="message-alert warning text-center">
-                        {% if not form.can_user_bid %}<p>Не можете да направите оферта за този аукцион.</p>{% endif %}
+                        <p>Не можете да направите оферта за този аукцион.</p>
                     </div>
                 {% endif %}
 
@@ -82,7 +82,7 @@
                     {% if form.user_won_auction %}
                         <p>Поздравления! Вие спечелихте този аукцион.</p>
                         <div class="text-center">
-                            <a href="{% url 'auction-payment' pk=auction.pk %}" class="custom-button custom-button-primary">Към плащане</a>
+                            <a href="{% url 'auction-payment' pk=auction.pk %}" class="create-link"><i class="fas fa-credit-card me-1"></i>Към плащане</a>
                         </div>
                     {% else %}
                         <p>Този аукцион е приключил.</p>
@@ -99,9 +99,7 @@
                 {% endif %}
 
                 <div class="text-center margin-top-large">
-                    <a href="{% url 'auction-list' %}" class="custom-button custom-button-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Към всички аукциони.
-                    </a>
+                    <a href="{% url 'auction-list' %}" class="back-link"><i class="fas fa-arrow-left me-1"></i>Към всички аукциони</a>
                 </div>
             </div>
         </div>
@@ -120,7 +118,7 @@
                                     <strong>{{ bid.bidder.username }}</strong>
                                 </a>
                                 направи оферта от
-                                <span class="text-success"><strong>{{ bid.amount|floatformat:2 }} лв.</strong></span>
+                                <span class="text-success"><strong>{{ bid.amount|floatformat:2 }} €</strong></span>
                             </div>
                             <small class="text-muted">{{ bid.bid_time|date:"d M Y H:i" }}</small>
                         </li>
@@ -142,11 +140,11 @@
                         {{ comment_form.text.label_tag }}
                         {{ comment_form.text }}
                     </div>
-                    <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                    <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
                 </form>
             {% else %}
                 <div class="text-center">
-                    <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                    <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
                 </div>
             {% endif %}
 

@@ -23,7 +23,7 @@
             {% if form.can_user_approve %}
                 <form action="{% url 'article-approve' article.pk %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-success custom-button-small">Потвърди статията</button>
+                    <button type="submit" class="text-button text-button-success"><i class="fas fa-check-circle me-1"></i>Потвърди статията</button>
                 </form>
             {% endif %}
             {% if form.can_user_edit_delete %}
@@ -43,11 +43,11 @@
                     {{ comment_form.text.label_tag }}
                     {{ comment_form.text }}
                 </div>
-                <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
             </form>
         {% else %}
             <div class="text-center">
-                <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
             </div>
         {% endif %}
 
@@ -76,7 +76,7 @@
     </div>
 
     <div class="text-center margin-top-large">
-        <a href="{% url 'article-list' %}" class="custom-button custom-button-primary"><i class="fas fa-arrow-left me-2"></i>Към всички статии</a>
+        <a href="{% url 'article-list' %}" class="back-link"><i class="fas fa-arrow-left me-1"></i>Към всички статии</a>
     </div>
 </div>
 {% endblock %}

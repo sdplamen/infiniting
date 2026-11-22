@@ -149,7 +149,7 @@ class ProfileCommentsTest(TestCase):
 
     def test_logged_out_and_empty_are_rejected(self):
         self.client.post(reverse('user-profile-comment', kwargs={'pk': self.profile.pk}), {'text': 'x'})
-        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари.')
+        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари')
         self.client.force_login(self.writer)
         self.client.post(reverse('user-profile-comment', kwargs={'pk': self.profile.pk}), {'text': ''})
         self.assertFalse(ProfileComment.objects.exists())
@@ -187,3 +187,30 @@ class ProfileCommentsTest(TestCase):
         for user, visible in ((self.writer, True), (self.owner, True), (self.stranger, False)):
             self.client.force_login(user)
             (self.assertContains if visible else self.assertNotContains)(self.client.get(self.detail), self._delete_url(comment))
+
+
+class FollowTextButtonsTest(TestCase):
+    def test_follow_and_unfollow_are_text_buttons_on_both_pages(self):
+        target = Photographer.objects.get_or_create(user=UserModel.objects.create_user(username='star', password='pw-12345678'))[0]
+        fan = UserModel.objects.create_user(username='fan2', password='pw-12345678')
+        self.client.force_login(fan)
+        pages = (reverse('user-profile-list'), reverse('user-profile-detail', kwargs={'pk': target.pk}))
+        for url in pages:
+            page = self.client.get(url)
+            self.assertContains(page, '<button type="submit" class="text-button"><i class="fas fa-user-plus me-1"></i>Последвай</button>', html=True)
+        self.client.post(reverse('user-follow', kwargs={'pk': target.user.pk}))
+        for url in pages:
+            page = self.client.get(url)
+            self.assertContains(page, '<button type="submit" class="text-button text-button-danger"><i class="fas fa-user-minus me-1"></i>Не следвай</button>', html=True)
+            self.assertNotContains(page, 'custom-button-small">Не следвай')
+
+
+class AuthPageButtonsTest(TestCase):
+    def test_sign_in_and_sign_up_are_text_buttons_and_still_work(self):
+        page = self.client.get(reverse('login'))
+        self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-sign-in-alt me-1"></i>Вход</button>', html=True)
+        page = self.client.get(reverse('register'))
+        self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-user-plus me-1"></i>Регистрация</button>', html=True)
+        UserModel.objects.create_user(username='signin', password='pw-12345678')
+        response = self.client.post(reverse('login'), {'username': 'signin', 'password': 'pw-12345678'})
+        self.assertEqual(response.status_code, 302)

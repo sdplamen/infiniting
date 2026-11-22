@@ -282,3 +282,105 @@ class PhotoCommentFormLookTest(TestCase):
         page = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
         self.assertContains(page, '>Коментар:</label>')
         self.assertContains(page, 'rows="3"')
+
+
+class BackLinksTest(TestCase):
+    """The 'Към всички …' links at the bottom of the detail pages are plain text links."""
+    def test_back_links_on_photo_article_and_auction_pages(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from articles.models import Article
+        from auctions.models import Auction
+        author = Photographer.objects.get_or_create(user=UserModel.objects.create_user(username='back', password='pw-12345678'))[0]
+        photo = Photo.objects.create(author=author, image='dummy_image.jpg')
+        article = Article.objects.create(title='т', content='с', author=author, is_approved=True)
+        now = timezone.now()
+        auction = Auction.objects.create(photo=photo, start_time=now, end_time=now + timedelta(days=1), starting_bid=1)
+        for page_url, list_url, label in (
+                (reverse('photo-detail', kwargs={'pk': photo.pk}), reverse('photo-home'), 'Към всички снимки'),
+                (reverse('article-detail', kwargs={'pk': article.pk}), reverse('article-list'), 'Към всички статии'),
+                (reverse('auction-detail', kwargs={'pk': auction.pk}), reverse('auction-list'), 'Към всички аукциони')):
+            page = self.client.get(page_url)
+            self.assertContains(page, f'<a href="{list_url}" class="back-link"><i class="fas fa-arrow-left me-1"></i>{label}</a>', html=True)
+            self.assertNotContains(page, f'{label}.')
+
+    def test_cancel_is_a_text_link_on_edit_and_delete_pages(self):
+        from articles.models import Article
+        from groups.models import Group
+        owner = UserModel.objects.create_user(username='canceller', password='pw-12345678')
+        author = Photographer.objects.get_or_create(user=owner)[0]
+        photo = Photo.objects.create(author=author, image='dummy_image.jpg')
+        article = Article.objects.create(title='т', content='с', author=author, is_approved=True)
+        group = Group.objects.create(name='Г', author=owner, is_approved=True)
+        self.client.force_login(owner)
+        pages = {
+            'photo-edit': (photo.pk, 'photo-detail'), 'photo-delete': (photo.pk, 'photo-detail'),
+            'article-edit': (article.pk, 'article-detail'), 'article-delete': (article.pk, 'article-detail'),
+            'group-edit': (group.pk, 'group-detail'), 'group-delete': (group.pk, 'group-detail'),
+            'user-profile-edit': (author.pk, 'user-profile-detail'), 'user-profile-delete': (author.pk, 'user-profile-detail'),
+        }
+        for name, (pk, back) in pages.items():
+            page = self.client.get(reverse(name, kwargs={'pk': pk}))
+            self.assertContains(page, f'<a href="{reverse(back, kwargs={"pk": pk})}" class="cancel-link">Откажи</a>', html=True, msg_prefix=name)
+            if name.endswith('-delete'):
+                self.assertContains(page, '<button type="submit" class="text-button text-button-danger"><i class="fas fa-trash-alt me-1"></i>Да, изтрий</button>', html=True, msg_prefix=name)
+            if name.endswith('-edit'):
+                self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-save me-1"></i>Запази промените</button>', html=True, msg_prefix=name)
+
+    def test_comment_login_links_return_to_the_same_page(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from urllib.parse import quote
+        from articles.models import Article
+        from auctions.models import Auction
+        from groups.models import Group
+        user = UserModel.objects.create_user(username='logger', password='pw-12345678')
+        author = Photographer.objects.get_or_create(user=user)[0]
+        photo = Photo.objects.create(author=author, image='dummy_image.jpg')
+        now = timezone.now()
+        pages = [
+            reverse('photo-detail', kwargs={'pk': photo.pk}),
+            reverse('article-detail', kwargs={'pk': Article.objects.create(title='т', content='с', author=author, is_approved=True).pk}),
+            reverse('group-detail', kwargs={'pk': Group.objects.create(name='Г2', author=user, is_approved=True).pk}),
+            reverse('auction-detail', kwargs={'pk': Auction.objects.create(photo=photo, start_time=now, end_time=now + timedelta(days=1), starting_bid=1).pk}),
+            reverse('user-profile-detail', kwargs={'pk': author.pk}),
+        ]
+        for url in pages:
+            login_url = f'{reverse("login")}?next={quote(url)}'
+            page = self.client.get(url)
+            self.assertContains(page, f'href="{login_url}" class="login-link"', msg_prefix=url)
+            self.assertNotContains(page, 'class="custom-button small-text">Влезте', msg_prefix=url)
+
+        # signing in through the link lands back on the page
+        response = self.client.post(f'{reverse("login")}?next={quote(pages[0], safe="")}', {'username': 'logger', 'password': 'pw-12345678'})
+        self.assertRedirects(response, pages[0])
+
+
+class AddCommentTextButtonTest(TestCase):
+    def test_add_comment_is_a_text_button(self):
+        user = UserModel.objects.create_user(username='commenter', password='pw-12345678')
+        photo = Photo.objects.create(author=Photographer.objects.get_or_create(user=user)[0], image='dummy_image.jpg')
+        self.client.force_login(user)
+        page = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
+        self.assertContains(page, '<button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button>', html=True)
+        self.assertNotContains(page, 'full-width">Добави коментар')
+
+
+class CreateLinksAndButtonsTest(TestCase):
+    def test_list_create_links_and_create_form_buttons(self):
+        staff = UserModel.objects.create_user(username='creator', password='pw-12345678', is_staff=True)
+        Photographer.objects.get_or_create(user=staff)
+        self.client.force_login(staff)
+        for list_name, create_name, label in (('photo-home', 'photo-create', 'Качи снимка'),
+                                              ('article-list', 'article-create', 'Създай нова статия'),
+                                              ('group-list', 'group-create', 'Създай нова група'),
+                                              ('auction-list', 'auction-create', 'Създай нов аукцион')):
+            page = self.client.get(reverse(list_name))
+            self.assertContains(page, f'href="{reverse(create_name)}" class="create-link"', msg_prefix=list_name)
+            self.assertContains(page, label, msg_prefix=list_name)
+        for create_name, label in (('photo-create', 'Качи снимка'), ('article-create', 'Публикувай статията'),
+                                   ('group-create', 'Създай група'), ('auction-create', 'Създай аукциона')):
+            page = self.client.get(reverse(create_name))
+            self.assertContains(page, 'class="text-button text-button-success"', msg_prefix=create_name)
+            self.assertContains(page, f'{label}</button>', msg_prefix=create_name)
+            self.assertNotContains(page, 'custom-button-primary full-width', msg_prefix=create_name)

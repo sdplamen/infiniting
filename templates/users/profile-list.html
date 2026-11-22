@@ -32,12 +32,12 @@
                     {% if user|is_following:profile.user %}
                         <form method="post" action="{% url 'user-unfollow' pk=profile.user.pk %}">
                             {% csrf_token %}
-                            <button type="submit" class="custom-button custom-button-danger custom-button-small">Не следвай</button>
+                            <button type="submit" class="text-button text-button-danger"><i class="fas fa-user-minus me-1"></i>Не следвай</button>
                         </form>
                     {% else %}
                         <form method="post" action="{% url 'user-follow' pk=profile.user.pk %}">
                             {% csrf_token %}
-                            <button type="submit" class="custom-button custom-button-success custom-button-small">Последвай</button>
+                            <button type="submit" class="text-button"><i class="fas fa-user-plus me-1"></i>Последвай</button>
                         </form>
                     {% endif %}
                 {% endif %}

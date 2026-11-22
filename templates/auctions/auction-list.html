@@ -7,7 +7,7 @@
 {% block content %}
     <div class="text-center">
         {% if user.is_authenticated and user.is_staff %}
-            <a href="{% url 'auction-create' %}" class="custom-button custom-button-success"><i class="fas fa-gavel me-2"></i>Създай нов аукцион</a>
+            <a href="{% url 'auction-create' %}" class="create-link"><i class="fas fa-gavel me-1"></i>Създай нов аукцион</a>
         {% endif %}
 
         <h2 class="text-center">Аукциони</h2>
@@ -35,10 +35,10 @@
                             <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
                         </p>
                         <p class="auction-price">
-                            Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} лв.</strong>
+                            Начална цена: <strong class="text-success">{{ auction.starting_bid|floatformat:2 }} €</strong>
                         </p>
                         <p class="auction-price">
-                            Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} лв.</strong>
+                            Текуща най-висока оферта: <strong class="text-primary">{{ auction.current_highest_bid|floatformat:2 }} €</strong>
                         </p>
                         {% if auction.highest_bidder %}
                             <p class="small-text">

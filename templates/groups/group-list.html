@@ -6,7 +6,7 @@
 {% block content %}
     <div class="text-center">
         {% if user.is_authenticated and user.photographer %}
-            <a href="{% url 'group-create' %}" class="custom-button custom-button-success"><i class="fas fa-plus-circle me-2"></i>Създай нова група</a>
+            <a href="{% url 'group-create' %}" class="create-link"><i class="fas fa-plus-circle me-1"></i>Създай нова група</a>
         {% elif user.is_authenticated and not user.photographer %}
             <p class="text-center">За да можете да създадете група</p>
             <div class="message-alert info text-center">
@@ -34,12 +34,12 @@
                             {% if user in group.members.all %}
                                 <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни</button>
+                                    <button type="submit" class="text-button text-button-danger"><i class="fas fa-sign-out-alt me-1"></i>Напусни</button>
                                 </form>
                             {% else %}
                                 <form method="POST" action="{% url 'group-join' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="custom-button custom-button-success custom-button-small">Присъедини се</button>
+                                    <button type="submit" class="text-button"><i class="fas fa-plus-circle me-1"></i>Присъедини се</button>
                                 </form>
                             {% endif %}
                         </div>

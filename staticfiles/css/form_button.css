@@ -113,3 +113,21 @@ form.inline-owner-actions { margin: 0 0 0 8px; }
 
 /* article list: marks a draft that only its author and approvers can see */
 .draft-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; color: #333; background-color: #ffc107; }
+
+/* "← Към всички …" at the bottom of detail pages: a plain text link, colour change on hover */
+a.back-link { border: 0; padding: 0; font-size: 0.95rem; }
+
+/* "Откажи" on edit/delete forms: a plain text link beside or under the main button */
+a.cancel-link { display: inline-block; border: 0; padding: 0; margin: 10px 12px; font-size: 0.95rem; }
+
+/* "Влезте, за да добавяте коментари" in comment sections: a plain text link */
+a.login-link { display: inline-block; border: 0; padding: 0; margin: 6px 0 10px; font-size: 0.95rem; }
+
+/* POST actions that should look like text links (follow / unfollow) */
+.text-button { border: 0; background: none; padding: 0; margin: 6px 0; color: #D4ECFC; font-size: 0.95rem; cursor: pointer; transition: color 0.2s ease; }
+.text-button:hover, .text-button:focus-visible { color: #00b3c7; }
+.text-button-danger:hover, .text-button-danger:focus-visible { color: #ff6b78; }
+.text-button-success:hover, .text-button-success:focus-visible { color: #3ddc84; }
+
+/* "Качи снимка" / "Създай нова …" at the top of lists: a text link with its icon */
+a.create-link { display: inline-block; border: 0; padding: 0; margin: 6px 0 10px; font-size: 1.05rem; font-weight: 600; }

@@ -10,18 +10,18 @@
             {% if form.is_member %}
                 <form action="{% url 'group-leave' pk=group.pk %}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни групата</button>
+                    <button type="submit" class="text-button text-button-danger"><i class="fas fa-sign-out-alt me-1"></i>Напусни групата</button>
                 </form>
             {% else %}
                 <form action="{% url 'group-join' pk=group.pk %}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-success custom-button-small">Присъедини се</button>
+                    <button type="submit" class="text-button"><i class="fas fa-plus-circle me-1"></i>Присъедини се</button>
                 </form>
             {% endif %}
             {% if form.can_user_approve %}
                 <form action="{% url 'group-approve' group.pk %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-success custom-button-small">Потвърди групата</button>
+                    <button type="submit" class="text-button text-button-success"><i class="fas fa-check-circle me-1"></i>Потвърди групата</button>
                 </form>
             {% endif %}
             {% if form.can_edit_group %}
@@ -65,13 +65,13 @@
                     {{ comment_form.text.label_tag }}
                     {{ comment_form.text }}
                 </div>
-                <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
             </form>
         {% elif user.is_authenticated %}
             <p class="text-center text-muted">Присъединете се към групата, за да коментирате.</p>
         {% else %}
             <div class="text-center">
-                <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
             </div>
         {% endif %}
 
