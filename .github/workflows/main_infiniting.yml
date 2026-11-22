@@ -52,10 +52,10 @@ jobs:
         with:
           name: python-app
       
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
-        with:
-          app-name: 'Infiniting'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8F2890706B754B15B904C637CD31290B }}
+#      - name: 'Deploy to Azure Web App'
+#        uses: azure/webapps-deploy@v3
+#        id: deploy-to-webapp
+#        with:
+#          app-name: 'Infiniting'
+#          slot-name: 'Production'
+#          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8F2890706B754B15B904C637CD31290B }}
