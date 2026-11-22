@@ -1,11 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from articles.forms import ArticleForm, ArticleDetailForm
+from articles.forms import ArticleForm, ArticleDetailForm, ArticleCommentForm
 from articles.mixins import ArticleApprovalMixin, AuthorRequiredTestMixin
-from articles.models import Article
+from articles.models import Article, ArticleComment
 from users.models import Photographer
 from django.core.mail import send_mail
 from django.conf import settings
@@ -13,7 +16,7 @@ from users.mixins import PaginationMixin
 
 
 # Create your views here.
-class ArticleListView(PaginationMixin, ListView):
+class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
     model = Article
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
@@ -27,7 +30,7 @@ class ArticleListView(PaginationMixin, ListView):
         context.update(pagination_data)
         return context
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(ArticleApprovalMixin, DetailView):
     model = Article
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'
@@ -36,6 +39,8 @@ class ArticleDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ArticleDetailForm(article=self.object, user=self.request.user)
+        context['comments'] = self.object.comments.select_related('user__photographer')
+        context['comment_form'] = ArticleCommentForm()
         return context
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
@@ -86,3 +91,29 @@ class ArticleApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request, pk) :
         return redirect('article-list')
+
+
+@login_required
+@require_POST
+def add_article_comment(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    if not article.is_approved:
+        raise PermissionDenied  # comments open once the article is approved
+    form = ArticleCommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.article = article
+        comment.save()
+    return redirect('article-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def delete_article_comment(request, pk, comment_pk):
+    """The comment's writer or the article's author may delete a comment."""
+    comment = get_object_or_404(ArticleComment.objects.select_related('article__author'), pk=comment_pk, article_id=pk)
+    if request.user.id not in (comment.user_id, comment.article.author.user_id):
+        raise PermissionDenied
+    comment.delete()
+    return redirect('article-detail', pk=pk)

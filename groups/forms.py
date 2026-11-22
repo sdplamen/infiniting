@@ -1,5 +1,5 @@
 from django import forms
-from .models import Group
+from .models import Group, GroupComment
 
 
 class GroupCreateForm(forms.ModelForm):
@@ -11,6 +11,14 @@ class GroupUpdateForm(forms.ModelForm):
     class Meta:
         model = Group
         fields = ['name', 'description', 'members']
+
+
+class GroupCommentForm(forms.ModelForm):
+    class Meta:
+        model = GroupComment
+        fields = ['text']
+        labels = {'text': 'Коментар'}
+        widgets = {'text': forms.Textarea(attrs={'rows': 3})}
 
 
 class GroupDetailForm(forms.Form):
@@ -25,9 +33,10 @@ class GroupDetailForm(forms.Form):
         return self.user in self.group.members.all()
 
     def can_edit_group(self):
+        """Author or staff: same rule as the edit/delete views."""
         if not self.user or not self.user.is_authenticated:
             return False
-        return self.user.is_staff
+        return self.user.is_staff or self.group.author_id == self.user.id
 
     def can_user_approve(self):
         if not self.user or not self.user.is_authenticated:

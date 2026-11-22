@@ -83,6 +83,33 @@ a.star-rating-static .star { cursor: pointer; }
 /* profile page: same round edit/delete icons, centred under the bio */
 .profile-actions { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
 
-/* article list: the title is the link to the full article */
-a.article-title-link:link, a.article-title-link:visited { color: inherit; border: 0; padding: 0; }
-a.article-title-link:hover, a.article-title-link:focus-visible { color: #00b3c7; background: none; text-shadow: none; font-weight: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+/* article and group lists: the title is the link to the full page; it only changes colour on hover */
+a.title-link:link, a.title-link:visited { color: inherit; border: 0; padding: 0; }
+a.title-link:hover, a.title-link:focus-visible { color: #00b3c7; background: none; text-shadow: none; font-weight: inherit; text-decoration: none; }
+
+/* group and article detail: action buttons and edit/delete icons on one centred row */
+.detail-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 10px 0 20px; }
+.detail-actions form { margin: 0; }
+
+/* a photo wrapped in a link: no global link border/padding/hover box */
+a.image-link, a.image-link:hover { display: block; border: 0; padding: 0; background: none; }
+
+/* photo detail, logged out: the thumb is a link to the login page */
+a.like-login-link, a.like-login-link:hover { border: 0; background: none; text-shadow: none; }
+a.like-login-link:hover i { color: #00b3c7; }
+
+/* list cards: the author's edit/delete icons, bottom right of the card */
+.card-owner-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
+/* compact lists (profile page articles): smaller icons at the end of the line */
+.inline-owner-actions { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
+.inline-owner-actions .owner-action { width: 26px; height: 26px; font-size: 0.75rem; }
+
+/* delete-comment bin is a <button> (POST form), so give it the link icons' colours */
+button.owner-action { background: none; cursor: pointer; }
+button.owner-action-delete { color: #ff6b78; }
+button.owner-action-delete:hover { background-color: #dc3545; border-color: #dc3545; color: #fff; }
+form.inline-owner-actions { margin: 0 0 0 8px; }
+
+/* article list: marks a draft that only its author and approvers can see */
+.draft-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; color: #333; background-color: #ffc107; }

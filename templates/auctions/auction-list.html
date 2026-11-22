@@ -25,12 +25,12 @@
             <div class="auction-grid-container">
                 <div class="card-custom">
                         {% if auction.photo.image %}
-                            <img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}" onclick="window.location.href='{% url 'auction-detail' pk=auction.pk %}'" style="cursor: pointer;">
+                            <a href="{% url 'auction-detail' pk=auction.pk %}" class="image-link" title="Виж детайли и направи оферта"><img src="{{ auction.photo.image.url }}" class="photo-display" alt="{{ auction.photo.caption|default:'Auction Photo' }}"></a>
                         {% else %}
                             <img src="https://placehold.co/500x350/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
                         {% endif %}
                     <div class="card-text-content">
-                        <h3>Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></h3>
+                        <h3><a href="{% url 'auction-detail' pk=auction.pk %}" class="title-link" title="Виж детайли и направи оферта">Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></a></h3>
                         <p class="text-muted small-text">
                             <i class="fas fa-camera me-1"></i> Автор: <a href="{% url 'user-profile-detail' pk=auction.photo.author.pk %}">{{ auction.photo.author.user.username }}</a>
                         </p>
@@ -50,9 +50,11 @@
                         <p class="small-text">
                             <i class="fas fa-clock me-1"></i> Край на: {{ auction.end_time|date:"d M Y H:i" }}
                         </p>
-                        <div class="text-center">
-                            <a href="{% url 'auction-detail' pk=auction.pk %}" class="custom-button custom-button-info custom-button-small">Виж детайли и направи оферта.</a>
-                        </div>
+                        {% if user.is_staff %}
+                            <div class="card-owner-actions">
+                                <form method="POST" action="{% url 'auction-deactivate' pk=auction.pk %}" class="m-0" onsubmit="return confirm('Деактивирай аукциона?');">{% csrf_token %}<button type="submit" class="owner-action owner-action-delete" title="Деактивирай аукциона" aria-label="Деактивирай аукциона"><i class="fas fa-ban"></i></button></form>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

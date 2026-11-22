@@ -18,20 +18,63 @@
         {{ article.content|linebreaksbr }}
     </div>
 
-    {% if form.can_user_edit_delete %}
-        <div class="actions-right">
-            <a href="{% url 'article-edit' pk=article.pk %}" class="custom-button custom-button-warning"><i class="fas fa-edit me-1"></i>Редактирай</a>
-            <a href="{% url 'article-delete' pk=article.pk %}" class="custom-button custom-button-danger"><i class="fas fa-trash-alt me-1"></i>Изтрий</a>
+    {% if form.can_user_edit_delete or form.can_user_approve %}
+        <div class="detail-actions">
+            {% if form.can_user_approve %}
+                <form action="{% url 'article-approve' article.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button custom-button-success custom-button-small">Потвърди статията</button>
+                </form>
+            {% endif %}
+            {% if form.can_user_edit_delete %}
+                <a href="{% url 'article-edit' pk=article.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай статията"><i class="fas fa-pen"></i></a>
+                <a href="{% url 'article-delete' pk=article.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий статията"><i class="fas fa-trash-alt"></i></a>
+            {% endif %}
         </div>
     {% endif %}
-    {% if form.can_user_approve %}
-        <div class="actions-right">
-            <form action="{% url 'article-approve' article.pk %}" method="post" style="display: inline;">
+    <div class="card-custom margin-top-large">
+        <h4>Коментари ({{ comments|length }})</h4>
+        {% if not article.is_approved %}
+            <p class="text-center text-muted">Коментарите ще бъдат отворени след одобрение на статията.</p>
+        {% elif user.is_authenticated %}
+            <form method="POST" action="{% url 'article-comment' pk=article.pk %}">
                 {% csrf_token %}
-                <button type="submit" class="custom-button custom-button-success">Потвърди статията</button>
+                <div class="form-field">
+                    {{ comment_form.text.label_tag }}
+                    {{ comment_form.text }}
+                </div>
+                <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
             </form>
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="text-center">
+                <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+            </div>
+        {% endif %}
+
+        {% if comments %}
+            <ul class="simple-list comment-list">
+                {% for comment in comments %}
+                    <li>
+                        <p>
+                            <i class="fas fa-user-circle me-1"></i>
+                            <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                            {{ comment.text }}
+                        </p>
+                        <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                        {% if user.is_authenticated %}{% if comment.user_id == user.id or form.can_user_edit_delete %}
+                            <form method="POST" action="{% url 'article-comment-delete' pk=article.pk comment_pk=comment.pk %}" class="inline-owner-actions" onsubmit="return confirm('Изтрий коментара?');">
+                                {% csrf_token %}
+                                <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        {% endif %}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">Все още няма коментари.</p>
+        {% endif %}
+    </div>
+
     <div class="text-center margin-top-large">
         <a href="{% url 'article-list' %}" class="custom-button custom-button-primary"><i class="fas fa-arrow-left me-2"></i>Към всички статии</a>
     </div>

@@ -1,0 +1,115 @@
+.form-field { display: block; color: #D4ECFC; font-size: 0.9em; list-style: none; padding: 0; margin-top: 5px; }
+.form-field label { display: block; margin-bottom: 5px; font-weight: bold; color: #D4ECFC; }
+.form-field input[type="text"], .form-field input[type="email"], .form-field input[type="password"], .form-field input[type="number"], .form-field input[type="datetime-local"], .form-field textarea, .form-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #005F99;
+    border-radius: 5px;
+    background-color: #001021;
+    color: #D4ECFC;
+    box-sizing: border-box;
+}
+.form-field input[type="text"], .form-field input[type="email"], .form-field input[type="password"], .form-field input[type="number"] { width: 50%; }
+.form-field select { width: 10%; }
+.form-field input[type="file"] { width: 100%; color: #D4ECFC; }
+.form-field .help-text { font-size: 0.8em; color: #A0B9D6; margin-top: 5px; }
+
+.custom-button {
+    background-color: #008999;
+    color: #D4ECFC;
+    margin: 5px auto;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+.custom-button:hover { background-color: #006F79; color: white; }
+.custom-button-primary { background-color: #008999; color: white; }
+.custom-button-secondary { background-color: #6c757d; color: white; }
+.custom-button-danger { background-color: #dc3545; color: white; }
+.custom-button-success { background-color: #28a745; color: white; }
+.custom-button-warning { background-color: #ffc107; color: #333; }
+.custom-button-info { background-color: #17a2b8; color: white; }
+
+.icon-button { border: none; background: none; padding: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #0095af; font-size: 1rem; }
+.icon-button i.bi { font-size: 1.2rem; line-height: 1; }
+.icon-button.icon-rate i.bi-star-fill { color: #ffc107; }
+.icon-button.icon-rate i.bi-star { color: #0095af; }
+.icon-like-toggle { border: none; background: none; padding: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.icon-like-toggle i { font-size: 1.2rem; color: #0095af; }
+.icon-like-toggle i.fas.fa-thumbs-up { color: #0095af; }
+.icon-button.icon-disabled i { color: #0095af; cursor: not-allowed; }
+.like-count, .rating-count { margin-left: 5px; font-size: 0.9rem; vertical-align: middle; }
+
+/* login / registration: centre every item, button lined up with the inputs */
+.form-centered,
+.form-centered .form-field,
+.form-centered .form-field label,
+.form-centered .help-text { text-align: center; }
+.form-centered .form-field input,
+.form-centered .form-field textarea,
+.form-centered .form-field select { display: block; margin-left: auto; margin-right: auto; }
+.form-centered .help-text ul { list-style-position: inside; padding-left: 0; }
+.form-centered .message-alert { margin-left: auto; margin-right: auto; }
+.form-centered .custom-button { display: block; width: 50%; margin: 20px auto 10px; }
+
+/* photo detail: like · rating · edit/delete on one row */
+.photo-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.photo-actions-bar > div { display: flex; align-items: center; gap: 4px; }
+.photo-actions-bar .owner-actions { margin-left: auto; gap: 8px; }
+.owner-action { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid currentColor; border-radius: 50%; font-size: 0.9rem; transition: background-color 0.2s ease, color 0.2s ease; }
+a.owner-action-edit:link, a.owner-action-edit:visited { color: #ffc107; }
+a.owner-action-delete:link, a.owner-action-delete:visited { color: #ff6b78; }
+a.owner-action-edit:hover { background-color: #ffc107; color: #333; text-shadow: none; }
+a.owner-action-delete:hover { background-color: #dc3545; border-color: #dc3545; color: #fff; text-shadow: none; }
+
+/* photo detail: 5-star rating. Stars sit in the DOM as 5..1 and row-reverse puts
+   them back as 1..5, so `.star:hover ~ .star` lights every star before the hovered one. */
+.star-rating { display: inline-flex; flex-direction: row-reverse; align-items: center; margin: 0; }
+.star-rating .star { border: 0; background: none; padding: 2px; margin: 0; line-height: 1; color: rgba(212, 236, 252, 0.3); font-size: 1.15rem; cursor: pointer; transition: color 0.15s ease, transform 0.15s ease; }
+.star-rating .star.is-on { color: #ffc107; }
+.star-rating:not(.star-rating-static):hover .star { color: rgba(212, 236, 252, 0.3); }
+.star-rating:not(.star-rating-static) .star:hover,
+.star-rating:not(.star-rating-static) .star:hover ~ .star { color: #ffc107; }
+.star-rating:not(.star-rating-static) .star:hover { transform: scale(1.15); }
+.star-rating .star:focus-visible { outline: 2px solid #008999; outline-offset: 1px; border-radius: 4px; }
+/* logged out: same stars, one link to the login page */
+a.star-rating-static { flex-direction: row; border: 0; padding: 0; }
+a.star-rating-static:hover { background: none; text-shadow: none; }
+a.star-rating-static .star { cursor: pointer; }
+
+/* profile page: same round edit/delete icons, centred under the bio */
+.profile-actions { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
+
+/* article and group lists: the title is the link to the full page; it only changes colour on hover */
+a.title-link:link, a.title-link:visited { color: inherit; border: 0; padding: 0; }
+a.title-link:hover, a.title-link:focus-visible { color: #00b3c7; background: none; text-shadow: none; font-weight: inherit; text-decoration: none; }
+
+/* group and article detail: action buttons and edit/delete icons on one centred row */
+.detail-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 10px 0 20px; }
+.detail-actions form { margin: 0; }
+
+/* a photo wrapped in a link: no global link border/padding/hover box */
+a.image-link, a.image-link:hover { display: block; border: 0; padding: 0; background: none; }
+
+/* photo detail, logged out: the thumb is a link to the login page */
+a.like-login-link, a.like-login-link:hover { border: 0; background: none; text-shadow: none; }
+a.like-login-link:hover i { color: #00b3c7; }
+
+/* list cards: the author's edit/delete icons, bottom right of the card */
+.card-owner-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
+/* compact lists (profile page articles): smaller icons at the end of the line */
+.inline-owner-actions { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
+.inline-owner-actions .owner-action { width: 26px; height: 26px; font-size: 0.75rem; }
+
+/* delete-comment bin is a <button> (POST form), so give it the link icons' colours */
+button.owner-action { background: none; cursor: pointer; }
+button.owner-action-delete { color: #ff6b78; }
+button.owner-action-delete:hover { background-color: #dc3545; border-color: #dc3545; color: #fff; }
+form.inline-owner-actions { margin: 0 0 0 8px; }
+
+/* article list: marks a draft that only its author and approvers can see */
+.draft-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; color: #333; background-color: #ffc107; }

@@ -10,13 +10,17 @@
         {% for photo in photos %}
             <div class="photo-grid-container">
                 <div class="card-custom">
-                    <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}" onclick="window.location.href='{% url 'photo-detail' pk=photo.pk %}'" style="cursor: pointer;">
-{#                    <a href="{% url 'photo-detail' pk=photo.pk %}"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}" style="cursor: pointer;"></a>#}
+                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}"></a>
                     <div class="card-body">
-                        <h5 class="card-title"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></h5>
+                        <h5 class="card-title"><a href="{% url 'photo-detail' pk=photo.pk %}" class="title-link" title="Виж детайли"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></a></h5>
                         <p class="card-text">Автор: <a href="{% url 'user-profile-detail' pk=photo.author.pk %}">{{ photo.author.user.username }}</a></p>
                         <p class="card-text">Качено на: {{ photo.uploaded_at|date:"d.m.Y H:i" }}</p>
-    {#                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="btn btn-primary">Виж детайли</a>#}
+                        {% if user.is_authenticated and photo.author.user_id == user.id %}
+                            <div class="card-owner-actions">
+                                <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
+                                <a href="{% url 'photo-delete' pk=photo.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий снимката"><i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

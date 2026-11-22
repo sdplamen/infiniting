@@ -11,5 +11,6 @@ urlpatterns = [
     path('<int:pk>/like/', views.like_photo, name='photo-like'),
     path('<int:pk>/unlike/', views.unlike_photo, name='photo-unlike'),
     path('<int:pk>/comment/', views.PhotoAddCommentView.as_view(), name='photo-comment'),
+    path('<int:pk>/comment/<int:comment_pk>/delete/', views.delete_comment, name='photo-comment-delete'),
     path('<int:pk>/rate/', views.PhotoAddRatingView.as_view(), name='photo-rate'),
 ]

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from photos.models import Photo
 
 User = get_user_model()
@@ -18,6 +19,11 @@ class Auction(models.Model) :
     def __str__(self) :
         return f'Auction for Photo {self.photo.id}'
 
+    @property
+    def comments_open(self):
+        """Comments are allowed until the auction ends or staff deactivate it."""
+        return self.is_active and self.end_time > timezone.now()
+
 
 class Bid(models.Model) :
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')
@@ -30,3 +36,16 @@ class Bid(models.Model) :
 
     def __str__(self) :
         return f'{self.bidder.username} bid {self.amount} on {self.auction.photo.id}'
+
+
+class AuctionComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='auction_comments')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.user.username} on auction {self.auction_id}'

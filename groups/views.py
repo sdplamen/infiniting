@@ -1,13 +1,16 @@
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from groups.forms import GroupCreateForm, GroupDetailForm
-from groups.mixins import GroupMemberRequiredMixin
-from groups.models import Group
+from groups.forms import GroupCreateForm, GroupDetailForm, GroupCommentForm
+from groups.mixins import GroupOwnerOrStaffRequiredMixin, GroupApprovalMixin
+from groups.models import Group, GroupComment
 from users.mixins import PaginationMixin
 
 
@@ -19,19 +22,20 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('group-list')
 
     def form_valid(self, form):
+        form.instance.author = self.request.user  # required field; the form doesn't include it
         response = super().form_valid(form)
         self.object.members.add(self.request.user)
         return response
 
 
-class GroupListView(PaginationMixin, ListView):
+class GroupListView(GroupApprovalMixin, PaginationMixin, ListView):
     model = Group
     template_name = 'groups/group-list.html'
     context_object_name = 'groups'
     paginate_by = 5
 
     def get_queryset(self):
-        return Group.objects.all().order_by('name')
+        return super().get_queryset().order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,7 +44,7 @@ class GroupListView(PaginationMixin, ListView):
         context.update(pagination_data)
         return context
 
-class GroupDetailView(PaginationMixin, DetailView):
+class GroupDetailView(GroupApprovalMixin, PaginationMixin, DetailView):
     model = Group
     template_name = 'groups/group-detail.html'
     context_object_name = 'group'
@@ -53,9 +57,11 @@ class GroupDetailView(PaginationMixin, DetailView):
         context.update(pagination_data)
         context['photos'] = context['page_obj']
         context['form'] = GroupDetailForm(group=self.object, user=self.request.user)
+        context['comments'] = self.object.comments.select_related('user__photographer')
+        context['comment_form'] = GroupCommentForm()
         return context
 
-class GroupUpdateView(LoginRequiredMixin, GroupMemberRequiredMixin, UpdateView):
+class GroupUpdateView(LoginRequiredMixin, GroupOwnerOrStaffRequiredMixin, UpdateView):
     model = Group
     form_class = GroupCreateForm
     template_name = 'groups/group-edit.html'
@@ -64,13 +70,15 @@ class GroupUpdateView(LoginRequiredMixin, GroupMemberRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('group-detail', kwargs={'pk': self.object.pk})
 
-class GroupDeleteView(LoginRequiredMixin, GroupMemberRequiredMixin, DeleteView):
+class GroupDeleteView(LoginRequiredMixin, GroupOwnerOrStaffRequiredMixin, DeleteView):
     model = Group
     template_name = 'groups/group-delete.html'
     success_url = reverse_lazy('group-list')  # Corrected
 
 def _handle_group_membership_change(request, pk, action_type):
-    group = get_object_or_404(Group, pk=pk)
+    # joining needs a group the user can see; leaving works for any group they are in
+    groups = Group.visible_to(request.user) if action_type == 'add' else Group.objects.all()
+    group = get_object_or_404(groups, pk=pk)
 
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -107,3 +115,30 @@ class GroupApproveView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request, pk) :
         return redirect('group-list')
+
+
+@login_required
+@require_POST
+def add_group_comment(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    if not group.members.filter(pk=request.user.pk).exists():
+        raise PermissionDenied  # only members take part in a group's discussion
+    form = GroupCommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.group = group
+        comment.save()
+    return redirect('group-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def delete_group_comment(request, pk, comment_pk):
+    """The comment's writer, the group's author or staff may delete a comment."""
+    comment = get_object_or_404(GroupComment.objects.select_related('group'), pk=comment_pk, group_id=pk)
+    user = request.user
+    if not (user.is_staff or user.id in (comment.user_id, comment.group.author_id)):
+        raise PermissionDenied
+    comment.delete()
+    return redirect('group-detail', pk=pk)

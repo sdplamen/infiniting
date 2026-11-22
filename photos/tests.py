@@ -179,3 +179,106 @@ class StarRatingTest(TestCase):
         page = self.client.get(self.url)
         self.assertContains(page, 'class="star-rating star-rating-static"')
         self.assertNotContains(page, 'name="score"')
+
+
+class PhotoListTitleLinkTest(TestCase):
+    def test_title_links_to_photo_detail(self):
+        author = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='shooter', password='pw-12345678'))[0]
+        photo = Photo.objects.create(author=author, image='dummy_image.jpg', caption='Залез')
+        detail_url = reverse('photo-detail', kwargs={'pk': photo.pk})
+
+        page = self.client.get(reverse('photo-home'))
+        self.assertContains(page, f'<a href="{detail_url}" class="image-link"')
+        self.assertNotContains(page, 'onclick="window.location.href')
+        self.assertContains(page, f'<a href="{detail_url}" class="title-link"')
+        self.assertContains(page, '<strong>Залез</strong>')
+        self.assertNotContains(page, 'Виж детайли</a>')
+
+
+class PhotoDetailLinksTest(TestCase):
+    def setUp(self):
+        author = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='snap', password='pw-12345678'))[0]
+        self.photo = Photo.objects.create(author=author, image='dummy_image.jpg', caption='Мост')
+        self.url = reverse('photo-detail', kwargs={'pk': self.photo.pk})
+
+    def test_photo_is_a_link_to_full_size(self):
+        page = self.client.get(self.url)
+        self.assertContains(page, f'<a href="{reverse("photo-full-photo", args=[self.photo.pk])}" class="image-link"')
+        self.assertNotContains(page, 'onclick="window.location.href')
+
+    def test_logged_out_like_is_login_link(self):
+        page = self.client.get(self.url)
+        self.assertContains(page, f'<a href="{reverse("login")}" class="icon-like-toggle like-login-link"')
+        self.assertNotContains(page, 'Влезте, за да харесате</a>')
+
+
+class PhotoListOwnerIconsTest(TestCase):
+    def setUp(self):
+        self.me = UserModel.objects.create_user(username='me-photo', password='pw-12345678')
+        other = UserModel.objects.create_user(username='other-photo', password='pw-12345678')
+        self.mine = Photo.objects.create(author=Photographer.objects.get_or_create(user=self.me)[0], image='dummy_image.jpg')
+        self.theirs = Photo.objects.create(author=Photographer.objects.get_or_create(user=other)[0], image='dummy_image.jpg')
+
+    def test_icons_only_on_own_photos(self):
+        self.client.force_login(self.me)
+        page = self.client.get(reverse('photo-home'))
+        self.assertContains(page, f'href="{reverse("photo-edit", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-edit"')
+        self.assertContains(page, f'href="{reverse("photo-delete", kwargs={"pk": self.mine.pk})}" class="owner-action owner-action-delete"')
+        self.assertNotContains(page, reverse('photo-edit', kwargs={'pk': self.theirs.pk}))
+        self.assertContains(page, 'card-owner-actions', count=1)
+
+    def test_logged_out_sees_no_icons(self):
+        self.assertNotContains(self.client.get(reverse('photo-home')), 'owner-action')
+
+
+from photos.models import Comment
+
+
+class CommentDeleteTest(TestCase):
+    def setUp(self):
+        self.owner = UserModel.objects.create_user(username='p-owner', password='pw-12345678')
+        self.writer = UserModel.objects.create_user(username='c-writer', password='pw-12345678')
+        self.stranger = UserModel.objects.create_user(username='stranger', password='pw-12345678')
+        self.photo = Photo.objects.create(author=Photographer.objects.get_or_create(user=self.owner)[0], image='dummy_image.jpg')
+        Photographer.objects.get_or_create(user=self.writer)
+
+    def _comment(self):
+        return Comment.objects.create(user=self.writer, photo=self.photo, text='Хубаво!')
+
+    def _url(self, comment):
+        return reverse('photo-comment-delete', kwargs={'pk': self.photo.pk, 'comment_pk': comment.pk})
+
+    def test_writer_and_photo_owner_can_delete(self):
+        for user in (self.writer, self.owner):
+            comment = self._comment()
+            self.client.force_login(user)
+            response = self.client.post(self._url(comment))
+            self.assertRedirects(response, reverse('photo-detail', kwargs={'pk': self.photo.pk}))
+            self.assertFalse(Comment.objects.filter(pk=comment.pk).exists())
+
+    def test_others_get_403_and_get_is_refused(self):
+        comment = self._comment()
+        self.client.force_login(self.stranger)
+        self.assertEqual(self.client.post(self._url(comment)).status_code, 403)
+        self.client.force_login(self.writer)
+        self.assertEqual(self.client.get(self._url(comment)).status_code, 405)
+        self.assertTrue(Comment.objects.filter(pk=comment.pk).exists())
+
+    def test_bin_shown_to_writer_and_owner_only(self):
+        comment = self._comment()
+        detail = reverse('photo-detail', kwargs={'pk': self.photo.pk})
+        for user, visible in ((self.writer, True), (self.owner, True), (self.stranger, False)):
+            self.client.force_login(user)
+            (self.assertContains if visible else self.assertNotContains)(self.client.get(detail), self._url(comment))
+
+
+class PhotoCommentFormLookTest(TestCase):
+    def test_label_and_size_match_other_comment_forms(self):
+        viewer = UserModel.objects.create_user(username='look', password='pw-12345678')
+        photo = Photo.objects.create(author=Photographer.objects.get_or_create(user=viewer)[0], image='dummy_image.jpg')
+        self.client.force_login(viewer)
+        page = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
+        self.assertContains(page, '>Коментар:</label>')
+        self.assertContains(page, 'rows="3"')

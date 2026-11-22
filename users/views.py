@@ -2,14 +2,15 @@ from django.contrib.auth import get_user_model, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from photos.models import Photo
-from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm
+from users.forms import CustomUserCreationForm, PhotographerProfileForm, ProfileDetailForm, ProfileCommentForm
 from users.mixins import UserIsProfileOwnerMixin, PaginationMixin
-from users.models import Photographer
+from users.models import Photographer, ProfileComment
 
 UserModel = get_user_model()
 
@@ -94,6 +95,14 @@ class ProfileDetailView(PaginationMixin, DetailView):
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
         context['followers'] = self.object.user.followers.all()
         context['following'] = self.object.user.following.all()
+        context['comments'] = self.object.comments.select_related('user__photographer')
+        # drafts are shown only to their author and to approvers (same rule as the articles list)
+        articles = self.object.articles.order_by('-created_at')
+        viewer = self.request.user
+        if not (viewer.id == self.object.user_id or viewer.has_perm('articles.can_approve_articles')):
+            articles = articles.filter(is_approved=True)
+        context['articles'] = articles
+        context['comment_form'] = ProfileCommentForm()
 
         if self.request.user.is_authenticated:
             context['is_following_photographer'] = self.request.user.following.filter(
@@ -165,3 +174,30 @@ def follow_user(request, pk):
 @require_POST
 def unfollow_user(request, pk):
     return _handle_follow_action(request, pk, 'unfollow')
+
+
+@login_required
+@require_POST
+def add_profile_comment(request, pk):
+    photographer = get_object_or_404(Photographer, pk=pk)
+    is_owner = request.user.id == photographer.user_id
+    if not (is_owner or request.user.following.filter(followed_id=photographer.user_id).exists()):
+        raise PermissionDenied  # only followers (and the owner, to reply) may comment
+    form = ProfileCommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.photographer = photographer
+        comment.save()
+    return redirect('user-profile-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def delete_profile_comment(request, pk, comment_pk):
+    """The comment's writer or the profile's owner may delete a comment."""
+    comment = get_object_or_404(ProfileComment.objects.select_related('photographer'), pk=comment_pk, photographer_id=pk)
+    if request.user.id not in (comment.user_id, comment.photographer.user_id):
+        raise PermissionDenied
+    comment.delete()
+    return redirect('user-profile-detail', pk=pk)

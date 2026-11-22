@@ -1,4 +1,5 @@
 from django import forms
+from groups.models import Group
 from .models import Photo, Comment, Rating
 
 
@@ -7,10 +8,18 @@ class PhotoUploadForm(forms.ModelForm):
         model = Photo
         fields = ['image', 'caption', 'group']
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            # approved groups, plus unapproved ones the user created or belongs to
+            self.fields['group'].queryset = Group.visible_to(user).order_by('name')
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+        labels = {'text': 'Коментар'}
+        widgets = {'text': forms.Textarea(attrs={'rows': 3})}
 
 class RatingForm(forms.ModelForm):
     class Meta:

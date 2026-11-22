@@ -1,11 +1,19 @@
 from django import forms
-from .models import Article
+from .models import Article, ArticleComment
 
 
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = ['title', 'content']
+
+
+class ArticleCommentForm(forms.ModelForm):
+    class Meta:
+        model = ArticleComment
+        fields = ['text']
+        labels = {'text': 'Коментар'}
+        widgets = {'text': forms.Textarea(attrs={'rows': 3})}
 
 
 class ArticleDetailForm(forms.Form):

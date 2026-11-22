@@ -1,5 +1,5 @@
 from django import forms
-from .models import Photographer
+from .models import Photographer, ProfileComment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -26,3 +26,11 @@ class ProfileDetailForm(forms.Form):
 
     def can_leave_group(self, group):
         return self.user.is_authenticated and self.user in group.members.all()
+
+
+class ProfileCommentForm(forms.ModelForm):
+    class Meta:
+        model = ProfileComment
+        fields = ['text']
+        labels = {'text': 'Коментар'}
+        widgets = {'text': forms.Textarea(attrs={'rows': 3})}

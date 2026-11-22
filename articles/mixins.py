@@ -1,11 +1,17 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db.models import Q
 
 
 class ArticleApprovalMixin:
+    """Unapproved articles are visible only to approvers and to their own author."""
     def get_queryset(self):
         queryset = super().get_queryset()
-        if not self.request.user.has_perm('articles.can_approve_articles'):
-            queryset = queryset.filter(is_approved=True)
+        user = self.request.user
+        if not user.has_perm('articles.can_approve_articles'):
+            visible = Q(is_approved=True)
+            if user.is_authenticated:
+                visible |= Q(author__user=user)
+            queryset = queryset.filter(visible)
         return queryset
 
 class AuthorRequiredTestMixin(UserPassesTestMixin):

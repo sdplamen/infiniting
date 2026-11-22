@@ -3,41 +3,48 @@
 {% block content %}
 <div class="text-center">
     <h2>{{ group.name }}</h2>
+    {% if not group.is_approved %}<p><span class="draft-badge">Чака одобрение</span></p>{% endif %}
     <p>{{ group.description|default:'Няма описание' }}</p>
     {% if user.is_authenticated %}
-        {% if form.is_member %}
-            <form action="{% url 'group-leave' pk=group.pk %}" method="POST" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Напусни групата</button>
-            </form>
-        {% else %}
-            <form action="{% url 'group-join' pk=group.pk %}" method="POST" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success">Присъедини се</button>
-            </form>
-        {% endif %}
-        {% if form.can_edit_group %}
-            <a href="{% url 'group-edit' pk=group.pk %}" class="btn btn-warning">Редактирай групата</a>
-        {% endif %}
-        {% if form.can_user_approve %}
-            <div class="groups-right">
-                <form action="{% url 'group-approve' group.pk %}" method="post" style="display: inline;">
+        <div class="detail-actions">
+            {% if form.is_member %}
+                <form action="{% url 'group-leave' pk=group.pk %}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="custom-button custom-button-success">Потвърди групата</button>
+                    <button type="submit" class="custom-button custom-button-danger custom-button-small">Напусни групата</button>
                 </form>
-            </div>
-        {% endif %}
+            {% else %}
+                <form action="{% url 'group-join' pk=group.pk %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button custom-button-success custom-button-small">Присъедини се</button>
+                </form>
+            {% endif %}
+            {% if form.can_user_approve %}
+                <form action="{% url 'group-approve' group.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="custom-button custom-button-success custom-button-small">Потвърди групата</button>
+                </form>
+            {% endif %}
+            {% if form.can_edit_group %}
+                <a href="{% url 'group-edit' pk=group.pk %}" class="owner-action owner-action-edit" title="Редактирай групата" aria-label="Редактирай групата"><i class="fas fa-pen"></i></a>
+                <a href="{% url 'group-delete' pk=group.pk %}" class="owner-action owner-action-delete" title="Изтрий групата" aria-label="Изтрий групата"><i class="fas fa-trash-alt"></i></a>
+            {% endif %}
+        </div>
     {% endif %}
     <h3>Снимки в групата</h3>
     <div>
         {% for photo in photos %}
             <div class="text-center">
                 <div class="card-custom">
-                    <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}" onclick="window.location.href='{% url 'photo-detail' pk=photo.pk %}'" style="cursor: pointer;">
+                    <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}"></a>
                     <div class="card-body">
-                        <h5 class="card-title"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></h5>
+                        <h5 class="card-title"><a href="{% url 'photo-detail' pk=photo.pk %}" class="title-link" title="Виж детайли"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></a></h5>
                         <p class="card-text">Автор: <a href="{% url 'user-profile-detail' pk=photo.author.pk %}">{{ photo.author.user.username }}</a></p>
-{#                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="btn btn-primary">Виж детайли</a>#}
+                        {% if user.is_authenticated and photo.author.user_id == user.id %}
+                            <div class="card-owner-actions">
+                                <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
+                                <a href="{% url 'photo-delete' pk=photo.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий снимката"><i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -48,5 +55,48 @@
     {% if is_paginated %}
         {% include 'paginator.html' %}
     {% endif %}
+
+    <div class="card-custom margin-top-large text-start">
+        <h4>Коментари ({{ comments|length }})</h4>
+        {% if form.is_member %}
+            <form method="POST" action="{% url 'group-comment' pk=group.pk %}">
+                {% csrf_token %}
+                <div class="form-field">
+                    {{ comment_form.text.label_tag }}
+                    {{ comment_form.text }}
+                </div>
+                <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+            </form>
+        {% elif user.is_authenticated %}
+            <p class="text-center text-muted">Присъединете се към групата, за да коментирате.</p>
+        {% else %}
+            <div class="text-center">
+                <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+            </div>
+        {% endif %}
+
+        {% if comments %}
+            <ul class="simple-list comment-list">
+                {% for comment in comments %}
+                    <li>
+                        <p>
+                            <i class="fas fa-user-circle me-1"></i>
+                            <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                            {{ comment.text }}
+                        </p>
+                        <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                        {% if user.is_authenticated %}{% if comment.user_id == user.id or form.can_edit_group %}
+                            <form method="POST" action="{% url 'group-comment-delete' pk=group.pk comment_pk=comment.pk %}" class="inline-owner-actions" onsubmit="return confirm('Изтрий коментара?');">
+                                {% csrf_token %}
+                                <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        {% endif %}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">Все още няма коментари.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

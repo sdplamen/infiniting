@@ -1,10 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailForm
-from photos.models import Photo, Like, Rating
+from photos.models import Photo, Like, Rating, Comment
 from users.models import Photographer
 from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
 from users.mixins import PaginationMixin
@@ -67,6 +69,9 @@ class PhotoDetailView(DetailView):
 class PhotoCreateView(LoginRequiredMixin, CreateView):
     model = Photo
     form_class = PhotoUploadForm
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
     template_name = 'photos/photo-create.html'
     success_url = reverse_lazy('photo-home')
 
@@ -82,6 +87,9 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
 class PhotoUpdateView(LoginRequiredMixin, UserIsObjectAuthorMixin, UpdateView):
     model = Photo
     form_class = PhotoUploadForm
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
     template_name = 'photos/photo-edit.html'
     pk_url_kwarg = 'pk'
 
@@ -132,3 +140,14 @@ class PhotoAddRatingView(PhotoFormProcessingMixin):
             defaults={'score': form.cleaned_data['score']}
         )
         return super().form_valid(form)
+
+
+@login_required
+@require_POST
+def delete_comment(request, pk, comment_pk):
+    """The comment's writer or the photo's author may delete a comment."""
+    comment = get_object_or_404(Comment.objects.select_related('photo__author'), pk=comment_pk, photo_id=pk)
+    if request.user.id not in (comment.user_id, comment.photo.author.user_id):
+        raise PermissionDenied
+    comment.delete()
+    return redirect('photo-detail', pk=pk)

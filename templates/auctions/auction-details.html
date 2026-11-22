@@ -11,14 +11,14 @@
         <div class="card-custom large-card">
             <div class="auction-image-container">
                 {% if auction.photo.image %}
-                    <img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}" style="cursor: pointer;">
+                    <a href="{% url 'photo-full-photo' auction.photo.pk %}" class="image-link" title="Виж снимката в пълен размер"><img src="{{ auction.photo.image.url }}" class="photo-display-large" alt="{{ auction.photo.caption|default:'Auction Photo' }}"></a>
                 {% else %}
                     <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
                 {% endif %}
             </div>
 
             <div class="card-text-content">
-                <h3>Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></h3>
+                <h3><a href="{% url 'photo-detail' pk=auction.photo.pk %}" class="title-link" title="Виж снимката">Аукцион за <strong>{{ auction.photo.caption|default:'Снимка' }}</strong></a></h3>
 
                 <div class="auction-meta">
                     <p class="text-muted small-text">
@@ -49,7 +49,7 @@
                             <div class="form-field inline-form-field">
                                 {{ bid_form.amount }}
                                 <span class="input-addon">лв.</span>
-                                <button type="submit" class="custom-button custom-button-primary">Направи оферta</button>
+                                <button type="submit" class="custom-button custom-button-primary">Направи оферта</button>
                             </div>
                             {% if bid_form.amount.errors %}
                                 <div class="errorlist">
@@ -92,8 +92,9 @@
                 <hr class="custom-hr">
 
                 {% if form.can_show_admin_actions and not form.auction_ended %}
-                    <div class="text-center admin-actions">
-                        <a href="{% url 'auction-deactivate' pk=auction.pk %}" class="custom-button custom-button-danger">Деактивирай аукциона</a>
+                    <div class="detail-actions">
+                        {# POST-only and there is no confirmation page, so ask first #}
+                        <form method="POST" action="{% url 'auction-deactivate' pk=auction.pk %}" class="m-0" onsubmit="return confirm('Деактивирай аукциона?');">{% csrf_token %}<button type="submit" class="owner-action owner-action-delete" title="Деактивирай аукциона" aria-label="Деактивирай аукциона"><i class="fas fa-ban"></i></button></form>
                     </div>
                 {% endif %}
 
@@ -127,6 +128,49 @@
                 </ul>
             {% else %}
                 <p class="text-center">Все още няма оферти за този аукцион.</p>
+            {% endif %}
+        </div>
+
+        <div class="card-custom">
+            <h4>Коментари ({{ comments|length }})</h4>
+            {% if not auction.comments_open %}
+                <p class="text-center text-muted">Аукционът е приключил. Коментарите са затворени.</p>
+            {% elif user.is_authenticated %}
+                <form method="POST" action="{% url 'auction-comment' pk=auction.pk %}">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        {{ comment_form.text.label_tag }}
+                        {{ comment_form.text }}
+                    </div>
+                    <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                </form>
+            {% else %}
+                <div class="text-center">
+                    <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                </div>
+            {% endif %}
+
+            {% if comments %}
+                <ul class="simple-list comment-list">
+                    {% for comment in comments %}
+                        <li>
+                            <p>
+                                <i class="fas fa-user-circle me-1"></i>
+                                <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                                {{ comment.text }}
+                            </p>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                            {% if user.is_authenticated %}{% if comment.user_id == user.id or user.is_staff %}
+                                <form method="POST" action="{% url 'auction-comment-delete' pk=auction.pk comment_pk=comment.pk %}" class="inline-owner-actions" onsubmit="return confirm('Изтрий коментара?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                            {% endif %}{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Все още няма коментари.</p>
             {% endif %}
         </div>
     </div>

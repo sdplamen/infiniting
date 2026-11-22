@@ -1,14 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, DetailView, FormView
-from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm
+from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm, AuctionCommentForm
 from auctions.mixins import StaffOrSuperuserRequiredMixin
-from auctions.models import Auction
+from auctions.models import Auction, AuctionComment
 from users.mixins import PaginationMixin
 
 
@@ -50,6 +52,8 @@ class AuctionDetailView(DetailView):
         user = self.request.user
 
         context['bids'] = auction.bids.all()
+        context['comments'] = auction.comments.select_related('user__photographer')
+        context['comment_form'] = AuctionCommentForm()
         context['now'] = timezone.now()
 
         auction_detail_form = AuctionDetailForm(auction=auction, user=user)
@@ -105,13 +109,15 @@ class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, F
     form_class = DeactivateAuctionForm
     # template_name = 'auctions/auction-deactivate.html'
     success_url = reverse_lazy('auction-list')
+    # POST only: opening the URL (a link, a prefetch) must not deactivate anything
+    http_method_names = ['post']
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         auction = get_object_or_404(self.model, pk=self.kwargs.get('pk'))
         if auction.is_active:
             auction.is_active = False
             auction.save()
-            messages.success(request, f"Aукционът '{auction.pk}' е деактивиран.")
+            messages.success(request, f"Аукционът '{auction.pk}' е деактивиран.")
         else:
             messages.warning(request, 'Аукционът вече е деактивиран.')
         return self.redirect_to_success_url()
@@ -156,3 +162,29 @@ class PaymentView(LoginRequiredMixin, FormView):
             messages.error(self.request, 'Вие не спечелихте тази аукцион.')
 
         return redirect(self.success_url)
+
+
+@login_required
+@require_POST
+def add_auction_comment(request, pk):
+    auction = get_object_or_404(Auction, pk=pk)
+    if not auction.comments_open:
+        raise PermissionDenied  # ended or deactivated: comments are read-only
+    form = AuctionCommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.auction = auction
+        comment.save()
+    return redirect('auction-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def delete_auction_comment(request, pk, comment_pk):
+    """The comment's writer or staff may delete a comment (auctions are run by staff)."""
+    comment = get_object_or_404(AuctionComment, pk=comment_pk, auction_id=pk)
+    if not (request.user.is_staff or request.user.id == comment.user_id):
+        raise PermissionDenied
+    comment.delete()
+    return redirect('auction-detail', pk=pk)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from groups.models import Group
+from groups.models import Group, GroupComment
 
 
 # Register your models here.
@@ -9,3 +9,9 @@ class GroupAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     filter = ('created_at',)
     ordering = ('name',)
+
+
+@admin.register(GroupComment)
+class GroupCommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'group', 'created_at')
+    search_fields = ('text',)

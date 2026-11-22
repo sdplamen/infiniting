@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static follow_tags %}
 
 {% block title %}Всички профили{% endblock %}
 
@@ -7,30 +7,39 @@
     <h2 class="text-center">Всички профили</h2>
     {% if user.is_authenticated and not user.photographer %}
         <div class="message-alert info text-center">
-            Все още нямате профил. <a href="{% url 'profile-create' %}" class="alert-link">Създайте го сега!</a>
+            Все още нямате профил. <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте го сега!</a>
         </div>
     {% endif %}
 
     <div class="profile-grid-container">
-        {% for profile in photographer %}
+        {% for profile in photographers %}
             <div class="card-custom text-center flex-item">
                 {% if profile.profile_picture %}
                     <img src="{{ profile.profile_picture.url }}" class="profile-picture-small" alt="{{ profile.user.username }}">
                 {% else %}
                     <i class="fas fa-user-circle default-profile-icon"></i>
                 {% endif %}
-                <h3>{{ profile.user.username }}</h3>
+                <h3><a href="{% url 'user-profile-detail' pk=profile.pk %}" class="title-link" title="Виж профила">{{ profile.user.username }}</a></h3>
                 <p class="text-muted">Член от {{ profile.created_at|date:"d M Y" }}</p>
                 <p>{{ profile.bio|truncatechars:100|default:'Няма биография.' }}</p>
-                <a href="{% url 'user-profile-detail' pk=profile.pk %}" class="custom-button custom-button-secondary">Виж профила.</a>
-                {% if user.is_authenticated %}
-                    <p class="text-muted">
-                        {% if profile.is_following_photographer %}
-                            Следвате този фотограф
-                        {% else %}
-                            <a href="{% url 'follow-user' pk=profile.user.pk %}" class="custom-button custom-button-success">Последвай</a>
-                        {% endif %}
-                    </p>
+                {% if user.is_authenticated and user.id == profile.user_id %}
+                    <div class="profile-actions">
+                        <a href="{% url 'user-profile-edit' pk=profile.pk %}" class="owner-action owner-action-edit" title="Редактирай профила" aria-label="Редактирай профила"><i class="fas fa-pen"></i></a>
+                        <a href="{% url 'user-profile-delete' pk=profile.pk %}" class="owner-action owner-action-delete" title="Изтрий профила" aria-label="Изтрий профила"><i class="fas fa-trash-alt"></i></a>
+                    </div>
+                {% endif %}
+                {% if user.is_authenticated and user != profile.user %}
+                    {% if user|is_following:profile.user %}
+                        <form method="post" action="{% url 'user-unfollow' pk=profile.user.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="custom-button custom-button-danger custom-button-small">Не следвай</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'user-follow' pk=profile.user.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="custom-button custom-button-success custom-button-small">Последвай</button>
+                        </form>
+                    {% endif %}
                 {% endif %}
             </div>
         {% empty %}

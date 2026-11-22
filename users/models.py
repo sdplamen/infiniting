@@ -27,3 +27,16 @@ class Follow(models.Model) :
 
     def __str__(self) :
         return f'{self.follower.username} follows {self.followed.username}'
+
+
+class ProfileComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile_comments')
+    photographer = models.ForeignKey(Photographer, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.user.username} on profile {self.photographer_id}'

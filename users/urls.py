@@ -9,5 +9,7 @@ urlpatterns = [
     path('<int:pk>/delete/', views.ProfileDeleteView.as_view(), name='user-profile-delete'),
     path('<int:pk>/follow/', views.follow_user, name='user-follow'),
     path('<int:pk>/unfollow/', views.unfollow_user, name='user-unfollow'),
+    path('<int:pk>/comment/', views.add_profile_comment, name='user-profile-comment'),
+    path('<int:pk>/comment/<int:comment_pk>/delete/', views.delete_profile_comment, name='user-profile-comment-delete'),
     path('me/', views.ProfileDetailView.as_view(), name='user-profile'),
 ]

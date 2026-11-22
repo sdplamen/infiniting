@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import Auction, Bid
+from .models import Auction, Bid, AuctionComment
 
 
 class AuctionCreateForm(forms.ModelForm):
@@ -100,3 +100,11 @@ class AuctionDetailForm(forms.Form):
 
     def user_won_auction(self):
         return self.user.is_authenticated and self.user == self.auction.highest_bidder
+
+
+class AuctionCommentForm(forms.ModelForm):
+    class Meta:
+        model = AuctionComment
+        fields = ['text']
+        labels = {'text': 'Коментар'}
+        widgets = {'text': forms.Textarea(attrs={'rows': 3})}

@@ -2,11 +2,10 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 
 class GroupApprovalMixin:
+    """Hide unapproved groups from everyone but staff (the approvers), the author and members."""
     def get_queryset(self):
-        queryset = super().get_queryset()
-        if not self.request.user.has_perm('groups.can_approve_groups'):
-            queryset = queryset.filter(is_approved=True)
-        return queryset
+        from groups.models import Group
+        return super().get_queryset().filter(pk__in=Group.visible_to(self.request.user).values('pk'))
 
 class GroupMemberRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -31,3 +30,9 @@ class PaginationMixin:
 
         context['limited_page_range'] = range(start_page, end_page + 1)
         return context
+
+class GroupOwnerOrStaffRequiredMixin(UserPassesTestMixin):
+    """Only the group's author or staff may edit or delete it."""
+    def test_func(self):
+        user = self.request.user
+        return user.is_staff or self.get_object().author_id == user.id

@@ -8,4 +8,6 @@ urlpatterns = [
     path('<int:pk>/edit/', views.ArticleUpdateView.as_view(), name='article-edit'),
     path('<int:pk>/delete/', views.ArticleDeleteView.as_view(), name='article-delete'),
     path('<int:pk>/approve/', views.ArticleApproveView.as_view(), name='article-approve'),
+    path('<int:pk>/comment/', views.add_article_comment, name='article-comment'),
+    path('<int:pk>/comment/<int:comment_pk>/delete/', views.delete_article_comment, name='article-comment-delete'),
 ]

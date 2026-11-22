@@ -10,4 +10,6 @@ urlpatterns = [
     path('<int:pk>/approve/', views.GroupApproveView.as_view(), name='group-approve'),
     path('<int:pk>/join/', views.join_group, name='group-join'),
     path('<int:pk>/leave/', views.leave_group, name='group-leave'),
+    path('<int:pk>/comment/', views.add_group_comment, name='group-comment'),
+    path('<int:pk>/comment/<int:comment_pk>/delete/', views.delete_group_comment, name='group-comment-delete'),
 ]

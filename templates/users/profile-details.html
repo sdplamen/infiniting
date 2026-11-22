@@ -28,12 +28,12 @@
                 {% if is_following_photographer %}
                     <form method="post" action="{% url 'user-unfollow' pk=photographer.user.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="custom-button custom-button-danger">Не следвай.</button>
+                        <button type="submit" class="custom-button custom-button-danger custom-button-small">Не следвай</button>
                     </form>
                 {% else %}
                     <form method="post" action="{% url 'user-follow' pk=photographer.user.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="custom-button custom-button-primary">Последвай.</button>
+                        <button type="submit" class="custom-button custom-button-success custom-button-small">Последвай</button>
                     </form>
                 {% endif %}
             </div>
@@ -80,7 +80,7 @@
                 <ul class="simple-list">
                     {% for group in photographer.user.user_groups.all %}
                         <li>
-                            <a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>
+                            {% if group.is_approved or user == photographer.user %}<a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>{% else %}{{ group.name }}{% endif %}
                             {% if form.can_leave_group %}
                                 <form method="post" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                     {% csrf_token %}
@@ -94,6 +94,49 @@
                 <p class="text-muted">Този фотограф не членува в групи.</p>
             {% endif %}
         </div>
+
+        <div class="card-custom">
+            <h4>Коментари ({{ comments|length }})</h4>
+            {% if user.is_authenticated and user == photographer.user or is_following_photographer %}
+                <form method="POST" action="{% url 'user-profile-comment' pk=photographer.pk %}">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        {{ comment_form.text.label_tag }}
+                        {{ comment_form.text }}
+                    </div>
+                    <button type="submit" class="custom-button custom-button-success full-width">Добави коментар</button>
+                </form>
+            {% elif user.is_authenticated %}
+                <p class="text-center text-muted">Последвайте този фотограф, за да коментирате.</p>
+            {% else %}
+                <div class="text-center">
+                    <a href="{% url 'login' %}" class="custom-button small-text">Влезте, за да добавяте коментари.</a>
+                </div>
+            {% endif %}
+
+            {% if comments %}
+                <ul class="simple-list comment-list">
+                    {% for comment in comments %}
+                        <li>
+                            <p>
+                                <i class="fas fa-user-circle me-1"></i>
+                                <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                                {{ comment.text }}
+                            </p>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                            {% if user.is_authenticated %}{% if comment.user_id == user.id or form.can_edit_delete_profile %}
+                                <form method="POST" action="{% url 'user-profile-comment-delete' pk=photographer.pk comment_pk=comment.pk %}" class="inline-owner-actions" onsubmit="return confirm('Изтрий коментара?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                            {% endif %}{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center">Все още няма коментари.</p>
+            {% endif %}
+        </div>
     </div>
 
     <div class="profile-content-column">
@@ -102,16 +145,15 @@
             <div>
                 {% for photo in photos %}
                     <div class="photo-item flex-item">
-{#                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="photo-link">#}
                             {% if photo.image %}
-                                <img src="{{ photo.image.url }}" class="photo-display alt={{ photo.caption|default:'Photo' }}" alt="Снимка">
+                                <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="photo-display" alt="{{ photo.caption|default:'Снимка' }}"></a>
                             {% else %}
                                 <img src="https://placehold.co/400x200/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
                             {% endif %}
-                        <p><strong>{{ photo.caption|default:'Няма описание.' }}</strong></p>
+                        <p><a href="{% url 'photo-detail' pk=photo.pk %}" class="title-link" title="Виж детайли"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></a></p>
                         {% if photo.group %}
                             <p class="text-muted small-text">
-                                <i class="fas fa-users me-1"></i> Група: <a href="{% url 'group-detail' pk=photo.group.pk %}">{{ photo.group.name }}</a>
+                                <i class="fas fa-users me-1"></i> Група: {% if photo.group.is_approved or user == photographer.user %}<a href="{% url 'group-detail' pk=photo.group.pk %}">{{ photo.group.name }}</a>{% else %}{{ photo.group.name }}{% endif %}
                             </p>
                         {% endif %}
                         <div class="photo-interactions">
@@ -122,6 +164,12 @@
                                 <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings.count }} оценки</span>
                             {% endif %}
                         </div>
+                        {% if form.can_edit_delete_profile %}
+                            <div class="card-owner-actions">
+                                <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
+                                <a href="{% url 'photo-delete' pk=photo.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий снимката"><i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% empty %}
                     <p class="text-center">Този фотограф все още не е качил снимки.</p>
@@ -134,12 +182,18 @@
     </div>
     <div class="profile-content-column">
         <h3 class="margin-top-large">Статии от <strong>{{ photographer.user.username }}</strong></h3>
-        {% if photographer.articles.all %}
+        {% if articles %}
             <ul class="simple-list">
-                {% for article in photographer.articles.all %}
+                {% for article in articles %}
                     <li>
-                        <a href="{% url 'article-detail' pk=article.pk %}">{{ article.title }}</a>
+                        <a href="{% url 'article-detail' pk=article.pk %}" class="title-link" title="Прочети цялата статия">{{ article.title }}</a>
                         <span class="text-muted small-text">публикувано на {{ article.created_at|date:"d M Y" }}</span>
+                        {% if form.can_edit_delete_profile %}
+                            <span class="inline-owner-actions">
+                                <a href="{% url 'article-edit' pk=article.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай статията"><i class="fas fa-pen"></i></a>
+                                <a href="{% url 'article-delete' pk=article.pk %}" class="owner-action owner-action-delete" title="Изтрий" aria-label="Изтрий статията"><i class="fas fa-trash-alt"></i></a>
+                            </span>
+                        {% endif %}
                     </li>
                 {% empty %}
                     <p class="text-center">Този фотограф все още не е публикувал статии.</p>

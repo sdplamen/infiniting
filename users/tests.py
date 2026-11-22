@@ -25,3 +25,165 @@ class ProfileOwnerActionsTest(TestCase):
         other = UserModel.objects.create_user(username='other', password='pw-12345678')
         self.client.force_login(other)
         self.assertNotContains(self.client.get(self.url), 'owner-action')
+
+
+class ProfileListTitleLinkTest(TestCase):
+    def test_username_links_to_profile_and_no_view_button(self):
+        profile = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='ivana', password='pw-12345678'))[0]
+        detail_url = reverse('user-profile-detail', kwargs={'pk': profile.pk})
+
+        page = self.client.get(reverse('user-profile-list'))
+        self.assertContains(page, f'<a href="{detail_url}" class="title-link" title="Виж профила">ivana</a>', html=True)
+        self.assertNotContains(page, 'Виж профила.</a>')
+
+    def test_signed_in_user_can_follow_from_list(self):
+        target = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='target', password='pw-12345678'))[0]
+        viewer = UserModel.objects.create_user(username='viewer', password='pw-12345678')
+        self.client.force_login(viewer)
+        page = self.client.get(reverse('user-profile-list'))
+        follow_url = reverse('user-follow', kwargs={'pk': target.user.pk})
+        self.assertContains(page, f'action="{follow_url}"')
+
+        self.client.post(follow_url)
+        page = self.client.get(reverse('user-profile-list'))
+        self.assertContains(page, f'action="{reverse("user-unfollow", kwargs={"pk": target.user.pk})}"')
+
+
+
+class ProfileDetailLinksTest(TestCase):
+    def setUp(self):
+        from articles.models import Article
+        from photos.models import Photo
+        self.owner = UserModel.objects.create_user(username='artist', password='pw-12345678')
+        self.profile = Photographer.objects.get_or_create(user=self.owner)[0]
+        self.photo = Photo.objects.create(author=self.profile, image='dummy_image.jpg', caption='Кула')
+        self.article = Article.objects.create(title='Композиция', content='текст', author=self.profile, is_approved=True)
+        self.url = reverse('user-profile-detail', kwargs={'pk': self.profile.pk})
+
+    def test_photo_and_article_links(self):
+        page = self.client.get(self.url)
+        photo_url = reverse('photo-detail', kwargs={'pk': self.photo.pk})
+        self.assertContains(page, f'<a href="{photo_url}" class="image-link"')
+        self.assertContains(page, f'<a href="{photo_url}" class="title-link"')
+        self.assertContains(page, f'<a href="{reverse("article-detail", kwargs={"pk": self.article.pk})}" class="title-link"')
+        self.assertNotContains(page, 'alt={{')
+
+    def test_follow_button(self):
+        self.client.force_login(UserModel.objects.create_user(username='fan', password='pw-12345678'))
+        page = self.client.get(self.url)
+        self.assertContains(page, '>Последвай</button>')
+        self.assertNotContains(page, 'Последвай.')
+
+
+class ProfileListOwnerIconsTest(TestCase):
+    def test_icons_only_on_own_card(self):
+        me = UserModel.objects.create_user(username='self', password='pw-12345678')
+        mine = Photographer.objects.get_or_create(user=me)[0]
+        theirs = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='else', password='pw-12345678'))[0]
+        self.client.force_login(me)
+        page = self.client.get(reverse('user-profile-list'))
+        self.assertContains(page, f'href="{reverse("user-profile-edit", kwargs={"pk": mine.pk})}" class="owner-action owner-action-edit"')
+        self.assertContains(page, f'href="{reverse("user-profile-delete", kwargs={"pk": mine.pk})}" class="owner-action owner-action-delete"')
+        self.assertNotContains(page, reverse('user-profile-edit', kwargs={'pk': theirs.pk}))
+        self.assertNotContains(page, f'action="{reverse("user-follow", kwargs={"pk": me.pk})}"')
+
+    def test_logged_out_sees_no_icons(self):
+        Photographer.objects.get_or_create(user=UserModel.objects.create_user(username='x1', password='pw-12345678'))
+        self.assertNotContains(self.client.get(reverse('user-profile-list')), 'owner-action')
+
+
+class ProfilePageContentIconsTest(TestCase):
+    def test_owner_gets_icons_on_photos_and_articles(self):
+        from articles.models import Article
+        from photos.models import Photo
+        owner = UserModel.objects.create_user(username='owner3', password='pw-12345678')
+        profile = Photographer.objects.get_or_create(user=owner)[0]
+        photo = Photo.objects.create(author=profile, image='dummy_image.jpg')
+        article = Article.objects.create(title='А', content='б', author=profile, is_approved=True)
+        url = reverse('user-profile-detail', kwargs={'pk': profile.pk})
+        links = [reverse('photo-edit', kwargs={'pk': photo.pk}), reverse('photo-delete', kwargs={'pk': photo.pk}),
+                 reverse('article-edit', kwargs={'pk': article.pk}), reverse('article-delete', kwargs={'pk': article.pk})]
+
+        self.client.force_login(owner)
+        page = self.client.get(url)
+        for link in links:
+            self.assertContains(page, f'href="{link}" class="owner-action')
+
+        self.client.force_login(UserModel.objects.create_user(username='visitor', password='pw-12345678'))
+        page = self.client.get(url)
+        for link in links:
+            self.assertNotContains(page, link)
+
+
+from users.models import ProfileComment, Follow
+
+
+class ProfileCommentsTest(TestCase):
+    def setUp(self):
+        self.owner = UserModel.objects.create_user(username='pr-owner', password='pw-12345678')
+        self.writer = UserModel.objects.create_user(username='pr-writer', password='pw-12345678')
+        self.stranger = UserModel.objects.create_user(username='pr-stranger', password='pw-12345678')
+        Photographer.objects.get_or_create(user=self.writer)
+        self.profile = Photographer.objects.get_or_create(user=self.owner)[0]
+        Follow.objects.create(follower=self.writer, followed=self.owner)
+        self.detail = reverse('user-profile-detail', kwargs={'pk': self.profile.pk})
+        self.comment_url = reverse('user-profile-comment', kwargs={'pk': self.profile.pk})
+
+    def _comment(self):
+        return ProfileComment.objects.create(user=self.writer, photographer=self.profile, text='Страхотно портфолио!')
+
+    def _delete_url(self, comment):
+        return reverse('user-profile-comment-delete', kwargs={'pk': self.profile.pk, 'comment_pk': comment.pk})
+
+    def test_signed_in_user_adds_comment_and_sees_it(self):
+        self.client.force_login(self.writer)
+        response = self.client.post(reverse('user-profile-comment', kwargs={'pk': self.profile.pk}), {'text': 'Браво'})
+        self.assertRedirects(response, self.detail)
+        self.assertEqual(ProfileComment.objects.get().user, self.writer)
+        page = self.client.get(self.detail)
+        self.assertContains(page, 'Браво')
+        self.assertContains(page, 'Коментари (1)')
+
+    def test_logged_out_and_empty_are_rejected(self):
+        self.client.post(reverse('user-profile-comment', kwargs={'pk': self.profile.pk}), {'text': 'x'})
+        self.assertContains(self.client.get(self.detail), 'Влезте, за да добавяте коментари.')
+        self.client.force_login(self.writer)
+        self.client.post(reverse('user-profile-comment', kwargs={'pk': self.profile.pk}), {'text': ''})
+        self.assertFalse(ProfileComment.objects.exists())
+
+    def test_owner_can_reply_on_own_profile(self):
+        self.client.force_login(self.owner)
+        self.client.post(self.comment_url, {'text': 'Благодаря!'})
+        self.assertEqual(ProfileComment.objects.get().user, self.owner)
+
+    def test_non_follower_cannot_comment_and_sees_follow_hint(self):
+        self.client.force_login(self.stranger)
+        self.assertEqual(self.client.post(self.comment_url, {'text': 'Здрасти'}).status_code, 403)
+        self.assertFalse(ProfileComment.objects.exists())
+        page = self.client.get(self.detail)
+        self.assertContains(page, 'Последвайте този фотограф, за да коментирате.')
+        self.assertNotContains(page, f'action="{self.comment_url}"')
+
+    def test_writer_and_profile_owner_can_delete(self):
+        for user in (self.writer, self.owner):
+            comment = self._comment()
+            self.client.force_login(user)
+            self.assertRedirects(self.client.post(self._delete_url(comment)), self.detail)
+            self.assertFalse(ProfileComment.objects.filter(pk=comment.pk).exists())
+
+    def test_others_get_403_and_get_is_refused(self):
+        comment = self._comment()
+        self.client.force_login(self.stranger)
+        self.assertEqual(self.client.post(self._delete_url(comment)).status_code, 403)
+        self.client.force_login(self.writer)
+        self.assertEqual(self.client.get(self._delete_url(comment)).status_code, 405)
+        self.assertTrue(ProfileComment.objects.filter(pk=comment.pk).exists())
+
+    def test_bin_visibility(self):
+        comment = self._comment()
+        for user, visible in ((self.writer, True), (self.owner, True), (self.stranger, False)):
+            self.client.force_login(user)
+            (self.assertContains if visible else self.assertNotContains)(self.client.get(self.detail), self._delete_url(comment))

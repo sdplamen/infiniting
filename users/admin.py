@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.models import Photographer
+from users.models import Photographer, ProfileComment
 
 
 # Register your models here.
@@ -9,3 +9,9 @@ class PhotographerAdmin(admin.ModelAdmin):
     filter = ('name', 'bio', 'profile_picture')
     search_fields = ('user', 'name')
     ordering = ('user',)
+
+
+@admin.register(ProfileComment)
+class ProfileCommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'photographer', 'created_at')
+    search_fields = ('text',)
