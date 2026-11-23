@@ -4,6 +4,7 @@
 {% block title %}Всички профили{% endblock %}
 
 {% block content %}
+    <h2 class="text-center">Профил</h2>
     {% if user.is_authenticated and not user.photographer %}
         <div class="message-alert info text-center">
             Все още нямате профил. <a href="{% url 'user-profile-create' %}" class="alert-link">Създайте го сега!</a>
