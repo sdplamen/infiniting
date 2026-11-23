@@ -4,7 +4,6 @@
         <li><a href="{% url 'article-list' %}" title="Статии"><i class="bi bi-book"></i></a></li>
         <li><a href="{% url 'auction-list' %}" title="Аукциони"><i class="bi bi-cash"></i></a></li>
         <li><a href="{% url 'group-list' %}" title="Групи"><i class="bi bi-people"></i></a></li>
-        <li><a href="{% url 'user-profile-list' %}" title="Профили"><i class="bi bi-person-lines-fill"></i></a></li>
 
         {% if user.is_authenticated %}
             <li>
