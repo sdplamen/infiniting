@@ -1,24 +1,37 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ photo.caption|default:'Снимка' }}</title>
-    <style>
-        /* Full-size view: the photo fills the window, no margins or white space */
-        html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
-        .full-photo-link { display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; height: 100dvh; cursor: zoom-out; }
-        .full-photo { display: block; width: 100%; height: 100%; object-fit: contain; }
-        .no-image { color: #D4ECFC; font-family: sans-serif; text-align: center; margin: 0; padding-top: 40vh; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/lightbox.css' %}">
+    {# warm the cache so ←/→ show the neighbour at once #}
+    {% if next_photo.image %}<link rel="prefetch" as="image" href="{{ next_photo.image.url }}">{% endif %}
+    {% if prev_photo.image %}<link rel="prefetch" as="image" href="{{ prev_photo.image.url }}">{% endif %}
 </head>
-<body>
+<body class="lightbox" data-prev-url="{{ prev_url }}" data-next-url="{{ next_url }}" data-close-url="{{ close_url }}">
     {% if photo.image %}
-        <a href="{% url 'photo-detail' photo.id %}" class="full-photo-link" title="Назад към снимката">
-            <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Снимка' }}" class="full-photo">
-        </a>
+        <div class="lb-stage" id="lb-stage" role="img" aria-label="{{ photo.caption|default:'Снимка' }}">
+            <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Снимка' }}" class="lb-image" id="lb-image" draggable="false">
+        </div>
     {% else %}
-        <p class="no-image">Няма изображение.</p>
+        <p class="lb-empty">Няма изображение.</p>
     {% endif %}
+
+    <a href="{{ close_url }}" class="lb-control lb-close" title="Затвори (Esc)" aria-label="Затвори">&times;</a>
+    {% if prev_url %}<a href="{{ prev_url }}" class="lb-control lb-nav lb-prev" title="Предишна (←)" aria-label="Предишна снимка">&lsaquo;</a>{% endif %}
+    {% if next_url %}<a href="{{ next_url }}" class="lb-control lb-nav lb-next" title="Следваща (→)" aria-label="Следваща снимка">&rsaquo;</a>{% endif %}
+
+    <div class="lb-control lb-info">
+        <span class="lb-caption">{{ photo.caption|default:'Без заглавие' }}</span>
+        <span class="lb-author">{{ photo.author.user.username }}</span>
+        <span class="lb-position">{{ position }} / {{ total }}</span>
+    </div>
+    <p class="lb-control lb-hint" aria-hidden="true">
+        <kbd>&larr;</kbd> <kbd>&rarr;</kbd> снимки &middot; клик или <kbd>Z</kbd> лупа &middot; <kbd>Esc</kbd> изход
+    </p>
+
+    <script src="{% static 'js/lightbox.js' %}"></script>
 </body>
 </html>

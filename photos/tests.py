@@ -399,3 +399,63 @@ class PhotoCardAuthorLabelTest(TestCase):
             self.assertContains(page, label, html=True, msg_prefix=url)
             self.assertNotContains(page, 'Качено на', msg_prefix=url)
             self.assertNotContains(page, 'Автор: <a', msg_prefix=url)
+
+
+class LightboxTest(TestCase):
+    """The full-photo page is the dark-room lightbox: neighbours in feed order, Esc target."""
+
+    def setUp(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        author = Photographer.objects.get_or_create(
+            user=UserModel.objects.create_user(username='lb', password='pw-12345678'))[0]
+        now = timezone.now()
+        # feed order (newest first): newest, middle, oldest
+        self.oldest, self.middle, self.newest = [
+            Photo.objects.create(author=author, image=f'photos/p{i}', caption=f'p{i}') for i in range(3)]
+        for photo, age in ((self.oldest, 3), (self.middle, 2), (self.newest, 1)):
+            Photo.objects.filter(pk=photo.pk).update(uploaded_at=now - timedelta(hours=age))
+
+    def url(self, photo, back=None):
+        url = reverse('photo-full-photo', kwargs={'pk': photo.pk})
+        return f'{url}?back={back}' if back else url
+
+    def test_neighbours_follow_feed_order(self):
+        page = self.client.get(self.url(self.middle))
+        self.assertEqual(page.context['prev_url'], self.url(self.newest))
+        self.assertEqual(page.context['next_url'], self.url(self.oldest))
+        self.assertEqual((page.context['position'], page.context['total']), (2, 3))
+        self.assertContains(page, f'data-prev-url="{self.url(self.newest)}"')
+        self.assertContains(page, f'data-next-url="{self.url(self.oldest)}"')
+        self.assertContains(page, 'class="lb-control lb-nav lb-prev"')
+        self.assertContains(page, 'js/lightbox.js')
+
+    def test_ends_have_no_prev_or_next(self):
+        first = self.client.get(self.url(self.newest))
+        self.assertEqual(first.context['prev_url'], '')
+        self.assertNotContains(first, 'lb-prev')
+        last = self.client.get(self.url(self.oldest))
+        self.assertEqual(last.context['next_url'], '')
+        self.assertNotContains(last, 'lb-next')
+
+    def test_same_upload_time_is_ordered_by_id(self):
+        Photo.objects.update(uploaded_at=self.newest.uploaded_at)
+        page = self.client.get(self.url(self.middle))
+        # newest pk first, as in the feed's tie-break
+        self.assertEqual(page.context['prev_url'], self.url(self.newest))
+        self.assertEqual(page.context['next_url'], self.url(self.oldest))
+
+    def test_esc_goes_to_photo_detail_by_default(self):
+        page = self.client.get(self.url(self.middle))
+        self.assertEqual(page.context['close_url'], reverse('photo-detail', kwargs={'pk': self.middle.pk}))
+
+    def test_back_is_kept_while_browsing(self):
+        page = self.client.get(self.url(self.middle, back='/auctions/7/'))
+        self.assertEqual(page.context['close_url'], '/auctions/7/')
+        self.assertEqual(page.context['next_url'], f"{reverse('photo-full-photo', kwargs={'pk': self.oldest.pk})}?back=%2Fauctions%2F7%2F")
+
+    def test_offsite_back_is_ignored(self):
+        for back in ('https://evil.example/', '//evil.example/', 'javascript:alert(1)'):
+            page = self.client.get(reverse('photo-full-photo', kwargs={'pk': self.middle.pk}), {'back': back})
+            self.assertEqual(page.context['close_url'], reverse('photo-detail', kwargs={'pk': self.middle.pk}))
+            self.assertNotIn('evil', page.context['next_url'])

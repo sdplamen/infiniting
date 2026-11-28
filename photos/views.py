@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
@@ -27,14 +29,47 @@ class IndexView(PaginationMixin, ListView):
         context.update(pagination_data)
         return context
 
-# def full_photo_view(request, photo_id):
-#     photo = get_object_or_404(Photo, id=photo_id)
-#     return render(request, 'photo-full-photo.html', {'photo': photo})
-
 class FullPhotoView(DetailView):
+    """Dark-room lightbox: one photo on #0d0d0d, with its neighbours in feed
+    order (newest first) for ←/→ and a loupe (static/js/lightbox.js).
+
+    `?back=<path>` names the page Esc returns to (e.g. the auction page);
+    without it Esc goes to the detail page of the photo being shown."""
     model = Photo
     template_name = 'photos/photo-full-photo.html'
     context_object_name = 'photo'
+
+    def _back_url(self):
+        back = self.request.GET.get('back', '')
+        if back and url_has_allowed_host_and_scheme(back, allowed_hosts={self.request.get_host()},
+                                                    require_https=self.request.is_secure()):
+            return back
+        return ''
+
+    def _lightbox_url(self, photo, back):
+        url = reverse('photo-full-photo', kwargs={'pk': photo.pk})
+        return f'{url}?{urlencode({"back": back})}' if back else url
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        photo = self.object
+        # same order as the home feed: -uploaded_at, ties broken by -pk
+        newer = Q(uploaded_at__gt=photo.uploaded_at) | Q(uploaded_at=photo.uploaded_at, pk__gt=photo.pk)
+        older = Q(uploaded_at__lt=photo.uploaded_at) | Q(uploaded_at=photo.uploaded_at, pk__lt=photo.pk)
+        prev_photo = Photo.objects.filter(newer).order_by('uploaded_at', 'pk').first()
+        next_photo = Photo.objects.filter(older).order_by('-uploaded_at', '-pk').first()
+
+        back = self._back_url()
+        context.update({
+            'prev_photo': prev_photo,
+            'next_photo': next_photo,
+            'prev_url': self._lightbox_url(prev_photo, back) if prev_photo else '',
+            'next_url': self._lightbox_url(next_photo, back) if next_photo else '',
+            'close_url': back or reverse('photo-detail', kwargs={'pk': photo.pk}),
+            'position': Photo.objects.filter(newer).count() + 1,
+            'total': Photo.objects.count(),
+        })
+        return context
 
 
 class PhotoDetailView(DetailView):

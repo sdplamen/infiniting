@@ -1,0 +1,170 @@
+/* Dark-room lightbox: templates/photos/photo-full-photo.html + static/js/lightbox.js */
+
+:root {
+    --lb-room: #0d0d0d;                     /* neutral near-black: no colour cast on B&W prints */
+    --lb-ink: rgba(236, 236, 236, 0.86);
+    --lb-ink-dim: rgba(236, 236, 236, 0.5);
+    --lb-control-bg: rgba(13, 13, 13, 0.55);
+    --lb-control-hover: rgba(255, 255, 255, 0.12);
+    --lb-focus: #D4ECFC;                    /* the site's light blue, for keyboard focus */
+    --lb-fade: 0.35s;
+}
+
+html, body { margin: 0; padding: 0; height: 100%; }
+
+.lightbox {
+    background: var(--lb-room);
+    color: var(--lb-ink);
+    font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --- the photo ----------------------------------------------------------- */
+
+.lb-stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    cursor: zoom-in;
+    touch-action: none;                     /* taps, drags and swipes are handled in JS */
+    user-select: none;
+}
+
+.lb-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity var(--lb-fade) ease;
+}
+
+.is-loaded .lb-image,
+.lb-image:not([src]) { opacity: 1; }
+
+/* the loupe: JS sets width/height/transform at real pixel size */
+.is-zoomed .lb-stage { cursor: zoom-out; }
+
+.is-zoomed .lb-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    object-fit: fill;
+    transform-origin: 0 0;
+    will-change: transform;
+    image-rendering: auto;
+}
+
+.lb-empty {
+    margin: 0;
+    padding-top: 40vh;
+    text-align: center;
+    color: var(--lb-ink-dim);
+}
+
+/* --- controls: quiet, and gone while you look ------------------------------ */
+
+.lb-control {
+    position: fixed;
+    z-index: 2;
+    transition: opacity var(--lb-fade) ease;
+}
+
+.is-idle .lb-control,
+.is-zoomed .lb-control { opacity: 0; pointer-events: none; }
+
+.is-idle .lb-stage { cursor: none; }
+.is-idle.is-zoomed .lb-stage { cursor: none; }
+
+/* a focused control stays visible for keyboard users */
+.lb-control:focus-visible { opacity: 1 !important; pointer-events: auto !important; }
+
+.lb-close,
+.lb-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lb-ink);
+    background: var(--lb-control-bg);
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 50%;
+}
+
+.lb-close:hover,
+.lb-nav:hover { background: var(--lb-control-hover); color: #fff; }
+
+.lb-close:focus-visible,
+.lb-nav:focus-visible { outline: 2px solid var(--lb-focus); outline-offset: 2px; }
+
+.lb-close {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 30px;
+}
+
+.lb-nav {
+    top: 50%;
+    width: 52px;
+    height: 52px;
+    margin-top: -26px;
+    font-size: 40px;
+    padding-bottom: 4px;                    /* optical centring of ‹ › */
+    box-sizing: border-box;
+}
+
+.lb-prev { left: 16px; }
+.lb-next { right: 16px; }
+
+.lb-info {
+    left: 16px;
+    bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+    max-width: calc(100% - 32px);
+    font-size: 13px;
+    letter-spacing: 0.03em;
+}
+
+.lb-caption { color: var(--lb-ink); font-weight: 500; }
+.lb-author,
+.lb-position { color: var(--lb-ink-dim); }
+
+.lb-hint {
+    right: 16px;
+    bottom: 16px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--lb-ink-dim);
+}
+
+.lb-hint kbd {
+    display: inline-block;
+    min-width: 1.4em;
+    padding: 1px 5px;
+    border: 1px solid rgba(236, 236, 236, 0.25);
+    border-radius: 3px;
+    font: inherit;
+    text-align: center;
+}
+
+/* phones: no keyboard hint, controls a little smaller and closer to the edge */
+@media (max-width: 700px), (hover: none) {
+    .lb-hint { display: none; }
+    .lb-nav { width: 44px; height: 44px; margin-top: -22px; font-size: 34px; }
+    .lb-prev { left: 8px; }
+    .lb-next { right: 8px; }
+    .lb-close { top: 8px; right: 8px; }
+    .lb-info { left: 12px; bottom: 12px; max-width: calc(100% - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lb-image,
+    .lb-control { transition: none; }
+}

@@ -59,7 +59,8 @@ class AuctionDetailPageTest(TestCase):
     def test_title_and_photo_links(self):
         page = self.client.get(self.url)
         self.assertContains(page, f'<a href="{reverse("photo-detail", kwargs={"pk": self.photo.pk})}" class="title-link"')
-        self.assertContains(page, f'<a href="{reverse("photo-full-photo", args=[self.photo.pk])}" class="image-link"')
+        # the lightbox returns to the auction on Esc
+        self.assertContains(page, f'<a href="{reverse("photo-full-photo", args=[self.photo.pk])}?back={self.url}" class="image-link"')
 
     def test_staff_sees_deactivate_icon_with_confirm(self):
         self.client.force_login(User.objects.create_user(username='boss', password='pw-12345678', is_staff=True))
