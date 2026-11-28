@@ -1,31 +1,37 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class IsAuthenticatedAndOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
+def _resolve(obj, path):
+    """Follow a dotted attribute path, e.g. 'author.user' -> obj.author.user."""
+    for attr in path.split('.'):
+        obj = getattr(obj, attr, None)
+        if obj is None:
+            return None
+    return obj
 
-        return obj.user == request.user
 
-class IsAdminOrReadOnly(BasePermission):
+class IsOwnerOrReadOnly(BasePermission):
+    """
+    Anyone may read; writing needs a logged-in user, and changing an existing
+    object needs one of its owners. The view lists who counts as an owner with
+    `owner_paths`, dotted paths from the object to a User (e.g. 'author.user'),
+    and sets `staff_can_edit = True` where staff moderate, as on the website.
+    """
+    message = 'You can only change your own content.'
+
     def has_permission(self, request, view):
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return request.user and request.user.is_staff
-
-class IsGroupMember(BasePermission):
-    def has_permission(self, request, view):
-        group_name = getattr(view, 'group_name', None)
-        if not group_name:
-            return False
-        return request.user and request.user.groups.filter(name=group_name).exists()
-
-class IsGroupCreatorOrAdmin(BasePermission):
-    message = 'You must be the creator of this group or an administrator to perform this action.'
+        return request.method in SAFE_METHODS or bool(request.user and request.user.is_authenticated)
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
-            return request.user and request.user.is_authenticated
+            return True
+        if getattr(view, 'staff_can_edit', False) and request.user.is_staff:
+            return True
+        return any(_resolve(obj, path) == request.user for path in view.owner_paths)
 
-        return bool(obj.creator == request.user or request.user.is_staff)
+
+class IsStaffOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.is_staff)

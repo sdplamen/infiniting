@@ -3,7 +3,7 @@ from django.urls import path
 from mobileAPI.views import RegisterView, PhotoListCreateAPIView, PhotoDetailAPIView, LikeListCreateAPIView, \
     LikeDetailAPIView, CommentListCreateAPIView, CommentDetailAPIView, RatingListCreateAPIView, RatingDetailAPIView, \
     ArticleListCreateAPIView, ArticleDetailAPIView, AuctionListCreateAPIView, AuctionDetailAPIView, \
-    BidListCreateAPIView, BidDetailAPIView, GroupListCreateAPIView, GroupDetailAPIView
+    BidListCreateAPIView, BidDetailAPIView, GroupListCreateAPIView, GroupDetailAPIView, GroupMembershipAPIView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register-api'),
@@ -26,5 +26,6 @@ urlpatterns = [
     path('bids/<int:pk>/', BidDetailAPIView.as_view(), name='bid-detail'),
     path('groups/', GroupListCreateAPIView.as_view(), name='group-list-create'),
     path('groups/<int:pk>/', GroupDetailAPIView.as_view(), name='group-detail-api'),
+    path('groups/<int:pk>/membership/', GroupMembershipAPIView.as_view(), name='group-membership-api'),
 
 ]
