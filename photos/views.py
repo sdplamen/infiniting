@@ -4,11 +4,12 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailForm
-from photos.models import Photo, Like, Rating, Comment
+from photos.models import Bookmark, Photo, Like, Rating, Comment
 from users.models import Photographer
 from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
 
@@ -22,6 +23,10 @@ class IndexView(ListView):
 
     def get_queryset(self):
         return Photo.objects.for_cards().order_by('-uploaded_at', '-pk')
+
+    def get_template_names(self):
+        # HTMX infinite scroll asks for the next page: send just its cards and "more" link
+        return ['photos/_feed_page.html'] if is_htmx(self.request) else [self.template_name]
 
 class FullPhotoView(DetailView):
     """Dark-room lightbox: one photo on #0d0d0d, with its neighbours in feed
@@ -98,6 +103,36 @@ class FullPhotoView(DetailView):
         return context
 
 
+def is_htmx(request):
+    """True for requests sent by HTMX (they get a partial instead of a redirect)."""
+    return request.headers.get('HX-Request') == 'true'
+
+
+def photo_page_context(request, photo, comment_form=None):
+    """Everything photo-detail.html and its partials (_like, _rating, _comments) show."""
+    user = request.user
+    photographer = getattr(user, 'photographer', None) if user.is_authenticated else None
+    return {
+        'photo': photo,
+        'comments': list(photo.comments.select_related('user__photographer').order_by('-created_at')),
+        'comment_form': comment_form or CommentForm(),
+        'is_bookmarked': user.is_authenticated and Bookmark.objects.filter(photo=photo, user=user).exists(),
+        'rating_form': RatingForm(),
+        'form': PhotoDetailForm(
+            photo=photo,
+            user=user,
+            user_liked=user.is_authenticated and Like.objects.filter(photo=photo, user=user).exists(),
+            user_rating=Rating.objects.filter(photo=photo, user=photographer).first() if photographer else None,
+        ),
+    }
+
+
+def render_photo_part(request, pk, template, comment_form=None):
+    """The fresh state of one part of the photo page, for HTMX to swap in."""
+    photo = get_object_or_404(Photo.objects.for_cards().with_counts(), pk=pk)
+    return render(request, template, photo_page_context(request, photo, comment_form))
+
+
 class PhotoDetailView(DetailView):
     template_name = 'photos/photo-detail.html'
     context_object_name = 'photo'
@@ -108,26 +143,9 @@ class PhotoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comments.select_related('user__photographer').order_by('-created_at')
-        context['comment_form'] = CommentForm()
-        context['rating_form'] = RatingForm()
-
-        user_liked = False
-        user_rating = None
-
-        if self.request.user.is_authenticated:
-            photographer = getattr(self.request.user, 'photographer', None)
-            if photographer:
-                user_liked = Like.objects.filter(photo=self.object, user=self.request.user).exists()
-                user_rating = Rating.objects.filter(photo=self.object, user=photographer).first()
-
-        context['form'] = PhotoDetailForm(
-            photo=self.object,
-            user=self.request.user,
-            user_liked=user_liked,
-            user_rating=user_rating
-        )
+        context.update(photo_page_context(self.request, self.object))
         return context
+
 
 class PhotoCreateView(LoginRequiredMixin, CreateView):
     model = Photo
@@ -165,44 +183,107 @@ class PhotoDeleteView(LoginRequiredMixin, UserIsObjectAuthorMixin, DeleteView):
     success_url = reverse_lazy('photo-home')
     pk_url_kwarg = 'pk'
 
-def _handle_photo_like_action(request, pk, action_type):
-    photo = get_object_or_404(Photo, pk=pk)
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            if action_type == 'like':
-                Like.objects.get_or_create(user=request.user, photo=photo)
-            elif action_type == 'unlike':
-                Like.objects.filter(user=request.user, photo=photo).delete()
-            return redirect('photo-detail', pk=photo.pk)
-        else:
-            return redirect('login')
-
 @login_required
+@require_POST
 def like_photo(request, pk):
-    return _handle_photo_like_action(request, pk, 'like')
+    photo = get_object_or_404(Photo, pk=pk)
+    Like.objects.get_or_create(user=request.user, photo=photo)
+    if is_htmx(request):
+        return render_photo_part(request, pk, 'photos/_like.html')
+    return redirect('photo-detail', pk=pk)
+
 
 @login_required
+@require_POST
 def unlike_photo(request, pk):
-    return _handle_photo_like_action(request, pk, 'unlike')
+    photo = get_object_or_404(Photo, pk=pk)
+    Like.objects.filter(user=request.user, photo=photo).delete()
+    if is_htmx(request):
+        return render_photo_part(request, pk, 'photos/_like.html')
+    return redirect('photo-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def bookmark_photo(request, pk):
+    photo = get_object_or_404(Photo, pk=pk)
+    Bookmark.objects.get_or_create(user=request.user, photo=photo)
+    if is_htmx(request):
+        return render_photo_part(request, pk, 'photos/_bookmark.html')
+    return redirect('photo-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def unbookmark_photo(request, pk):
+    photo = get_object_or_404(Photo, pk=pk)
+    Bookmark.objects.filter(user=request.user, photo=photo).delete()
+    if is_htmx(request):
+        if request.POST.get('next') == 'saved':
+            return HttpResponse('')   # the saved-photos card swaps itself out for nothing
+        return render_photo_part(request, pk, 'photos/_bookmark.html')
+    # removed from the saved-photos page: go back there
+    if request.POST.get('next') == 'saved':
+        return redirect('photo-saved')
+    return redirect('photo-detail', pk=pk)
+
+
+class SavedPhotosView(LoginRequiredMixin, ListView):
+    """The user's bookmarks, newest first, with the feed's cards and infinite scroll."""
+    template_name = 'photos/photo-saved.html'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return (Bookmark.objects.filter(user=self.request.user)
+                .select_related('photo__author__user', 'photo__group'))
+
+    def get_template_names(self):
+        return ['photos/_feed_page.html'] if is_htmx(self.request) else [self.template_name]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['photos'] = [bookmark.photo for bookmark in context['page_obj']]
+        context['saved_page'] = True
+        context['empty_message'] = 'Все още нямате запазени снимки. Натиснете отметката под снимка, за да я запазите тук.'
+        return context
+
 
 class PhotoAddCommentView(PhotoFormProcessingMixin):
     form_class = CommentForm
+
     def form_valid(self, form):
         comment = form.save(commit=False)
         comment.user = self.request.user
         comment.photo = self.object
         comment.save()
+        if is_htmx(self.request):
+            return render_photo_part(self.request, self.object.pk, 'photos/_comments.html')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if is_htmx(self.request):
+            # keep what was typed and show why it was refused, without leaving the page
+            return render_photo_part(self.request, self.object.pk, 'photos/_comments.html', comment_form=form)
+        return super().form_invalid(form)
+
 
 class PhotoAddRatingView(PhotoFormProcessingMixin):
     form_class = RatingForm
+
     def form_valid(self, form):
-        Rating.objects.update_or_create(
-            user=self.request.user.photographer,
-            photo=self.object,
-            defaults={'score': form.cleaned_data['score']}
-        )
+        photographer = getattr(self.request.user, 'photographer', None)
+        if photographer is None:
+            raise PermissionDenied  # ratings belong to photographer profiles
+        Rating.objects.update_or_create(user=photographer, photo=self.object,
+                                        defaults={'score': form.cleaned_data['score']})
+        if is_htmx(self.request):
+            return render_photo_part(self.request, self.object.pk, 'photos/_rating.html')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if is_htmx(self.request):
+            return render_photo_part(self.request, self.object.pk, 'photos/_rating.html')
+        return super().form_invalid(form)
 
 
 @login_required
@@ -213,4 +294,6 @@ def delete_comment(request, pk, comment_pk):
     if request.user.id not in (comment.user_id, comment.photo.author.user_id):
         raise PermissionDenied
     comment.delete()
+    if is_htmx(request):
+        return render_photo_part(request, pk, 'photos/_comments.html')
     return redirect('photo-detail', pk=pk)

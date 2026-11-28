@@ -94,3 +94,16 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'{self.user} rated {self.photo.id} with {self.score}'
+
+class Bookmark(models.Model):
+    """A photo the user saved for later. Private: only the user sees their bookmarks."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE, related_name='bookmarks')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at', '-pk']
+        constraints = [models.UniqueConstraint(fields=['user', 'photo'], name='bookmark_photo_once')]
+
+    def __str__(self):
+        return f'{self.user.username} saved {self.photo_id}'

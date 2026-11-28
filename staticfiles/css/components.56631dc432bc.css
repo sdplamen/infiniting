@@ -1,0 +1,137 @@
+.messages-container { margin-bottom: 20px; padding: 10px; }
+.message-alert { max-width: 300px; padding: 10px 15px; margin-bottom: 10px; border-radius: 5px; font-weight: bold; }
+.message-alert.success { background-color: #4CAF50; color: white; }
+.message-alert.error { background-color: #f44336; color: white; }
+.message-alert.warning { background-color: #ff9800; color: white; }
+.message-alert.info { background-color: #2196F3; color: white; }
+
+.content-section {
+    padding: 20px;
+    background-color: rgba(0, 21, 53, 0.7);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-container, .card-custom {
+    background-color: rgba(0, 21, 53, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 600px;
+    width: 700px;
+    overflow: hidden;
+}
+
+.card-img-top { max-width: 100%; height: auto; border-radius: 10px; display: block; margin-bottom: 20px; }
+.card-body { padding: 0; color: #D4ECFC; }
+.card-title { margin-top: 0; margin-bottom: 15px; }
+.card-body p { margin-bottom: 10px; }
+.card-body p:last-of-type { margin-bottom: 10px; }
+.card-body .btn { margin-top: 5px; }
+
+/* Photo cards: tighter spacing around the title */
+.card-custom:has(> .photo-frame + .card-body),
+.card-custom:has(> .photo-frame + .card-text-content) { padding-bottom: 12px; }
+/* Auction cards: same tight spacing as photo cards */
+.photo-frame + .card-text-content { padding: 0; }
+.photo-frame + .card-text-content h3 { margin-top: 0; }
+.photo-frame + .card-text-content > :last-child { margin-bottom: 0; }
+/* Article and group cards: same tight spacing as photo cards */
+.article-grid-container .card-custom,
+.group-grid-container .card-custom { padding-bottom: 12px; }
+.article-grid-container .card-custom h3,
+.group-grid-container .card-custom h3 { margin-top: 0; margin-bottom: 10px; }
+.article-grid-container .card-custom > :last-child,
+.group-grid-container .card-custom > :last-child { margin-bottom: 0; }
+/* Profile cards — the profile list (avatar on top) and the profile page's info column:
+   same tight spacing as photo cards, with small gaps between all items */
+.card-custom:has(> .profile-picture-small, > .default-profile-icon),
+.profile-info-column .card-custom { padding-bottom: 12px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > * { margin-top: 0; margin-bottom: 6px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > h3 { margin-top: 8px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > h4:not(:first-child) { margin-top: 12px; }
+:is(.card-custom:has(> .profile-picture-small, > .default-profile-icon), .profile-info-column .card-custom) > :last-child { margin-bottom: 0; }
+.profile-info-column .comment-list li p { margin-bottom: 2px; }
+/* The frame carries the gap so the author badge sits on the image corner */
+.photo-frame { margin-bottom: 10px; }
+.photo-frame .card-img-top, .photo-frame .photo-display { margin-bottom: 0; }
+.photo-frame + .card-body,
+.photo-frame + .card-body .card-title { margin: 0 auto; padding: 0; }
+.article-content { background-color: rgba(0, 21, 53, 0.5); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); margin: 40px auto; }
+.actions-right { display: inline-block; }
+.photo-item, .card {
+    align-items: center;
+    margin: 0 auto 20px auto;
+    max-width: 500px;
+    background-color: rgba(0, 21, 53, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+img.photo-display {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    margin: 0 auto 10px auto;
+    cursor: zoom-in;
+}
+
+.photo-display-large {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    margin: 0 auto 10px auto;
+    cursor: zoom-in;
+}
+
+.photo-display-large.enlarged {
+    max-width: 100%;
+    height: auto;
+    transform: scale(1.5);
+    transition: transform 0.3s ease;
+    border: #f7f8d9 solid 1px;
+    cursor: zoom-out;
+    z-index: 10;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.full-image-container { display: flex; justify-content: center; align-items: center; max-width: 100%; max-height: 80vh; margin: 20px auto; padding: 0; overflow: hidden; }
+.full-photo { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.photo-link { display: block; line-height: 0; }
+.card-text-content { padding: 15px; padding-top: 0; color: #D4ECFC; }
+.profile-picture-large { max-width: 100px; border: #1f6acd double 3px; border-radius: 50%; }
+.author { display: grid; justify-items: center; }
+/* --- HTMX (templates/photos/_feed_page.html, _like.html, _rating.html, _comments.html) --- */
+.feed-more { display: inline-block; margin: 16px auto 32px; }
+.feed-more__loading { display: none; }
+.feed-more.htmx-request .feed-more__label { display: none; }
+.feed-more.htmx-request .feed-more__loading { display: inline; }
+.feed-end { margin: 16px auto 32px; }
+/* a button waiting for the server (hx-disabled-elt) */
+button[disabled].icon-like-toggle,
+button[disabled].text-button { opacity: 0.5; cursor: progress; }
+/* new feed cards and swapped-in parts appear gently */
+.htmx-added { opacity: 0; }
+.photo-grid-container, #photo-like, #photo-rating, #photo-comments { transition: opacity 0.25s ease; }
+@media (prefers-reduced-motion: reduce) {
+    .photo-grid-container, #photo-like, #photo-rating, #photo-comments { transition: none; }
+}
+
+/* --- bookmarks (templates/photos/_bookmark.html, saved-photos cards) --- */
+.icon-bookmark-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 5px; border: 0; background: none; cursor: pointer; }
+.icon-bookmark-toggle i { font-size: 1.15rem; color: #A0B9D6; transition: color 0.15s ease; }
+.icon-bookmark-toggle:hover i,
+.icon-bookmark-toggle.is-on i { color: #f0b429; }
+.icon-bookmark-toggle:focus-visible { outline: 2px solid #00b3c7; outline-offset: 2px; border-radius: 4px; }
+.saved-remove { display: flex; justify-content: center; margin-top: 4px; }
+/* a removed saved card fades out during the short swap delay */
+.photo-grid-container.htmx-swapping { opacity: 0; }

@@ -42,37 +42,9 @@
                 <hr class="custom-hr">
 
                 <div class="form-field inline-form-field photo-actions-bar">
-                    <div>
-                        {% if form.can_like_or_rate %}
-                            <form method="POST" action="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="icon-like-toggle">
-                                    <i class="{% if form.has_liked %}fas fa-thumbs-up{% else %}far fa-thumbs-up{% endif %}"></i>
-                                </button>
-                            </form>
-                            <span class="like-count">{{ photo.likes_count }}</span>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="icon-like-toggle like-login-link" title="Влезте, за да харесате" aria-label="Влезте, за да харесате"><i class="far fa-thumbs-up"></i></a>
-                            <span class="like-count">{{ photo.likes_count }}</span>
-                        {% endif %}
-                    </div>
-{#                    <hr class="custom-hr">#}
-                    <div>
-                        {% if form.can_like_or_rate %}
-                            {# stars are written 5..1 and flipped by CSS, so hovering one also lights the ones before it #}
-                            <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="star-rating" title="{% if form.has_rated %}Вашата оценка: {{ form.user_rating.score }}{% else %}Оценете снимката{% endif %}">
-                                {% csrf_token %}
-                                {% for i in "54321"|make_list %}
-                                    <button type="submit" name="score" value="{{ i }}" class="star{% if form.has_rated and form.user_rating.score >= i|add:0 %} is-on{% endif %}" aria-label="Оценка {{ i }} от 5"><i class="bi bi-star-fill"></i></button>
-                                {% endfor %}
-                            </form>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="star-rating star-rating-static" title="Влезте, за да оцените" aria-label="Влезте, за да оцените">
-                                {% for i in "12345"|make_list %}<span class="star"><i class="bi bi-star-fill"></i></span>{% endfor %}
-                            </a>
-                        {% endif %}
-                        <span class="rating-count" title="Брой оценки">{{ photo.ratings_count }}</span>
-                    </div>
+                    {% include 'photos/_like.html' %}
+                    {% include 'photos/_rating.html' %}
+                    {% include 'photos/_bookmark.html' %}
                     {% if form.can_edit_delete %}
                         <div class="owner-actions">
                             <a href="{% url 'photo-edit' pk=photo.pk %}" class="owner-action owner-action-edit" title="Редактирай" aria-label="Редактирай снимката"><i class="fas fa-pen"></i></a>
@@ -86,56 +58,7 @@
     </div>
 
     <div class="side-column">
-        <div class="card-custom">
-            <h4>Коментари ({{ comments.count }})</h4>
-            {% if user.is_authenticated %}
-                <form method="POST" action="{% url 'photo-comment' pk=photo.pk %}">
-                    {% csrf_token %}
-                    <div class="form-field">
-                        {{ comment_form.text.label_tag }}
-                        {{ comment_form.text }}
-                        {% for error in comment_form.text.errors %}
-                            <div class="errorlist">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    {% if comment_form.non_field_errors %}
-                        <div class="message-alert error">
-                            {% for error in comment_form.non_field_errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
-                </form>
-            {% else %}
-                <div class="text-center">
-                    <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
-                </div>
-            {% endif %}
-
-            {% if comments %}
-                <ul class="simple-list comment-list">
-                    {% for comment in comments %}
-                        <li>
-                            <p>
-                                <i class="fas fa-user-circle me-1"></i>
-                                <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
-                                {{ comment.text }}
-                            </p>
-                            <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
-                            {% if user.is_authenticated %}{% if comment.user_id == user.id or form.can_edit_delete %}
-                                <form method="POST" action="{% url 'photo-comment-delete' pk=photo.pk comment_pk=comment.pk %}" class="inline-owner-actions" onsubmit="return confirm('Изтрий коментара?');">
-                                    {% csrf_token %}
-                                    <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
-                                </form>
-                            {% endif %}{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-center">Все още няма коментари.</p>
-            {% endif %}
-        </div>
+        {% include 'photos/_comments.html' %}
     </div>
 </div>
 {% endblock %}

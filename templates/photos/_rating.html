@@ -1,0 +1,18 @@
+{# Star rating and count. Rendered in photo-detail.html and returned alone to HTMX by PhotoAddRatingView. #}
+<div id="photo-rating" class="photo-rating">
+    {% if form.can_like_or_rate %}
+        {# stars are written 5..1 and flipped by CSS, so hovering one also lights the ones before it #}
+        <form method="POST" action="{% url 'photo-rate' pk=photo.pk %}" class="star-rating" title="{% if form.has_rated %}Вашата оценка: {{ form.user_rating.score }}{% else %}Оценете снимката{% endif %}"
+              hx-post="{% url 'photo-rate' pk=photo.pk %}" hx-target="#photo-rating" hx-swap="outerHTML">
+            {% csrf_token %}
+            {% for i in "54321"|make_list %}
+                <button type="submit" name="score" value="{{ i }}" id="star-{{ i }}" class="star{% if form.has_rated and form.user_rating.score >= i|add:0 %} is-on{% endif %}" aria-label="Оценка {{ i }} от 5"><i class="bi bi-star-fill"></i></button>
+            {% endfor %}
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}" class="star-rating star-rating-static" title="Влезте, за да оцените" aria-label="Влезте, за да оцените">
+            {% for i in "12345"|make_list %}<span class="star"><i class="bi bi-star-fill"></i></span>{% endfor %}
+        </a>
+    {% endif %}
+    <span class="rating-count" title="Брой оценки">{{ photo.ratings_count }}</span>
+</div>

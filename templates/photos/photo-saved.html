@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Запазени снимки - Магнум Фотография{% endblock %}
+{% block content %}
+    <div class="text-center">
+        <h2 class="text-center">Запазени снимки</h2>
+        <p class="text-muted">Виждате ги само вие.</p>
+        <div class="feed" id="feed">
+            {% include 'photos/_feed_page.html' %}
+        </div>
+    </div>
+{% endblock %}

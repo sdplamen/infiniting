@@ -1,0 +1,38 @@
+{% comment %} One page of feed cards plus the link to the next page. The home feed includes it, and
+   IndexView returns it alone to HTMX: the link loads the next page when it scrolls into view
+   and is replaced by it (infinite scroll). Without JavaScript the link opens the next page. {% endcomment %}
+{% for photo in photos %}
+    <div class="photo-grid-container">
+        <div class="card-custom">
+            <div class="photo-frame">
+                <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}" loading="lazy"></a>
+                <a href="{% url 'user-profile-detail' pk=photo.author.pk %}" class="photo-author" title="Автор"><i class="fas fa-camera me-1"></i>{{ photo.author.user.username }}</a>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><a href="{% url 'photo-detail' pk=photo.pk %}" class="title-link" title="Виж детайли"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></a></h5>
+                {% if saved_page %}
+                    {# on the saved-photos page: un-save, and HTMX removes this card #}
+                    <form method="POST" action="{% url 'photo-unbookmark' pk=photo.pk %}" class="saved-remove"
+                          hx-post="{% url 'photo-unbookmark' pk=photo.pk %}" hx-target="closest .photo-grid-container" hx-swap="outerHTML swap:0.2s">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="saved">
+                        <button type="submit" class="icon-bookmark-toggle is-on" title="Махни от запазените" aria-label="Махни „{{ photo.caption|default:'Без заглавие' }}“ от запазените"><i class="bi bi-bookmark-fill" aria-hidden="true"></i></button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p>{{ empty_message|default:'Няма налични снимки.' }}</p>
+{% endfor %}
+
+{% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="feed-more text-button"
+       hx-get="?page={{ page_obj.next_page_number }}" hx-trigger="revealed, click" hx-swap="outerHTML"
+       hx-indicator="this">
+        <span class="feed-more__label"><i class="fas fa-arrow-down me-1"></i>Още снимки</span>
+        <span class="feed-more__loading" aria-hidden="true">Зареждане…</span>
+    </a>
+{% elif page_obj.number > 1 %}
+    <p class="feed-end text-muted">Това са всички снимки.</p>
+{% endif %}

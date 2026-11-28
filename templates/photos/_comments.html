@@ -1,0 +1,57 @@
+{% comment %} The comments card: count, form and list. Rendered in photo-detail.html and returned whole
+   to HTMX after adding or deleting a comment, so the count, the list and the form's errors stay in step. {% endcomment %}
+<div id="photo-comments" class="card-custom">
+    <h4>Коментари ({{ comments|length }})</h4>
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'photo-comment' pk=photo.pk %}"
+              hx-post="{% url 'photo-comment' pk=photo.pk %}" hx-target="#photo-comments" hx-swap="outerHTML"
+              hx-disabled-elt="find button[type=submit]">
+            {% csrf_token %}
+            <div class="form-field">
+                {{ comment_form.text.label_tag }}
+                {{ comment_form.text }}
+                {% for error in comment_form.text.errors %}
+                    <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% if comment_form.non_field_errors %}
+                <div class="message-alert error">
+                    {% for error in comment_form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="text-end"><button type="submit" class="text-button"><i class="fas fa-paper-plane me-1"></i>Добави коментар</button></div>
+        </form>
+    {% else %}
+        <div class="text-center">
+            <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i>Влезте, за да добавяте коментари</a>
+        </div>
+    {% endif %}
+
+    {% if comments %}
+        <ul class="simple-list comment-list">
+            {% for comment in comments %}
+                <li id="comment-{{ comment.pk }}">
+                    <p>
+                        <i class="fas fa-user-circle me-1"></i>
+                        <strong><a href="{% url 'user-profile-detail' pk=comment.user.photographer.pk %}">{{ comment.user.username }}</a>:</strong>
+                        {{ comment.text }}
+                    </p>
+                    <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                    {% if user.is_authenticated %}{% if comment.user_id == user.id or form.can_edit_delete %}
+                        <form method="POST" action="{% url 'photo-comment-delete' pk=photo.pk comment_pk=comment.pk %}" class="inline-owner-actions"
+                              onsubmit="return window.htmx ? true : confirm('Изтрий коментара?');"
+                              hx-post="{% url 'photo-comment-delete' pk=photo.pk comment_pk=comment.pk %}" hx-confirm="Изтрий коментара?"
+                              hx-target="#photo-comments" hx-swap="outerHTML">
+                            {% csrf_token %}
+                            <button type="submit" class="owner-action owner-action-delete" title="Изтрий коментара" aria-label="Изтрий коментара"><i class="fas fa-trash-alt"></i></button>
+                        </form>
+                    {% endif %}{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center">Все още няма коментари.</p>
+    {% endif %}
+</div>

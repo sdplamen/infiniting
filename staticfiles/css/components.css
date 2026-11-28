@@ -110,3 +110,28 @@ img.photo-display {
 .card-text-content { padding: 15px; padding-top: 0; color: #D4ECFC; }
 .profile-picture-large { max-width: 100px; border: #1f6acd double 3px; border-radius: 50%; }
 .author { display: grid; justify-items: center; }
+/* --- HTMX (templates/photos/_feed_page.html, _like.html, _rating.html, _comments.html) --- */
+.feed-more { display: inline-block; margin: 16px auto 32px; }
+.feed-more__loading { display: none; }
+.feed-more.htmx-request .feed-more__label { display: none; }
+.feed-more.htmx-request .feed-more__loading { display: inline; }
+.feed-end { margin: 16px auto 32px; }
+/* a button waiting for the server (hx-disabled-elt) */
+button[disabled].icon-like-toggle,
+button[disabled].text-button { opacity: 0.5; cursor: progress; }
+/* new feed cards and swapped-in parts appear gently */
+.htmx-added { opacity: 0; }
+.photo-grid-container, #photo-like, #photo-rating, #photo-comments { transition: opacity 0.25s ease; }
+@media (prefers-reduced-motion: reduce) {
+    .photo-grid-container, #photo-like, #photo-rating, #photo-comments { transition: none; }
+}
+
+/* --- bookmarks (templates/photos/_bookmark.html, saved-photos cards) --- */
+.icon-bookmark-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 5px; border: 0; background: none; cursor: pointer; }
+.icon-bookmark-toggle i { font-size: 1.15rem; color: #A0B9D6; transition: color 0.15s ease; }
+.icon-bookmark-toggle:hover i,
+.icon-bookmark-toggle.is-on i { color: #f0b429; }
+.icon-bookmark-toggle:focus-visible { outline: 2px solid #00b3c7; outline-offset: 2px; border-radius: 4px; }
+.saved-remove { display: flex; justify-content: center; margin-top: 4px; }
+/* a removed saved card fades out during the short swap delay */
+.photo-grid-container.htmx-swapping { opacity: 0; }

@@ -7,24 +7,8 @@
         {% endif %}
         <h2 class="text-center">Снимки</h2>
 
-        {% for photo in photos %}
-            <div class="photo-grid-container">
-                <div class="card-custom">
-                    <div class="photo-frame">
-                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}"></a>
-                        <a href="{% url 'user-profile-detail' pk=photo.author.pk %}" class="photo-author" title="Автор"><i class="fas fa-camera me-1"></i>{{ photo.author.user.username }}</a>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'photo-detail' pk=photo.pk %}" class="title-link" title="Виж детайли"><strong>{{ photo.caption|default:'Без заглавие' }}</strong></a></h5>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <p>Няма налични снимки.</p>
-        {% endfor %}
-
-        {% if is_paginated %}
-            {% include 'paginator.html' %}
-        {% endif %}
+        <div class="feed" id="feed">
+            {% include 'photos/_feed_page.html' %}
+        </div>
     </div>
 {% endblock %}

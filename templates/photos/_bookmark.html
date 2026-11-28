@@ -1,0 +1,16 @@
+{# Save-for-later toggle. Rendered in photo-detail.html and returned alone to HTMX by bookmark_photo/unbookmark_photo. #}
+<div id="photo-bookmark" class="photo-bookmark">
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% if is_bookmarked %}{% url 'photo-unbookmark' pk=photo.pk %}{% else %}{% url 'photo-bookmark' pk=photo.pk %}{% endif %}" class="d-inline"
+              hx-post="{% if is_bookmarked %}{% url 'photo-unbookmark' pk=photo.pk %}{% else %}{% url 'photo-bookmark' pk=photo.pk %}{% endif %}"
+              hx-target="#photo-bookmark" hx-swap="outerHTML">
+            {% csrf_token %}
+            <button type="submit" id="bookmark-button" class="icon-bookmark-toggle{% if is_bookmarked %} is-on{% endif %}" aria-pressed="{% if is_bookmarked %}true{% else %}false{% endif %}"
+                    title="{% if is_bookmarked %}Махни от запазените{% else %}Запази за по-късно{% endif %}" aria-label="Запази снимката">
+                <i class="bi {% if is_bookmarked %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}" aria-hidden="true"></i>
+            </button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="icon-bookmark-toggle" title="Влезте, за да запазвате снимки" aria-label="Влезте, за да запазвате снимки"><i class="bi bi-bookmark" aria-hidden="true"></i></a>
+    {% endif %}
+</div>

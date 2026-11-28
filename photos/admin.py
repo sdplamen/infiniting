@@ -1,5 +1,5 @@
 from django.contrib import admin
-from photos.models import Photo
+from photos.models import Bookmark, Photo
 
 
 # Register your models here.
@@ -24,3 +24,9 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ('user', 'photo', 'score')
     filter = ('photo', 'user')
     ordering = ('photo')
+
+
+@admin.register(Bookmark)
+class BookmarkAdmin(admin.ModelAdmin):
+    list_display = ('user', 'photo', 'created_at')
+    raw_id_fields = ('user', 'photo')

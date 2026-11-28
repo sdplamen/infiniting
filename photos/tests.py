@@ -497,3 +497,198 @@ class PhotoCountsTest(TestCase):
         detail = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
         self.assertContains(detail, '<span class="like-count">2</span>', html=True)
         self.assertContains(detail, '<span class="rating-count" title="Брой оценки">2</span>', html=True)
+
+
+class HtmxTest(TestCase):
+    """Likes, ratings, comments and the feed answer HTMX with a partial and plain posts with a redirect."""
+    HX = {'HTTP_HX_REQUEST': 'true'}
+
+    def setUp(self):
+        self.owner = UserModel.objects.create_user(username='hx-owner', password='pw-12345678')
+        self.fan = UserModel.objects.create_user(username='hx-fan', password='pw-12345678')
+        self.photo = Photo.objects.create(author=self.owner.photographer, image='photos/hx', caption='hx')
+        self.client.force_login(self.fan)
+
+    def url(self, name, **kwargs):
+        return reverse(name, kwargs={'pk': self.photo.pk, **kwargs})
+
+    def assertPartial(self, response, root_id):
+        """A bare fragment whose outermost element is the one HTMX swaps out."""
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertRegex(html, rf'^\s*<div id="{root_id}"')
+        self.assertNotIn('<html', html)
+
+    def test_photo_page_wires_htmx(self):
+        page = self.client.get(self.url('photo-detail'))
+        self.assertContains(page, 'htmx.org@2.0.4')
+        self.assertContains(page, f'hx-post="{self.url("photo-like")}"')
+        self.assertContains(page, f'hx-post="{self.url("photo-rate")}"')
+        self.assertContains(page, f'hx-post="{self.url("photo-comment")}"')
+
+    def test_like_and_unlike_return_the_button(self):
+        response = self.client.post(self.url('photo-like'), **self.HX)
+        self.assertPartial(response, 'photo-like')
+        self.assertContains(response, '<span class="like-count">1</span>', html=True)
+        self.assertContains(response, 'aria-pressed="true"')
+        self.assertContains(response, f'hx-post="{self.url("photo-unlike")}"')
+
+        response = self.client.post(self.url('photo-unlike'), **self.HX)
+        self.assertContains(response, '<span class="like-count">0</span>', html=True)
+        self.assertContains(response, 'aria-pressed="false"')
+        self.assertFalse(Like.objects.exists())
+
+    def test_like_without_javascript_redirects_and_get_is_refused(self):
+        self.assertRedirects(self.client.post(self.url('photo-like')), self.url('photo-detail'))
+        self.assertEqual(Like.objects.count(), 1)
+        self.assertEqual(self.client.get(self.url('photo-like')).status_code, 405)
+
+    def test_rating_returns_the_stars(self):
+        response = self.client.post(self.url('photo-rate'), {'score': '3'}, **self.HX)
+        self.assertPartial(response, 'photo-rating')
+        self.assertContains(response, 'class="star is-on"', count=3)
+        self.assertContains(response, '<span class="rating-count" title="Брой оценки">1</span>', html=True)
+        response = self.client.post(self.url('photo-rate'), {'score': '9'}, **self.HX)   # invalid: unchanged stars
+        self.assertContains(response, 'class="star is-on"', count=3)
+
+    def test_comment_add_shows_it_and_clears_the_form(self):
+        response = self.client.post(self.url('photo-comment'), {'text': 'Силна светлина'}, **self.HX)
+        self.assertPartial(response, 'photo-comments')
+        self.assertContains(response, 'Коментари (1)')
+        self.assertContains(response, 'Силна светлина')
+        self.assertNotContains(response, '>Силна светлина</textarea>')
+
+    def test_empty_comment_keeps_the_form_with_an_error(self):
+        response = self.client.post(self.url('photo-comment'), {'text': ''}, **self.HX)
+        self.assertPartial(response, 'photo-comments')
+        self.assertContains(response, 'class="errorlist"')
+        self.assertFalse(Comment.objects.exists())
+
+    def test_comment_delete_returns_the_list(self):
+        comment = Comment.objects.create(user=self.fan, photo=self.photo, text='махни ме')
+        response = self.client.post(self.url('photo-comment-delete', comment_pk=comment.pk), **self.HX)
+        self.assertPartial(response, 'photo-comments')
+        self.assertContains(response, 'Коментари (0)')
+        self.assertFalse(Comment.objects.exists())
+
+        other = Comment.objects.create(user=self.owner, photo=self.photo, text='не е твой')
+        self.client.force_login(UserModel.objects.create_user(username='hx-stranger', password='pw-12345678'))
+        response = self.client.post(self.url('photo-comment-delete', comment_pk=other.pk), **self.HX)
+        self.assertEqual(response.status_code, 403)
+
+
+class HtmxFeedTest(TestCase):
+    """Infinite scroll: page N ends with a link that HTMX swaps for page N+1."""
+
+    def setUp(self):
+        owner = UserModel.objects.create_user(username='feed-owner', password='pw-12345678')
+        self.photos = [Photo.objects.create(author=owner.photographer, image=f'photos/f{i}', caption=f'кадър {i}')
+                       for i in range(12)]   # 5 per page: pages 1, 2, 3
+
+    def test_first_page_ends_with_a_more_link(self):
+        page = self.client.get(reverse('photo-home'))
+        self.assertContains(page, 'class="photo-grid-container"', count=5)
+        self.assertContains(page, 'hx-get="?page=2"')
+        self.assertContains(page, 'href="?page=2"')               # works without JavaScript too
+        self.assertContains(page, 'hx-trigger="revealed, click"')
+
+    def test_htmx_gets_only_the_next_cards(self):
+        part = self.client.get(reverse('photo-home'), {'page': 2}, HTTP_HX_REQUEST='true')
+        html = part.content.decode()
+        self.assertNotIn('<html', html)
+        self.assertNotIn('Качи снимка', html)
+        self.assertContains(part, 'class="photo-grid-container"', count=5)
+        self.assertContains(part, 'hx-get="?page=3"')
+
+    def test_last_page_ends_the_feed(self):
+        part = self.client.get(reverse('photo-home'), {'page': 3}, HTTP_HX_REQUEST='true')
+        self.assertContains(part, 'class="photo-grid-container"', count=2)
+        self.assertNotContains(part, 'hx-get=')
+        self.assertContains(part, 'Това са всички снимки.')
+
+
+from photos.models import Bookmark
+
+
+class BookmarkTest(TestCase):
+    HX = {'HTTP_HX_REQUEST': 'true'}
+
+    def setUp(self):
+        self.owner = UserModel.objects.create_user(username='bm-owner', password='pw-12345678')
+        self.reader = UserModel.objects.create_user(username='bm-reader', password='pw-12345678')
+        self.photos = [Photo.objects.create(author=self.owner.photographer, image=f'photos/b{i}', caption=f'кадър {i}')
+                       for i in range(7)]
+        self.photo = self.photos[0]
+        self.client.force_login(self.reader)
+
+    def url(self, name, photo=None):
+        return reverse(name, kwargs={'pk': (photo or self.photo).pk})
+
+    def test_toggle_on_photo_page_with_htmx(self):
+        page = self.client.get(self.url('photo-detail'))
+        self.assertContains(page, f'hx-post="{self.url("photo-bookmark")}"')
+        self.assertContains(page, 'aria-pressed="false"', count=2)            # like and bookmark
+
+        part = self.client.post(self.url('photo-bookmark'), **self.HX)
+        self.assertRegex(part.content.decode(), r'^\s*<div id="photo-bookmark"')
+        self.assertContains(part, 'bi-bookmark-fill')
+        self.assertContains(part, f'hx-post="{self.url("photo-unbookmark")}"')
+        self.assertTrue(Bookmark.objects.filter(user=self.reader, photo=self.photo).exists())
+
+        self.client.post(self.url('photo-bookmark'), **self.HX)               # twice: still one
+        self.assertEqual(Bookmark.objects.count(), 1)
+
+        part = self.client.post(self.url('photo-unbookmark'), **self.HX)
+        self.assertContains(part, 'aria-pressed="false"')
+        self.assertFalse(Bookmark.objects.exists())
+
+    def test_without_javascript_and_logged_out(self):
+        self.assertRedirects(self.client.post(self.url('photo-bookmark')), self.url('photo-detail'))
+        self.assertEqual(self.client.get(self.url('photo-bookmark')).status_code, 405)
+        self.client.logout()
+        page = self.client.get(self.url('photo-detail'))
+        self.assertContains(page, 'title="Влезте, за да запазвате снимки"')
+        response = self.client.post(self.url('photo-bookmark'))
+        self.assertRedirects(response, f"{reverse('login')}?next={self.url('photo-bookmark')}")
+        self.assertRedirects(self.client.get(reverse('photo-saved')), f"{reverse('login')}?next={reverse('photo-saved')}")
+
+    def test_saved_page_is_private_newest_first_and_scrolls(self):
+        for photo in self.photos:                                           # saved 0..6, newest is 6
+            Bookmark.objects.create(user=self.reader, photo=photo)
+        Bookmark.objects.create(user=self.owner, photo=self.photos[1])     # someone else's
+
+        page = self.client.get(reverse('photo-saved'))
+        self.assertContains(page, 'Запазени снимки')
+        self.assertContains(page, 'class="photo-grid-container"', count=5)
+        titles = [f'кадър {i}' for i in (6, 5, 4, 3, 2)]
+        self.assertEqual([t for t in titles if t in page.content.decode()], titles)
+        self.assertContains(page, 'hx-get="?page=2"')
+        self.assertContains(page, 'name="next" value="saved"', count=5)
+
+        part = self.client.get(reverse('photo-saved'), {'page': 2}, **self.HX)
+        self.assertNotIn('<html', part.content.decode())
+        self.assertContains(part, 'class="photo-grid-container"', count=2)
+
+        self.client.force_login(self.owner)
+        mine = self.client.get(reverse('photo-saved'))
+        self.assertContains(mine, 'class="photo-grid-container"', count=1)
+
+    def test_removing_from_saved_page(self):
+        Bookmark.objects.create(user=self.reader, photo=self.photo)
+        part = self.client.post(self.url('photo-unbookmark'), {'next': 'saved'}, **self.HX)
+        self.assertEqual((part.status_code, part.content), (200, b''))     # the card swaps itself out
+        self.assertFalse(Bookmark.objects.exists())
+        Bookmark.objects.create(user=self.reader, photo=self.photo)
+        self.assertRedirects(self.client.post(self.url('photo-unbookmark'), {'next': 'saved'}), reverse('photo-saved'))
+
+    def test_empty_saved_page_and_nav_link(self):
+        page = self.client.get(reverse('photo-saved'))
+        self.assertContains(page, 'Все още нямате запазени снимки.')
+        self.assertContains(page, f'href="{reverse("photo-saved")}" title="Запазени снимки"')
+        self.client.logout()
+        self.assertNotContains(self.client.get(reverse('photo-home')), reverse('photo-saved'))
+
+    def test_deleting_the_photo_removes_bookmarks(self):
+        Bookmark.objects.create(user=self.reader, photo=self.photo)
+        self.photo.delete()
+        self.assertFalse(Bookmark.objects.exists())

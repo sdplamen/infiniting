@@ -21,7 +21,7 @@ from articles.models import Article, ArticleComment
 from auctions.models import Auction, AuctionComment, Bid
 from essays.models import Essay
 from groups.models import Group, GroupComment
-from photos.models import Comment, Like, Photo, Rating
+from photos.models import Bookmark, Comment, Like, Photo, Rating
 from users.models import Follow, ProfileComment
 
 UserModel = get_user_model()
@@ -61,6 +61,8 @@ class QueryCountTest(TestCase):
                 Like.objects.create(user=user, photo=photo)
                 Comment.objects.create(user=user, photo=photo, text='c')
                 Rating.objects.create(user=user.photographer, photo=photo, score=4)
+            Bookmark.objects.create(user=self.owner, photo=own)
+            Bookmark.objects.create(user=self.owner, photo=owners)
             Follow.objects.create(follower=user, followed=self.owner)
             Follow.objects.create(follower=self.owner, followed=user)
             ProfileComment.objects.create(user=user, photographer=self.owner.photographer, text='c')
@@ -111,6 +113,12 @@ class QueryCountTest(TestCase):
 
     def test_lightbox(self):
         self.assertFlat(f'/{self.photo.pk}/full-photo/?essay={self.essay.pk}')
+
+    def test_saved_photos(self):
+        self.assertFlat('/saved/')
+
+    def test_saved_photos_later_page(self):
+        self.assertFlat('/saved/?page=2')
 
     def test_profile_list(self):
         self.assertFlat('/users/')

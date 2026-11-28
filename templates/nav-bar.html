@@ -7,6 +7,7 @@
         <li><a href="{% url 'group-list' %}" title="Групи"><i class="bi bi-people"></i></a></li>
 
         {% if user.is_authenticated %}
+            <li><a href="{% url 'photo-saved' %}" title="Запазени снимки"><i class="bi bi-bookmark"></i></a></li>
             <li>
                 <a href="{% url 'user-profile' %}" title="Профил ({{ user.username }})">
                     <i class="bi bi-person-circle"></i>

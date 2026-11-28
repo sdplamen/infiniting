@@ -1,0 +1,18 @@
+{# Like toggle and count. Rendered in photo-detail.html and returned alone to HTMX by like_photo/unlike_photo. #}
+<div id="photo-like" class="photo-like">
+    {% if form.can_like_or_rate %}
+        <form method="POST" action="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}" class="d-inline"
+              hx-post="{% if form.has_liked %}{% url 'photo-unlike' pk=photo.pk %}{% else %}{% url 'photo-like' pk=photo.pk %}{% endif %}"
+              hx-target="#photo-like" hx-swap="outerHTML">
+            {% csrf_token %}
+            <button type="submit" id="like-button" class="icon-like-toggle" aria-pressed="{% if form.has_liked %}true{% else %}false{% endif %}"
+                    title="{% if form.has_liked %}Махни харесването{% else %}Харесай{% endif %}" aria-label="Харесай снимката">
+                <i class="{% if form.has_liked %}fas fa-thumbs-up{% else %}far fa-thumbs-up{% endif %}"></i>
+            </button>
+        </form>
+        <span class="like-count">{{ photo.likes_count }}</span>
+    {% else %}
+        <a href="{% url 'login' %}" class="icon-like-toggle like-login-link" title="Влезте, за да харесате" aria-label="Влезте, за да харесате"><i class="far fa-thumbs-up"></i></a>
+        <span class="like-count">{{ photo.likes_count }}</span>
+    {% endif %}
+</div>
