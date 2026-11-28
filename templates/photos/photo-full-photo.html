@@ -26,6 +26,7 @@
     <div class="lb-control lb-info">
         <span class="lb-caption">{{ photo.caption|default:'Без заглавие' }}</span>
         <span class="lb-author">{{ photo.author.user.username }}</span>
+        {% if essay %}<span class="lb-essay">{{ essay.title }}</span>{% endif %}
         <span class="lb-position">{{ position }} / {{ total }}</span>
     </div>
     <p class="lb-control lb-hint" aria-hidden="true">

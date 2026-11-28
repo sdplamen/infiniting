@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Изтрий есе{% endblock %}
+
+{% block content %}
+<div class="form-container text-center">
+    <h2 class="text-danger">Изтрий есето</h2>
+    <p class="lead-text">Сигурни ли сте, че искате да изтриете <strong>„{{ essay.title }}“</strong>?</p>
+    <p class="text-muted">Изтриват се подредбата и текстовете към кадрите ({{ essay.items.count }}). Самите снимки остават в профила ви.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="detail-actions">
+            <button type="submit" class="owner-action owner-action-delete" title="Да, изтрий" aria-label="Да, изтрий"><i class="fas fa-trash-alt"></i></button>
+            <a href="{% url 'essay-detail' pk=essay.pk %}" class="owner-action owner-action-cancel" title="Откажи" aria-label="Откажи"><i class="fas fa-times"></i></a>
+        </div>
+    </form>
+</div>
+{% endblock %}

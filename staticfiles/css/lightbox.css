@@ -134,7 +134,9 @@ html, body { margin: 0; padding: 0; height: 100%; }
 
 .lb-caption { color: var(--lb-ink); font-weight: 500; }
 .lb-author,
+.lb-essay,
 .lb-position { color: var(--lb-ink-dim); }
+.lb-essay { font-style: italic; }
 
 .lb-hint {
     right: 16px;

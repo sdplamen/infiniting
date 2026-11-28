@@ -33,7 +33,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 # Application definition
 PROJECT_APPS = [
-    'users', 'groups',  'photos', 'articles', 'auctions', 'mobileAPI',
+    'users', 'groups',  'photos', 'articles', 'auctions', 'essays', 'mobileAPI',
 ]
 
 INSTALLED_APPS = [

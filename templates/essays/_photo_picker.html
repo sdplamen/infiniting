@@ -1,0 +1,19 @@
+{# Checkbox grid of photo thumbnails. Needs: field (a PhotoChoiceField bound field) #}
+<fieldset class="photo-picker">
+    <legend>{{ field.label }}</legend>
+    {% if field.help_text %}<p class="help-text">{{ field.help_text }}</p>{% endif %}
+    <div class="photo-picker__grid">
+        {% for choice in field %}
+            {% with photo=choice.data.value.instance %}
+                <label class="photo-picker__option" for="{{ choice.id_for_label }}">
+                    {{ choice.tag }}
+                    <img src="{{ photo.image.url }}" alt="" loading="lazy">
+                    <span class="photo-picker__label">{{ choice.choice_label }}</span>
+                </label>
+            {% endwith %}
+        {% empty %}
+            <p class="text-muted">Няма снимки за добавяне. <a href="{% url 'photo-create' %}">Качете снимка</a>.</p>
+        {% endfor %}
+    </div>
+    {% for error in field.errors %}<div class="errorlist">{{ error }}</div>{% endfor %}
+</fieldset>

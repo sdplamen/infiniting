@@ -28,6 +28,7 @@ urlpatterns = [
     path('groups/', include('groups.urls')),
     path('articles/', include('articles.urls')),
     path('auctions/', include('auctions.urls')),
+    path('essays/', include('essays.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/register/', user_views.UserRegisterView.as_view(), name='register'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

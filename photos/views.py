@@ -34,10 +34,19 @@ class FullPhotoView(DetailView):
     order (newest first) for ←/→ and a loupe (static/js/lightbox.js).
 
     `?back=<path>` names the page Esc returns to (e.g. the auction page);
-    without it Esc goes to the detail page of the photo being shown."""
+    without it Esc goes to the detail page of the photo being shown.
+    `?essay=<pk>` steps through that essay's sequence instead of the feed,
+    and Esc returns to the essay at the frame being shown."""
     model = Photo
     template_name = 'photos/photo-full-photo.html'
     context_object_name = 'photo'
+
+    def _essay(self):
+        essay_id = self.request.GET.get('essay', '')
+        if not essay_id.isdigit():
+            return None
+        from essays.models import Essay
+        return Essay.visible_to(self.request.user).filter(pk=essay_id).first()
 
     def _back_url(self):
         back = self.request.GET.get('back', '')
@@ -46,20 +55,43 @@ class FullPhotoView(DetailView):
             return back
         return ''
 
-    def _lightbox_url(self, photo, back):
+    def _lightbox_url(self, photo, back, essay=None):
         url = reverse('photo-full-photo', kwargs={'pk': photo.pk})
-        return f'{url}?{urlencode({"back": back})}' if back else url
+        params = {key: value for key, value in (('essay', essay.pk if essay else ''), ('back', back)) if value}
+        return f'{url}?{urlencode(params)}' if params else url
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         photo = self.object
+        back = self._back_url()
+
+        essay = self._essay()
+        sequence = list(essay.items.values_list('photo_id', flat=True)) if essay else []
+        if photo.pk in sequence:
+            # inside an essay: its order, its count, and Esc back to this frame
+            index = sequence.index(photo.pk)
+            prev_pk = sequence[index - 1] if index > 0 else None
+            next_pk = sequence[index + 1] if index + 1 < len(sequence) else None
+            neighbours = Photo.objects.in_bulk([pk for pk in (prev_pk, next_pk) if pk])
+            prev_photo, next_photo = neighbours.get(prev_pk), neighbours.get(next_pk)
+            context.update({
+                'essay': essay,
+                'prev_photo': prev_photo,
+                'next_photo': next_photo,
+                'prev_url': self._lightbox_url(prev_photo, back, essay) if prev_photo else '',
+                'next_url': self._lightbox_url(next_photo, back, essay) if next_photo else '',
+                'close_url': back or f"{reverse('essay-detail', kwargs={'pk': essay.pk})}#frame-{index + 1}",
+                'position': index + 1,
+                'total': len(sequence),
+            })
+            return context
+
         # same order as the home feed: -uploaded_at, ties broken by -pk
         newer = Q(uploaded_at__gt=photo.uploaded_at) | Q(uploaded_at=photo.uploaded_at, pk__gt=photo.pk)
         older = Q(uploaded_at__lt=photo.uploaded_at) | Q(uploaded_at=photo.uploaded_at, pk__lt=photo.pk)
         prev_photo = Photo.objects.filter(newer).order_by('uploaded_at', 'pk').first()
         next_photo = Photo.objects.filter(older).order_by('-uploaded_at', '-pk').first()
 
-        back = self._back_url()
         context.update({
             'prev_photo': prev_photo,
             'next_photo': next_photo,

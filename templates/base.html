@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/png" href="{% static 'images/infinity.png' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header>
@@ -38,6 +39,7 @@
     <footer>
         <div>&copy Социална мрежа за Магнум Фотография</div>
     </footer>
+    {% block scripts %}{% endblock %}
 
 </body>
 </html>

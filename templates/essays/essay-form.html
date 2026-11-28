@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Редактирай есе{% else %}Ново есе{% endif %}{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/essays.css' %}">{% endblock %}
+
+{% block content %}
+<div class="form-container essay-form">
+    <h2 class="text-center">{% if object %}Редактирай „{{ object.title }}“{% else %}Ново есе или контактен лист{% endif %}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name == 'photos' %}
+                {% include 'essays/_photo_picker.html' with field=field %}
+            {% elif field.name == 'kind' or field.name == 'cover_layout' %}
+                <fieldset class="form-field essay-choice essay-choice--{{ field.name }}">
+                    <legend>{{ field.label }}</legend>
+                    {% for choice in field %}
+                        <label class="essay-choice__option essay-choice__option--{{ choice.data.value }}" for="{{ choice.id_for_label }}">
+                            {{ choice.tag }}
+                            <span class="essay-choice__sketch" aria-hidden="true"></span>
+                            <span class="essay-choice__label">{{ choice.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                    {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+                    {% for error in field.errors %}<div class="errorlist">{{ error }}</div>{% endfor %}
+                </fieldset>
+            {% else %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+                    {% for error in field.errors %}<div class="errorlist">{{ error }}</div>{% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}
+            <div class="message-alert error">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+        {% endif %}
+        <div class="text-center">
+            <button type="submit" class="text-button text-button-success">
+                {% if object %}<i class="fas fa-save me-1"></i>Запази{% else %}<i class="fas fa-arrow-right me-1"></i>Създай и подреди кадрите{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

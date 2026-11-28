@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Подредба: {{ essay.title }}{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/essays.css' %}">{% endblock %}
+
+{% block content %}
+<div class="sequence-editor">
+    <h2 class="text-center">Подредба на „<a href="{% url 'essay-detail' pk=essay.pk %}">{{ essay.title }}</a>“</h2>
+    <p class="text-center text-muted sequence-editor__lead">
+        Влачете кадрите за дръжката <i class="fas fa-grip-vertical"></i> (или я фокусирайте и ползвайте <kbd>↑</kbd> <kbd>↓</kbd>),
+        напишете текст към всеки кадър и натиснете „Запази“.
+    </p>
+
+    {% if items %}
+        <form method="POST" id="sequence-form" class="sequence-form">
+            {% csrf_token %}
+            <ol class="sequence-list" id="sequence-list">
+                {% for item in items %}
+                    <li class="sequence-item" data-item-id="{{ item.pk }}">
+                        <button type="button" class="sequence-item__handle" hidden
+                                aria-label="Премести кадър {{ forloop.counter }} ({{ item.photo.caption|default:'без заглавие' }})"
+                                aria-describedby="sequence-help"><i class="fas fa-grip-vertical" aria-hidden="true"></i></button>
+                        <span class="sequence-item__number" aria-hidden="true">{{ forloop.counter }}</span>
+                        <img src="{{ item.photo.image.url }}" alt="{{ item.photo.caption|default:'Кадър' }}" class="sequence-item__thumb" draggable="false">
+                        <div class="sequence-item__fields">
+                            <label class="sequence-item__position">
+                                Позиция
+                                <input type="number" name="position-{{ item.pk }}" value="{{ forloop.counter }}" min="1" class="sequence-item__position-input">
+                            </label>
+                            <label for="caption-{{ item.pk }}" class="visually-hidden">Текст към кадър {{ forloop.counter }}</label>
+                            <textarea name="caption-{{ item.pk }}" id="caption-{{ item.pk }}" rows="2"
+                                      placeholder="Текст към кадъра (по желание)">{{ item.caption }}</textarea>
+                        </div>
+                        <div class="sequence-item__tools">
+                            <button type="button" class="sequence-item__move" data-move="-1" hidden aria-label="Нагоре" title="Нагоре"><i class="fas fa-arrow-up"></i></button>
+                            <button type="button" class="sequence-item__move" data-move="1" hidden aria-label="Надолу" title="Надолу"><i class="fas fa-arrow-down"></i></button>
+                            <label class="sequence-item__remove" title="Махни от есето">
+                                <input type="checkbox" name="remove-{{ item.pk }}">
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i><span class="visually-hidden">Махни кадър {{ forloop.counter }}</span>
+                            </label>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+            <p id="sequence-help" class="visually-hidden">Със стрелките нагоре и надолу местите кадъра.</p>
+            <p id="sequence-status" class="visually-hidden" aria-live="polite"></p>
+
+            <div class="sequence-savebar">
+                <span class="sequence-savebar__state" id="sequence-state"></span>
+                <a href="{% url 'essay-detail' pk=essay.pk %}" class="text-button">Към есето</a>
+                <button type="submit" class="text-button text-button-success"><i class="fas fa-save me-1"></i>Запази</button>
+            </div>
+        </form>
+    {% else %}
+        <p class="text-center">Есето още няма кадри. Изберете снимки по-долу.</p>
+    {% endif %}
+
+    <form method="POST" action="{% url 'essay-add-photos' pk=essay.pk %}" class="sequence-add">
+        {% csrf_token %}
+        {% include 'essays/_photo_picker.html' with field=add_form.photos %}
+        {% if add_form.photos.field.queryset.exists %}
+            <div class="text-center"><button type="submit" class="text-button"><i class="fas fa-plus me-1"></i>Добави в края</button></div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/essay-sequence.js' %}"></script>{% endblock %}

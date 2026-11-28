@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
@@ -102,6 +103,11 @@ class ProfileDetailView(PaginationMixin, DetailView):
         if not (viewer.id == self.object.user_id or viewer.has_perm('articles.can_approve_articles')):
             articles = articles.filter(is_approved=True)
         context['articles'] = articles
+        # essays: published ones, plus drafts for their author
+        essays = self.object.essays.annotate(frame_count=Count('items'))
+        if viewer.id != self.object.user_id:
+            essays = essays.filter(is_published=True)
+        context['essays'] = essays
         context['comment_form'] = ProfileCommentForm()
 
         if self.request.user.is_authenticated:

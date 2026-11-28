@@ -176,6 +176,17 @@
         </section>
     </div>
     <div class="profile-content-column">
+        <h3 class="margin-top-large text-center">Есета от <strong>{{ photographer.user.username }}</strong></h3>
+        <ul class="simple-list">
+            {% for essay in essays %}
+                <li>
+                    <a href="{% url 'essay-detail' pk=essay.pk %}" class="title-link" title="Виж есето">{{ essay.title }}</a>
+                    <span class="text-muted small-text">{{ essay.get_kind_display }} · {{ essay.frame_count }} кадър{{ essay.frame_count|pluralize:",а" }}{% if not essay.is_published %} · чернова{% endif %}</span>
+                </li>
+            {% empty %}
+                <p class="text-center">Този фотограф все още няма есета.</p>
+            {% endfor %}
+        </ul>
         <h3 class="margin-top-large text-center">Статии от <strong>{{ photographer.user.username }}</strong></h3>
         {% if articles %}
             <ul class="simple-list">

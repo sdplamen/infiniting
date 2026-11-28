@@ -1,0 +1,29 @@
+{# The essay's cover in its chosen layout. Needs: essay #}
+{% with cover=essay.cover %}
+<div class="essay-cover essay-cover--{{ essay.cover_layout }}{% if not cover and essay.cover_layout != 'typographic' %} essay-cover--no-photo{% endif %}">
+    {% if essay.cover_layout == 'triptych' %}
+        {% with panels=essay.triptych %}
+            {% if panels %}
+                <div class="essay-cover__panels essay-cover__panels--{{ panels|length }}">
+                    {% for photo in panels %}
+                        <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'' }}" class="essay-cover__img">
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% elif essay.cover_layout != 'typographic' and cover %}
+        <div class="essay-cover__media">
+            <img src="{{ cover.image.url }}" alt="{{ cover.caption|default:'' }}" class="essay-cover__img">
+        </div>
+    {% endif %}
+
+    <div class="essay-cover__text">
+        <p class="essay-kicker">{{ essay.get_kind_display }}{% if not essay.is_published %} · <span class="essay-draft-badge">Чернова</span>{% endif %}</p>
+        <h2 class="essay-title">{{ essay.title }}</h2>
+        <p class="essay-byline">
+            <a href="{% url 'user-profile-detail' pk=essay.author.pk %}"><i class="fas fa-camera me-1"></i>{{ essay.author.user.username }}</a>
+        </p>
+        {% if essay.intro %}<div class="essay-intro">{{ essay.intro|linebreaks }}</div>{% endif %}
+    </div>
+</div>
+{% endwith %}
