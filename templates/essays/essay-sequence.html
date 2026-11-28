@@ -22,7 +22,7 @@
                                 aria-label="Премести кадър {{ forloop.counter }} ({{ item.photo.caption|default:'без заглавие' }})"
                                 aria-describedby="sequence-help"><i class="fas fa-grip-vertical" aria-hidden="true"></i></button>
                         <span class="sequence-item__number" aria-hidden="true">{{ forloop.counter }}</span>
-                        <img src="{{ item.photo.image.url }}" alt="{{ item.photo.caption|default:'Кадър' }}" class="sequence-item__thumb" draggable="false">
+                        <img src="{{ item.photo.image|img:'thumb' }}" alt="{{ item.photo.caption|default:'Кадър' }}" class="sequence-item__thumb" draggable="false">
                         <div class="sequence-item__fields">
                             <label class="sequence-item__position">
                                 Позиция

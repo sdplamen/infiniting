@@ -4,10 +4,11 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from photos.direct_upload import upload_signature
 from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailForm
 from photos.models import Bookmark, Photo, Like, Rating, Comment
 from users.models import Photographer
@@ -201,6 +202,15 @@ def unlike_photo(request, pk):
     if is_htmx(request):
         return render_photo_part(request, pk, 'photos/_like.html')
     return redirect('photo-detail', pk=pk)
+
+
+@login_required
+@require_POST
+def sign_upload(request):
+    """Signed parameters for a direct browser → Cloudinary upload (photos/direct_upload.py)."""
+    if not Photographer.objects.filter(user=request.user).exists():
+        raise PermissionDenied
+    return JsonResponse(upload_signature())
 
 
 @login_required

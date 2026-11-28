@@ -11,9 +11,10 @@
             Моля, <a href="{% url 'user-profile-create' %}" class="alert-link">създайте профил на фотограф</a>, за да можете да качвате снимки.
         </div>
     {% else %}
-        <form method="POST" action="{% url 'photo-create' %}" enctype="multipart/form-data">
+        <form method="POST" action="{% url 'photo-create' %}" enctype="multipart/form-data" data-direct-upload-form data-sign-url="{% url 'photo-upload-sign' %}">
             {% csrf_token %}
-            {% for field in form %}
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+            {% for field in form.visible_fields %}
                 <div class="form-field">
                     {{ field.label_tag }}
                     {{ field }}
@@ -34,9 +35,8 @@
             {% endif %}
             <div class="text-center"><button type="submit" class="text-button text-button-success" id="upload-button"><i class="fas fa-upload me-1"></i>Качи снимка</button></div>
         </form>
-        <script>
-            document.getElementById('upload-button').addEventListener('click', function() {console.log('Upload button clicked');});
-        </script>
     {% endif %}
 </div>
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'js/direct-upload.js' %}"></script>{% endblock %}

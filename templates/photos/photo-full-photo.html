@@ -7,13 +7,13 @@
     <title>{{ photo.caption|default:'Снимка' }}</title>
     <link rel="stylesheet" href="{% static 'css/lightbox.css' %}">
     {# warm the cache so ←/→ show the neighbour at once #}
-    {% if next_photo.image %}<link rel="prefetch" as="image" href="{{ next_photo.image.url }}">{% endif %}
-    {% if prev_photo.image %}<link rel="prefetch" as="image" href="{{ prev_photo.image.url }}">{% endif %}
+    {% if next_photo.image %}<link rel="prefetch" as="image" href="{{ next_photo.image|img:'full' }}">{% endif %}
+    {% if prev_photo.image %}<link rel="prefetch" as="image" href="{{ prev_photo.image|img:'full' }}">{% endif %}
 </head>
 <body class="lightbox" data-prev-url="{{ prev_url }}" data-next-url="{{ next_url }}" data-close-url="{{ close_url }}">
     {% if photo.image %}
         <div class="lb-stage" id="lb-stage" role="img" aria-label="{{ photo.caption|default:'Снимка' }}">
-            <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Снимка' }}" class="lb-image" id="lb-image" draggable="false">
+            <img src="{{ photo.image|img:'full' }}" alt="{{ photo.caption|default:'Снимка' }}" class="lb-image" id="lb-image" draggable="false">
         </div>
     {% else %}
         <p class="lb-empty">Няма изображение.</p>

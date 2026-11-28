@@ -36,7 +36,7 @@
             <div class="text-center">
                 <div class="card-custom">
                     <div class="photo-frame">
-                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}"></a>
+                        <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image|img:'card' }}" class="card-img-top" alt="{{ photo.caption|default:'Снимка' }}"></a>
                         <a href="{% url 'user-profile-detail' pk=photo.author.pk %}" class="photo-author" title="Автор"><i class="fas fa-camera me-1"></i>{{ photo.author.user.username }}</a>
                     </div>
                     <div class="card-body">

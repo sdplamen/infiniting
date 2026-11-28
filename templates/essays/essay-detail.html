@@ -23,7 +23,7 @@
                 {% for item in items %}
                     <li class="contact-sheet__frame" id="frame-{{ forloop.counter }}">
                         <a href="{% url 'photo-full-photo' item.photo.pk %}?essay={{ essay.pk }}" class="contact-sheet__link" title="Виж кадъра">
-                            <img src="{{ item.photo.image.url }}" alt="{{ item.caption|default:item.photo.caption|default:'Кадър' }}" loading="lazy">
+                            <img src="{{ item.photo.image|img:'card' }}" alt="{{ item.caption|default:item.photo.caption|default:'Кадър' }}" loading="lazy">
                         </a>
                         <span class="contact-sheet__number" aria-hidden="true">{{ forloop.counter }}<span>A</span></span>
                         {% if item.caption %}<p class="contact-sheet__caption">{{ item.caption }}</p>{% endif %}
@@ -38,7 +38,7 @@
             {% for item in items %}
                 <figure class="essay-frame" id="frame-{{ forloop.counter }}">
                     <a href="{% url 'photo-full-photo' item.photo.pk %}?essay={{ essay.pk }}" class="essay-frame__link" title="Виж кадъра в тъмната стая">
-                        <img src="{{ item.photo.image.url }}" alt="{{ item.photo.caption|default:'Кадър' }}" loading="lazy">
+                        <img src="{{ item.photo.image|img:'large' }}" alt="{{ item.photo.caption|default:'Кадър' }}" loading="lazy">
                     </a>
                     <figcaption>
                         <span class="essay-frame__number">{{ forloop.counter }} / {{ items|length }}</span>

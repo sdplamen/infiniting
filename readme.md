@@ -87,3 +87,20 @@ pip install -r requirements-dev.txt
 
 django-debug-toolbar then appears on every page; its **SQL** panel lists the queries and marks duplicates.
 It is never enabled in production or in tests.
+
+---
+
+## Photo uploads and image delivery
+
+**Uploads go straight from the browser to Cloudinary.** When a photo is picked, Django signs the upload
+(`/upload/sign/`), the browser sends the file to Cloudinary with a progress bar while the caption is
+written, and the form then submits only the file's reference. Django accepts it only if Cloudinary's
+response signature checks out (`photos/direct_upload.py`, `static/js/direct-upload.js`). EXIF is read
+from the file's first 64 KB, which the browser sends along. Without JavaScript, or if the direct
+upload fails, the form uploads the file the old way. The REST API still takes multipart uploads.
+
+**Images are resized and converted by Cloudinary, not by us.** Templates use
+`{{ photo.image|img:'card' }}` (variants in `photos/templatetags/photo_images.py`: `thumb`, `avatar`,
+`card`, `large`, `full`). Each URL asks Cloudinary for that size with `f_auto,q_auto`, so browsers get
+AVIF or WebP when they support it. Cloudinary creates each variant once and caches it; each counts
+towards the plan's monthly transformation quota.

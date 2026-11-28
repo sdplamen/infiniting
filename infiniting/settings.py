@@ -129,6 +129,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
             ],
+            # {{ photo.image|img:'card' }} in every template (photos/templatetags/photo_images.py)
+            'builtins': ['photos.templatetags.photo_images'],
         },
     },
 ]

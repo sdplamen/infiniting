@@ -30,7 +30,7 @@
         <a href="{% url 'essay-detail' pk=essay.pk %}" class="essay-card essay-card--{{ essay.kind }}">
             <div class="essay-card__media">
                 {% if cover %}
-                    <img src="{{ cover.image.url }}" alt="" loading="lazy">
+                    <img src="{{ cover.image|img:'card' }}" alt="" loading="lazy">
                 {% else %}
                     <span class="essay-card__placeholder">{{ essay.title|truncatechars:1 }}</span>
                 {% endif %}

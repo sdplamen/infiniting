@@ -8,7 +8,7 @@
     <div class="main-content-column">
         <div class="card-custom large-card">
             {% if photo.image %}
-                <a href="{% url 'photo-full-photo' photo.id %}" class="image-link" title="Виж снимката в пълен размер"><img src="{{ photo.image.url }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}"></a>
+                <a href="{% url 'photo-full-photo' photo.id %}" class="image-link" title="Виж снимката в пълен размер"><img src="{{ photo.image|img:'large' }}" class="photo-display-large" alt="{{ photo.caption|default:'Photo' }}"></a>
             {% else %}
                 <img src="https://placehold.co/800x600/001535/D4ECFC?text=Няма+изображение" class="photo-display-large" alt="No image available">
             {% endif %}

@@ -135,3 +135,16 @@ button[disabled].text-button { opacity: 0.5; cursor: progress; }
 .saved-remove { display: flex; justify-content: center; margin-top: 4px; }
 /* a removed saved card fades out during the short swap delay */
 .photo-grid-container.htmx-swapping { opacity: 0; }
+
+/* --- direct upload (static/js/direct-upload.js) --- */
+.direct-upload { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 10px; border: 1px solid rgba(212, 236, 252, 0.18); border-radius: 6px; background: rgba(0, 21, 53, 0.5); }
+.direct-upload__preview { width: 72px; height: 72px; object-fit: cover; border-radius: 4px; background: #000; flex-shrink: 0; }
+.direct-upload__body { flex: 1; min-width: 0; }
+.direct-upload__bar { height: 6px; border-radius: 3px; background: rgba(212, 236, 252, 0.15); overflow: hidden; }
+.direct-upload__bar span { display: block; width: 0; height: 100%; background: #00b3c7; transition: width 0.2s ease; }
+.direct-upload__status { margin: 6px 0 0; font-size: 0.85em; color: #A0B9D6; }
+.direct-upload.is-done .direct-upload__bar span { background: #4CAF50; }
+.direct-upload.is-done .direct-upload__status { color: #8fd694; }
+.direct-upload.is-failed .direct-upload__bar { display: none; }
+.direct-upload.is-failed .direct-upload__status { color: #ffb74d; }
+@media (prefers-reduced-motion: reduce) { .direct-upload__bar span { transition: none; } }

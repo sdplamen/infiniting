@@ -14,7 +14,7 @@
         {% for profile in photographers %}
             <div class="card-custom text-center flex-item">
                 {% if profile.profile_picture %}
-                    <img src="{{ profile.profile_picture.url }}" class="profile-picture-small" alt="{{ profile.user.username }}">
+                    <img src="{{ profile.profile_picture|img:'avatar' }}" class="profile-picture-small" alt="{{ profile.user.username }}">
                 {% else %}
                     <i class="fas fa-user-circle default-profile-icon"></i>
                 {% endif %}

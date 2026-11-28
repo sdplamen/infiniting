@@ -9,7 +9,7 @@
     <div class="profile-info-column">
         <div class="card-custom text-center">
             {% if photographer.profile_picture %}
-                <img src="{{ photographer.profile_picture.url }}" class="profile-picture-large" alt="{{ photographer.user.username }}">
+                <img src="{{ photographer.profile_picture|img:'avatar' }}" class="profile-picture-large" alt="{{ photographer.user.username }}">
             {% else %}
                 <i class="fas fa-user-circle default-profile-icon-large"></i>
             {% endif %}
@@ -147,7 +147,7 @@
                 {% for photo in photos %}
                     <div class="photo-item flex-item">
                             {% if photo.image %}
-                                <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image.url }}" class="photo-display" alt="{{ photo.caption|default:'Снимка' }}"></a>
+                                <a href="{% url 'photo-detail' pk=photo.pk %}" class="image-link" title="Виж детайли"><img src="{{ photo.image|img:'card' }}" class="photo-display" alt="{{ photo.caption|default:'Снимка' }}"></a>
                             {% else %}
                                 <img src="https://placehold.co/400x200/001535/D4ECFC?text=Няма+изображение" class="photo-display" alt="No image available">
                             {% endif %}

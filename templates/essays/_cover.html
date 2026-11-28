@@ -6,14 +6,14 @@
             {% if panels %}
                 <div class="essay-cover__panels essay-cover__panels--{{ panels|length }}">
                     {% for photo in panels %}
-                        <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'' }}" class="essay-cover__img">
+                        <img src="{{ photo.image|img:'large' }}" alt="{{ photo.caption|default:'' }}" class="essay-cover__img">
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
     {% elif essay.cover_layout != 'typographic' and cover %}
         <div class="essay-cover__media">
-            <img src="{{ cover.image.url }}" alt="{{ cover.caption|default:'' }}" class="essay-cover__img">
+            <img src="{{ cover.image|img:'large' }}" alt="{{ cover.caption|default:'' }}" class="essay-cover__img">
         </div>
     {% endif %}
 
