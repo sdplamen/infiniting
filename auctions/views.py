@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, ListView, DetailView, FormView
+from django.views.generic import CreateView, ListView, DetailView, FormView, DeleteView
 from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm, AuctionCommentForm
 from auctions.mixins import StaffOrSuperuserRequiredMixin
 from auctions.models import Auction, AuctionComment
@@ -124,6 +124,22 @@ class AuctionDeactivateView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, F
 
     def redirect_to_success_url(self):
         return redirect(self.success_url)
+
+class AuctionDeleteView(LoginRequiredMixin, StaffOrSuperuserRequiredMixin, DeleteView):
+    """Staff may delete an auction (with its bids and comments) until it ends.
+    Ended auctions are kept: the winner still has to pay for them."""
+    model = Auction
+    template_name = 'auctions/auction-delete.html'
+    context_object_name = 'auction'
+    success_url = reverse_lazy('auction-list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(end_time__gt=timezone.now()).select_related('photo')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Аукционът за '{self.object.photo.caption or 'Снимка'}' беше изтрит.")
+        return super().form_valid(form)
+
 
 class PaymentView(LoginRequiredMixin, FormView):
     model = Auction

@@ -189,6 +189,12 @@ class AuctionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AuctionSerializer
     permission_classes = [IsStaffOrReadOnly]
 
+    def perform_destroy(self, instance):
+        # as on the website: ended auctions are kept, the winner still has to pay
+        if instance.end_time <= timezone.now():
+            raise ValidationError({'detail': 'An auction can only be deleted before it ends.'})
+        instance.delete()
+
 
 class BidListCreateAPIView(generics.ListCreateAPIView):
     """The current user's bids; POST places a bid."""

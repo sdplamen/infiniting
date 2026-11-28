@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Изтрий аукцион{% endblock %}
+
+{% block content %}
+<div class="form-container text-center">
+    <h2 class="text-danger">Изтрий аукциона</h2>
+    <p class="lead-text">Сигурни ли сте, че искате да изтриете аукциона за <strong>"{{ auction.photo.caption|default:'Снимка' }}"</strong>?</p>
+    <p class="text-muted">Това действие е необратимо и ще изтрие всички оферти ({{ auction.bids.count }}) и коментари към аукциона. Снимката остава на автора.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="detail-actions">
+            <button type="submit" class="owner-action owner-action-delete" title="Да, изтрий" aria-label="Да, изтрий"><i class="fas fa-trash-alt"></i></button>
+            <a href="{% url 'auction-detail' pk=auction.pk %}" class="owner-action owner-action-cancel" title="Откажи" aria-label="Откажи"><i class="fas fa-times"></i></a>
+        </div>
+    </form>
+</div>
+{% endblock %}

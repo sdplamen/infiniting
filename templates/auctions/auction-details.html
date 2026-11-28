@@ -95,6 +95,7 @@
                     <div class="detail-actions">
                         {# POST-only and there is no confirmation page, so ask first #}
                         <form method="POST" action="{% url 'auction-deactivate' pk=auction.pk %}" class="m-0" onsubmit="return confirm('Деактивирай аукциона?');">{% csrf_token %}<button type="submit" class="owner-action owner-action-delete" title="Деактивирай аукциона" aria-label="Деактивирай аукциона"><i class="fas fa-ban"></i></button></form>
+                        <a href="{% url 'auction-delete' pk=auction.pk %}" class="owner-action owner-action-delete" title="Изтрий аукциона" aria-label="Изтрий аукциона"><i class="fas fa-trash-alt"></i></a>
                     </div>
                 {% endif %}
 

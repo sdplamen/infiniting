@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils import timezone
-from auctions.models import Auction
+from auctions.models import Auction, AuctionComment, Bid
 from photos.models import Photo
 from users.models import Photographer
 
@@ -258,3 +258,60 @@ class PaymentButtonsTest(TestCase):
         self.assertContains(page, f'<a href="{pay_url}" class="create-link"><i class="fas fa-credit-card me-1"></i>Към плащане</a>', html=True)
         page = self.client.get(pay_url)
         self.assertContains(page, '<button type="submit" class="text-button text-button-success"><i class="fas fa-credit-card me-1"></i>Завърши плащането</button>', html=True)
+
+
+class AuctionDeleteTest(TestCase):
+    def setUp(self):
+        author = Photographer.objects.get_or_create(user=User.objects.create_user(username='x-seller', password='pw-12345678'))[0]
+        now = timezone.now()
+        self.photo = Photo.objects.create(author=author, image='dummy_image.jpg', caption='Мост')
+        self.auction = Auction.objects.create(photo=self.photo, start_time=now - timedelta(hours=1),
+                                              end_time=now + timedelta(days=1), starting_bid=5)
+        self.bidder = User.objects.create_user(username='x-bidder', password='pw-12345678')
+        Bid.objects.create(auction=self.auction, bidder=self.bidder, amount=10)
+        AuctionComment.objects.create(auction=self.auction, user=self.bidder, text='Хубаво')
+        self.url = reverse('auction-delete', kwargs={'pk': self.auction.pk})
+        self.detail = reverse('auction-detail', kwargs={'pk': self.auction.pk})
+        self.staff = User.objects.create_user(username='x-staff', password='pw-12345678', is_staff=True)
+
+    def test_staff_sees_bin_and_confirmation_page(self):
+        self.client.force_login(self.staff)
+        self.assertContains(self.client.get(self.detail), f'href="{self.url}"')
+        page = self.client.get(self.url)
+        self.assertContains(page, 'Изтрий аукциона')
+        self.assertContains(page, 'оферти (1)')
+        self.assertTrue(Auction.objects.filter(pk=self.auction.pk).exists())  # GET only asks
+
+    def test_staff_deletes_before_end(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, reverse('auction-list'))
+        self.assertIn("Аукционът за 'Мост' беше изтрит.", [str(m) for m in response.context['messages']])
+        self.assertFalse(Auction.objects.filter(pk=self.auction.pk).exists())
+        self.assertFalse(Bid.objects.exists())
+        self.assertFalse(AuctionComment.objects.exists())
+        self.assertTrue(Photo.objects.filter(pk=self.photo.pk).exists())  # the photo stays
+
+    def test_deactivated_but_not_ended_can_be_deleted(self):
+        self.auction.is_active = False
+        self.auction.save()
+        self.client.force_login(self.staff)
+        self.client.post(self.url)
+        self.assertFalse(Auction.objects.filter(pk=self.auction.pk).exists())
+
+    def test_ended_auction_cannot_be_deleted(self):
+        self.auction.end_time = timezone.now() - timedelta(minutes=1)
+        self.auction.save()
+        self.client.force_login(self.staff)
+        self.assertNotContains(self.client.get(self.detail), f'href="{self.url}"')
+        self.assertEqual(self.client.get(self.url).status_code, 404)
+        self.assertEqual(self.client.post(self.url).status_code, 404)
+        self.assertTrue(Auction.objects.filter(pk=self.auction.pk).exists())
+
+    def test_regular_users_cannot_delete(self):
+        self.assertRedirects(self.client.post(self.url), f"{reverse('login')}?next={self.url}")
+        for user in (self.bidder, self.photo.author.user):
+            self.client.force_login(user)
+            self.assertNotContains(self.client.get(self.detail), f'href="{self.url}"')
+            self.assertEqual(self.client.post(self.url).status_code, 403)
+        self.assertTrue(Auction.objects.filter(pk=self.auction.pk).exists())

@@ -234,6 +234,19 @@ class AuctionBidApiTest(ApiTestCase):
         self.assertEqual(self.bid('50.00').status_code, 400)
         self.assertFalse(Bid.objects.exists())
 
+    def test_staff_deletes_only_before_end(self):
+        url = reverse('auction-detail-api', kwargs={'pk': self.auction.pk})
+        self.client.force_authenticate(self.other)
+        self.assertEqual(self.client.delete(url).status_code, 403)
+        self.client.force_authenticate(self.staff)
+        self.auction.end_time = timezone.now() - timedelta(minutes=1)
+        self.auction.save()
+        self.assertEqual(self.client.delete(url).status_code, 400)
+        self.auction.end_time = timezone.now() + timedelta(hours=1)
+        self.auction.save()
+        self.assertEqual(self.client.delete(url).status_code, 204)
+        self.assertFalse(Auction.objects.exists())
+
     def test_bids_are_final_and_private(self):
         self.client.force_authenticate(self.other)
         bid_id = self.bid('15.00').data['id']
