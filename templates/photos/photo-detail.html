@@ -50,10 +50,10 @@
                                     <i class="{% if form.has_liked %}fas fa-thumbs-up{% else %}far fa-thumbs-up{% endif %}"></i>
                                 </button>
                             </form>
-                            <span class="like-count">{{ photo.likes.count }}</span>
+                            <span class="like-count">{{ photo.likes_count }}</span>
                         {% else %}
                             <a href="{% url 'login' %}" class="icon-like-toggle like-login-link" title="Влезте, за да харесате" aria-label="Влезте, за да харесате"><i class="far fa-thumbs-up"></i></a>
-                            <span class="like-count">{{ photo.likes.count }}</span>
+                            <span class="like-count">{{ photo.likes_count }}</span>
                         {% endif %}
                     </div>
 {#                    <hr class="custom-hr">#}
@@ -71,7 +71,7 @@
                                 {% for i in "12345"|make_list %}<span class="star"><i class="bi bi-star-fill"></i></span>{% endfor %}
                             </a>
                         {% endif %}
-                        <span class="rating-count" title="Брой оценки">{{ photo.ratings.count }}</span>
+                        <span class="rating-count" title="Брой оценки">{{ photo.ratings_count }}</span>
                     </div>
                     {% if form.can_edit_delete %}
                         <div class="owner-actions">

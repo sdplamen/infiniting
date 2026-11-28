@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+import importlib.util
+import sys
 import dj_database_url
 from pathlib import Path
 from decouple import config
@@ -97,6 +99,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# django-debug-toolbar (requirements-dev.txt): local development only. It stays off
+# in production (DEBUG=False), when it isn't installed, and in tests (it refuses to run there).
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+DEBUG_TOOLBAR = DEBUG and not TESTING and importlib.util.find_spec('debug_toolbar') is not None
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS += ['debug_toolbar']
+    # right after WhiteNoise, so static files don't pass through it
+    MIDDLEWARE.insert(1, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    INTERNAL_IPS = ['127.0.0.1', '::1']
 
 ROOT_URLCONF = 'infiniting.urls'
 

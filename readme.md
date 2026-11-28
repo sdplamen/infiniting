@@ -70,3 +70,20 @@ What This Means :
 
 **Live Demo:** [https://infiniting.onrender.com](https://infiniting.onrender.com)
 Note: Hosted on Render's free tier. If the link takes ~30 seconds to load initially, it is waking up the server instance.
+
+---
+
+## Development: database queries
+
+Every page runs a fixed number of SQL queries, however many photos, likes or comments there are:
+photo lists load authors with `Photo.objects.for_cards()` and counts with `.with_counts()` (see `photos/models.py`).
+`infiniting/test_query_counts.py` fails if a page's query count grows with the data (an N+1 query).
+
+To see each page's queries, install the development tools and run with `DEBUG=True`:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+django-debug-toolbar then appears on every page; its **SQL** panel lists the queries and marks duplicates.
+It is never enabled in production or in tests.

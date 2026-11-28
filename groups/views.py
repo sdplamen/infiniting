@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -28,20 +29,21 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class GroupListView(GroupApprovalMixin, PaginationMixin, ListView):
+class GroupListView(GroupApprovalMixin, ListView):
     model = Group
     template_name = 'groups/group-list.html'
     context_object_name = 'groups'
     paginate_by = 5
 
     def get_queryset(self):
-        return super().get_queryset().order_by('name')
+        return super().get_queryset().annotate(member_count=Count('members')).order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        pagination_data = self.get_paginated_queryset(queryset, self.request)
-        context.update(pagination_data)
+        # join/leave buttons: one query for the viewer's groups, not a member list per group
+        user = self.request.user
+        context['my_group_ids'] = (
+            set(user.user_groups.values_list('pk', flat=True)) if user.is_authenticated else set())
         return context
 
 class GroupDetailView(GroupApprovalMixin, PaginationMixin, DetailView):
@@ -52,7 +54,7 @@ class GroupDetailView(GroupApprovalMixin, PaginationMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        photos = self.object.photos.all().order_by('-uploaded_at')
+        photos = self.object.photos.for_cards().order_by('-uploaded_at', '-pk')
         pagination_data = self.get_paginated_queryset(photos, self.request)
         context.update(pagination_data)
         context['photos'] = context['page_obj']

@@ -12,26 +12,18 @@ from articles.models import Article, ArticleComment
 from users.models import Photographer
 from django.core.mail import send_mail
 from django.conf import settings
-from users.mixins import PaginationMixin
 
 
 # Create your views here.
-class ArticleListView(ArticleApprovalMixin, PaginationMixin, ListView):
-    model = Article
+class ArticleListView(ArticleApprovalMixin, ListView):
+    queryset = Article.objects.select_related('author__user')
     template_name = 'articles/article-list.html'
     context_object_name = 'articles'
-    ordering = ['-created_at']
+    ordering = ['-created_at', '-pk']
     paginate_by = 5
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        pagination_data = self.get_paginated_queryset(queryset, self.request)
-        context.update(pagination_data)
-        return context
-
 class ArticleDetailView(ArticleApprovalMixin, DetailView):
-    model = Article
+    queryset = Article.objects.select_related('author__user')
     template_name = 'articles/article-detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'pk'

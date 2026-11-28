@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Avg, Count, Q
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, status
@@ -50,9 +50,7 @@ class PhotoMixin:
     owner_paths = ['author.user']
 
     def get_queryset(self):
-        return (Photo.objects.select_related('author__user')
-                .annotate(likes_count=Count('likes', distinct=True), average_rating=Avg('ratings__score'))
-                .order_by('-uploaded_at'))
+        return Photo.objects.for_cards().with_counts().order_by('-uploaded_at', '-pk')
 
 
 class PhotoListCreateAPIView(PhotoMixin, generics.ListCreateAPIView):

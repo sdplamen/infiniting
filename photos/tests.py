@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from photos.models import Photo, Photographer, Group
+from photos.models import Photo, Photographer, Group, Like, Comment, Rating
 from django.conf import settings
 
 UserModel = get_user_model()
@@ -459,3 +459,41 @@ class LightboxTest(TestCase):
             page = self.client.get(reverse('photo-full-photo', kwargs={'pk': self.middle.pk}), {'back': back})
             self.assertEqual(page.context['close_url'], reverse('photo-detail', kwargs={'pk': self.middle.pk}))
             self.assertNotIn('evil', page.context['next_url'])
+
+
+class PhotoCountsTest(TestCase):
+    """Photo.objects.with_counts() must match the real counts (it replaces photo.likes.count etc.)."""
+
+    def test_counts_match_and_do_not_multiply(self):
+        owner = UserModel.objects.create_user(username='c-owner', password='pw-12345678')
+        busy = Photo.objects.create(author=owner.photographer, image='photos/busy', caption='busy')
+        quiet = Photo.objects.create(author=owner.photographer, image='photos/quiet', caption='quiet')
+        for i in range(3):
+            fan = UserModel.objects.create_user(username=f'c-fan{i}', password='pw-12345678')
+            Like.objects.create(user=fan, photo=busy)
+            Rating.objects.create(user=fan.photographer, photo=busy, score=2 + i)   # 2, 3, 4
+            Comment.objects.create(user=fan, photo=busy, text='a')
+            Comment.objects.create(user=fan, photo=busy, text='b')
+
+        photos = {p.caption: p for p in Photo.objects.for_cards().with_counts()}
+        b, q = photos['busy'], photos['quiet']
+        # 3 likes × 6 comments × 3 ratings would give 54 if the counts were joined
+        self.assertEqual((b.likes_count, b.comments_count, b.ratings_count, b.average_rating), (3, 6, 3, 3.0))
+        self.assertEqual((q.likes_count, q.comments_count, q.ratings_count, q.average_rating), (0, 0, 0, None))
+
+    def test_profile_and_photo_pages_show_the_counts(self):
+        owner = UserModel.objects.create_user(username='c-owner', password='pw-12345678')
+        photo = Photo.objects.create(author=owner.photographer, image='photos/p', caption='p')
+        for i in range(2):
+            fan = UserModel.objects.create_user(username=f'c-fan{i}', password='pw-12345678')
+            Like.objects.create(user=fan, photo=photo)
+            Rating.objects.create(user=fan.photographer, photo=photo, score=5)
+        Comment.objects.create(user=owner, photo=photo, text='x')
+
+        profile = self.client.get(reverse('user-profile-detail', kwargs={'pk': owner.photographer.pk}))
+        self.assertContains(profile, '<span class="likes-count"><i class="fas fa-thumbs-up"></i> 2</span>', html=True)
+        self.assertContains(profile, '<span class="comments-count"><i class="fas fa-comment"></i> 1</span>', html=True)
+        self.assertContains(profile, '2 оценки')
+        detail = self.client.get(reverse('photo-detail', kwargs={'pk': photo.pk}))
+        self.assertContains(detail, '<span class="like-count">2</span>', html=True)
+        self.assertContains(detail, '<span class="rating-count" title="Брой оценки">2</span>', html=True)

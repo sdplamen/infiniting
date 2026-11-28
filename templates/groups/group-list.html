@@ -25,7 +25,7 @@
                     <div class="card-footer-row">
                         <div>
                             {% if user.is_authenticated %}
-                                {% if user in group.members.all %}
+                                {% if group.pk in my_group_ids %}
                                     <form method="POST" action="{% url 'group-leave' pk=group.pk %}" class="d-inline">
                                         {% csrf_token %}
                                         <button type="submit" class="text-button text-button-danger"><i class="fas fa-sign-out-alt me-1"></i>Напусни</button>
@@ -38,7 +38,7 @@
                                 {% endif %}
                             {% endif %}
                         </div>
-                        {% with count=group.members.count %}
+                        {% with count=group.member_count %}
                             <span class="author-chip" title="Членове"><i class="fas fa-users me-1"></i>{{ count }} {% if count == 1 %}член{% else %}члена{% endif %}</span>
                         {% endwith %}
                     </div>

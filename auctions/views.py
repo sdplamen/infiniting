@@ -11,11 +11,10 @@ from django.views.generic import CreateView, ListView, DetailView, FormView, Del
 from auctions.forms import AuctionCreateForm, BidForm, AuctionPaymentForm, DeactivateAuctionForm, AuctionDetailForm, AuctionCommentForm
 from auctions.mixins import StaffOrSuperuserRequiredMixin
 from auctions.models import Auction, AuctionComment
-from users.mixins import PaginationMixin
 
 
 # Create your views here.
-class AuctionListView(PaginationMixin, ListView):
+class AuctionListView(ListView):
     model = Auction
     template_name = 'auctions/auction-list.html'
     context_object_name = 'auctions'
@@ -23,7 +22,8 @@ class AuctionListView(PaginationMixin, ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_active=True)
+        queryset = (super().get_queryset().filter(is_active=True)
+                    .select_related('photo__author__user', 'highest_bidder__photographer'))
         sort_by = self.request.GET.get('sort_by')
         if sort_by == 'rating':
             queryset = queryset.annotate(avg_rating=Avg('photo__ratings__score')).order_by('-avg_rating')
@@ -33,15 +33,12 @@ class AuctionListView(PaginationMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        pagination_data = self.get_paginated_queryset(queryset, self.request)
-        context.update(pagination_data)
         context['sort_options'] = ['latest', 'rating', 'likes']
         context['current_sort'] = self.request.GET.get('sort_by', 'latest')
         return context
 
 class AuctionDetailView(DetailView):
-    model = Auction
+    queryset = Auction.objects.select_related('photo__author__user', 'highest_bidder__photographer')
     template_name = 'auctions/auction-details.html'
     context_object_name = 'auction'
     pk_url_kwarg = 'pk'
@@ -51,7 +48,7 @@ class AuctionDetailView(DetailView):
         auction = self.object
         user = self.request.user
 
-        context['bids'] = auction.bids.all()
+        context['bids'] = auction.bids.select_related('bidder__photographer')
         context['comments'] = auction.comments.select_related('user__photographer')
         context['comment_form'] = AuctionCommentForm()
         context['now'] = timezone.now()
@@ -98,7 +95,7 @@ def place_bid(request, pk):
             context = {
                 'auction': auction,
                 'bid_form': form,
-                'bids': auction.bids.all(),
+                'bids': auction.bids.select_related('bidder__photographer'),
                 'now': timezone.now(),
                 'form': AuctionDetailForm(auction=auction, user=user),
             }

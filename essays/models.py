@@ -53,6 +53,10 @@ class Essay(models.Model):
         """The chosen cover photo, or the first frame of the sequence."""
         if self.cover_photo_id:
             return self.cover_photo
+        if 'items' in getattr(self, '_prefetched_objects_cache', {}):
+            # the essay list prefetched the frames with their photos: no query here
+            items = self.items.all()
+            return items[0].photo if items else None
         first = self.items.select_related('photo').first()
         return first.photo if first else None
 

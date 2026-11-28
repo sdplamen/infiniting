@@ -11,23 +11,17 @@ from photos.forms import PhotoUploadForm, CommentForm, RatingForm, PhotoDetailFo
 from photos.models import Photo, Like, Rating, Comment
 from users.models import Photographer
 from photos.mixins import UserIsObjectAuthorMixin, PhotoFormProcessingMixin
-from users.mixins import PaginationMixin
 
 
-# Create your views here.
-class IndexView(PaginationMixin, ListView):
-    model = Photo
+class IndexView(ListView):
+    """The home feed. ListView paginates (one COUNT, one page query); the cards'
+    author names come in the same query, so the count stays flat per page."""
     template_name = 'photos/photo-list.html'
     context_object_name = 'photos'
-    ordering = ['-uploaded_at']
     paginate_by = 5
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        pagination_data = self.get_paginated_queryset(queryset, self.request)
-        context.update(pagination_data)
-        return context
+    def get_queryset(self):
+        return Photo.objects.for_cards().order_by('-uploaded_at', '-pk')
 
 class FullPhotoView(DetailView):
     """Dark-room lightbox: one photo on #0d0d0d, with its neighbours in feed
@@ -105,14 +99,16 @@ class FullPhotoView(DetailView):
 
 
 class PhotoDetailView(DetailView):
-    model = Photo
     template_name = 'photos/photo-detail.html'
     context_object_name = 'photo'
     pk_url_kwarg = 'pk'
 
+    def get_queryset(self):
+        return Photo.objects.for_cards().with_counts()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comments.all().order_by('-created_at')
+        context['comments'] = self.object.comments.select_related('user__photographer').order_by('-created_at')
         context['comment_form'] = CommentForm()
         context['rating_form'] = RatingForm()
 

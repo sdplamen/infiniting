@@ -22,7 +22,7 @@
                 <p class="text-muted">Член от {{ profile.created_at|date:"d M Y" }}</p>
                 <p>{{ profile.bio|truncatechars:100|default:'Няма биография.' }}</p>
                 {% if user.is_authenticated and user != profile.user %}
-                    {% if user|is_following:profile.user %}
+                    {% if profile.user_id in followed_user_ids %}
                         <form method="post" action="{% url 'user-unfollow' pk=profile.user.pk %}">
                             {% csrf_token %}
                             <button type="submit" class="text-button text-button-danger"><i class="fas fa-user-minus me-1"></i>Не следвай</button>

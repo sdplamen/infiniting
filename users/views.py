@@ -32,10 +32,20 @@ class UserRegisterView(CreateView):
         return response
 
 class ProfileListView(ListView):
-    model = Photographer
     template_name = 'users/profile-list.html'
     context_object_name = 'photographers'
     paginate_by = 10
+
+    def get_queryset(self):
+        return Photographer.objects.select_related('user').order_by('-created_at', '-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # one query for the follow buttons on the page, not one per profile
+        user = self.request.user
+        context['followed_user_ids'] = (
+            set(user.following.values_list('followed_id', flat=True)) if user.is_authenticated else set())
+        return context
 
 class ProfileCreateView(LoginRequiredMixin, CreateView):
     model = Photographer
@@ -56,7 +66,7 @@ from django.http import Http404
 
 
 class ProfileDetailView(PaginationMixin, DetailView):
-    model = Photographer
+    queryset = Photographer.objects.select_related('user')
     template_name = 'users/profile-details.html'
     context_object_name = 'photographer'
     pk_url_kwarg = 'pk'
@@ -65,7 +75,7 @@ class ProfileDetailView(PaginationMixin, DetailView):
         if self.kwargs.get(self.pk_url_kwarg) is None:
             if self.request.user.is_authenticated:
                 try:
-                    return Photographer.objects.get(user=self.request.user)
+                    return self.queryset.get(user=self.request.user)
                 except Photographer.DoesNotExist:
                     return None
             else:
@@ -87,15 +97,22 @@ class ProfileDetailView(PaginationMixin, DetailView):
                 return redirect('user-profile-list')
         return super().dispatch(request, *args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        # dispatch() already loaded the profile; DetailView.get() would load it again
+        return self.render_to_response(self.get_context_data(object=self.object))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        photos = Photo.objects.filter(author=self.object).order_by('-uploaded_at')
+        # the photo cards: group, and like/comment/rating counts in the same query
+        photos = (Photo.objects.filter(author=self.object).select_related('group')
+                  .with_counts().order_by('-uploaded_at', '-pk'))
         pagination_context = self.get_paginated_queryset(photos, self.request)
         context.update(pagination_context)
         context['photos'] = context['page_obj']
         context['form'] = ProfileDetailForm(photographer=self.object, user=self.request.user)
-        context['followers'] = self.object.user.followers.all()
-        context['following'] = self.object.user.following.all()
+        context['followers'] = self.object.user.followers.select_related('follower__photographer')
+        context['following'] = self.object.user.following.select_related('followed__photographer')
+        context['member_groups'] = self.object.user.user_groups.order_by('name')
         context['comments'] = self.object.comments.select_related('user__photographer')
         # drafts are shown only to their author and to approvers (same rule as the articles list)
         articles = self.object.articles.order_by('-created_at')

@@ -42,7 +42,7 @@
         </div>
 
         <div class="card-custom">
-            <h4>Следващи ме : {{ followers.count }}</h4>
+            <h4>Следващи ме : {{ followers|length }}</h4>
             {% if followers %}
                 <ul class="simple-list">
                     {% for follow in followers %}
@@ -59,7 +59,7 @@
                 <p class="text-muted">Все още няма следващи ме.</p>
             {% endif %}
 
-            <h4>Последвани : {{ following.count }}</h4>
+            <h4>Последвани : {{ following|length }}</h4>
             {% if following %}
                 <ul class="simple-list">
                     {% for follow in following %}
@@ -77,9 +77,9 @@
             {% endif %}
 
             <h4>Членува в групи</h4>
-            {% if photographer.user.user_groups.all %}
+            {% if member_groups %}
                 <ul class="simple-list">
-                    {% for group in photographer.user.user_groups.all %}
+                    {% for group in member_groups %}
                         <li>
                             {% if group.is_approved or user == photographer.user %}<a href="{% url 'group-detail' pk=group.pk %}">{{ group.name }}</a>{% else %}{{ group.name }}{% endif %}
                             {% if user == photographer.user %}{# own profile: these are your groups #}
@@ -159,10 +159,10 @@
                         {% endif %}
                         <div class="photo-interactions">
                             <small class="uploaded-at">{{ photo.uploaded_at|date:"d M Y" }}</small>
-                            <span class="likes-count"><i class="fas fa-thumbs-up"></i> {{ photo.likes.count }}</span>
-                            <span class="comments-count"><i class="fas fa-comment"></i> {{ photo.comments.count }}</span>
-                            {% if photo.ratings.count > 0 %}
-                                <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings.count }} оценки</span>
+                            <span class="likes-count"><i class="fas fa-thumbs-up"></i> {{ photo.likes_count }}</span>
+                            <span class="comments-count"><i class="fas fa-comment"></i> {{ photo.comments_count }}</span>
+                            {% if photo.ratings_count %}
+                                <span class="ratings-count"><i class="fas fa-star"></i> {{ photo.ratings_count }} оценки</span>
                             {% endif %}
                         </div>
                     </div>

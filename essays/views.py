@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -11,6 +11,10 @@ from django.views.generic.detail import SingleObjectMixin
 from essays.forms import AddPhotosForm, EssayForm
 from essays.models import Essay, EssayItem
 from users.models import Photographer
+
+
+# each essay's frames with their photos, so `essay.cover` needs no query per card
+_FIRST_FRAME = Prefetch('items', queryset=EssayItem.objects.select_related('photo'))
 
 
 class EssayOwnerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -32,8 +36,9 @@ class EssayListView(ListView):
     def get_queryset(self):
         return (Essay.objects.filter(is_published=True)
                 .select_related('author__user', 'cover_photo')
+                .prefetch_related(_FIRST_FRAME)
                 .annotate(frame_count=Count('items'))
-                .order_by('-updated_at'))
+                .order_by('-updated_at', '-pk'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
